@@ -56,14 +56,17 @@ module beef::bet {
 	/// Anybody can define a new bet
 	public entry fun create<T>(title: vector<u8>, quorum: u8, bet_size: u64,
 			players: vector<address>, judges: vector<address>, ctx: &mut TxContext) {
-		// TODO: validate inputs
+		// TODO: validate all inputs
+		let admin_addr = tx_context::sender(ctx);
+		assert!(!vector::contains(&players, &admin_addr), E_ADMIN_CANT_BE_PLAYER);
+
 		let bet = Bet<T> {
 			info: object::new(ctx),
 			status: STATUS_FUND,
 			title: utf8::string_unsafe(title),
 			quorum: quorum,
 			bet_size: bet_size,
-			admin: tx_context::sender(ctx),
+			admin: admin_addr,
 			players: players,
 			judges: judges,
 			votes: vec_map::empty(),
@@ -73,8 +76,20 @@ module beef::bet {
 	}
 
 	/// Player locks funds for the bet
-	public entry fun fund(ctx: &mut TxContext) {
+	public entry fun fund<T>(bet: &mut Bet<T>, player_coin: Coin<T>, ctx: &mut TxContext)
+	{
+		let player_addr = tx_context::sender(ctx);
 
+		assert!(vector::contains(&bet.players, &player_addr), E_ONLY_PLAYERS_CAN_FUND);
+		assert!(!vec_map::contains(&bet.funds, &player_addr), E_ALREADY_FUNDED);
+		assert!(coin::value(&player_coin) >= bet.bet_size, E_FUNDS_BELOW_BET_SIZE);
+
+		vec_map::insert(&mut bet.funds, player_addr, player_coin);
+
+		// If all players have funded the Bet, move to the "vote" phase
+		if (vec_map::size(&bet.funds) == vector::length(&bet.players)) {
+			bet.status = STATUS_VOTE;
+		}
 	}
 
 	/// Judges can cast a vote for one of the player addresses
@@ -95,10 +110,20 @@ module beef::bet {
 
 	/* Specs */
 
+	/*
 	spec create {
-		// pragma aborts_if_is_strict;
-		// aborts_if n >= 100;
+		pragma aborts_if_is_strict;
+		// Won't work:
+		aborts_if contains(players, tx_context::sender(ctx));
+		// Won't work either:
+		aborts_if contains(players, std::signer::address_of(ctx.signer));
+		// Both throw the same error:
+		//    ┌─ ./../sui/crates/sui-framework/sources/tx_context.move:56:39
+		//    │
+		// 56 │         ctx.ids_created = ids_created + 1;
+		//    │                                       - abort happened here with execution failure
 	}
+	*/
 
 	/* Tests */
 }
