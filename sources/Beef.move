@@ -1,6 +1,6 @@
 /// Create bets between 2 or more players. Includes escrow and voting functionality.
-module beef::bet {
-
+module beef::bet
+{
 	use std::vector;
 	use sui::coin::{Self, Coin};
 	use sui::object::{Self, Info};
@@ -29,13 +29,14 @@ module beef::bet {
 	const E_ONLY_JUDGES_CAN_VOTE: u64 = 200;
 	const E_ALREADY_VOTED: u64 = 201;
 
-	// Bet.status possible values
-	const STATUS_FUND: u8 = 0;
-	const STATUS_VOTE: u8 = 1;
+	// Bet.phase possible values
+	const PHASE_FUND: u8 = 0;
+	const PHASE_VOTE: u8 = 1;
 
-	struct Bet<phantom T> has key, store {
+	struct Bet<phantom T> has key, store
+	{
 		info: Info,
-		status: u8,
+		phase: u8,
 		title: String,
 		quorum: u8,
 		bet_size: u64,
@@ -55,14 +56,15 @@ module beef::bet {
 
 	/// Anybody can define a new bet
 	public entry fun create<T>(title: vector<u8>, quorum: u8, bet_size: u64,
-			players: vector<address>, judges: vector<address>, ctx: &mut TxContext) {
+			players: vector<address>, judges: vector<address>, ctx: &mut TxContext)
+	{
 		// TODO: validate all inputs
 		let admin_addr = tx_context::sender(ctx);
 		assert!(!vector::contains(&players, &admin_addr), E_ADMIN_CANT_BE_PLAYER);
 
 		let bet = Bet<T> {
 			info: object::new(ctx),
-			status: STATUS_FUND,
+			phase: PHASE_FUND,
 			title: utf8::string_unsafe(title),
 			quorum: quorum,
 			bet_size: bet_size,
@@ -88,12 +90,13 @@ module beef::bet {
 
 		// If all players have funded the Bet, move to the "vote" phase
 		if (vec_map::size(&bet.funds) == vector::length(&bet.players)) {
-			bet.status = STATUS_VOTE;
+			bet.phase = PHASE_VOTE;
 		}
 	}
 
 	/// Judges can cast a vote for one of the player addresses
-	public entry fun vote(_ctx: &mut TxContext) {
+	public entry fun vote(_ctx: &mut TxContext)
+	{
 
 	}
 
@@ -102,7 +105,8 @@ module beef::bet {
 	/// - If after the last vote there is no quorum, the bet automatically cancels.
 	/// - If end_epoch is reached without a quorum, any participant can cancel the bet.
 	/// - If the players both agree on cancelling the bet (adds complexity).
-	public entry fun cancel(_ctx: &mut TxContext) {
+	public entry fun cancel(_ctx: &mut TxContext)
+	{
 
 	}
 
@@ -111,17 +115,18 @@ module beef::bet {
 	/* Specs */
 
 	/*
-	spec create {
+	spec create
+	{
 		pragma aborts_if_is_strict;
 		// Won't work:
 		aborts_if contains(players, tx_context::sender(ctx));
 		// Won't work either:
 		aborts_if contains(players, std::signer::address_of(ctx.signer));
 		// Both throw the same error:
-		//    ┌─ ./../sui/crates/sui-framework/sources/tx_context.move:56:39
-		//    │
-		// 56 │         ctx.ids_created = ids_created + 1;
-		//    │                                       - abort happened here with execution failure
+		//     - ./../sui/crates/sui-framework/sources/tx_context.move:56:39
+		//    |
+		// 56 |         ctx.ids_created = ids_created + 1;
+		//    |                                       - abort happened here with execution failure
 	}
 	*/
 
