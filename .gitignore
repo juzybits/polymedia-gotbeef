@@ -1,3 +1,5 @@
+.coverage_map.mvcov
 .DS_Store
+.trace
 beef.txt
 build/
