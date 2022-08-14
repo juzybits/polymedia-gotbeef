@@ -65,13 +65,14 @@ module beef::bet
         judges: vector<address>,
         ctx: &mut TxContext)
     {
-        // TODO: deduplicate players and judges
         let admin_addr = tx_context::sender(ctx);
         let player_len = vector::length(&players);
         let judge_len = vector::length(&judges);
         assert!(player_len >= MIN_PLAYERS && player_len <= MAX_PLAYERS, E_INVALID_NUMBER_OF_PLAYERS);
         assert!(judge_len >= MIN_JUDGES && judge_len <= MAX_JUDGES, E_INVALID_NUMBER_OF_JUDGES);
         assert!(!vector::contains(&players, &admin_addr), E_ADMIN_CANT_BE_PLAYER);
+        // TODO: deduplicate players and judges
+        // TODO: E_JUDGES_CANT_BE_PLAYERS, E_INVALID_QUORUM
 
         let bet = Bet<T> {
             info: object::new(ctx),
@@ -130,30 +131,14 @@ module beef::bet
 
     /* Specs */
 
-    /*
     spec create
     {
         pragma aborts_if_is_strict;
-
-        // Won't work:
-        aborts_if !in_range( MIN_PLAYERS..MAX_PLAYERS, len(players) );
-
-        // ------
-
-        // Won't work:
-        aborts_if contains(players, tx_context::sender(ctx));
-
-        // Won't work either:
-        aborts_if contains(players, std::signer::address_of(ctx.signer));
-
-        // Both throw the same error:
-        //     - ./../sui/crates/sui-framework/sources/tx_context.move:56:39
-        //    |
-        // 56 |         ctx.ids_created = ids_created + 1;
-        //    |                                       - abort happened here with execution failure
+        aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
+        aborts_if len(players) < MIN_PLAYERS || len(players) > MAX_PLAYERS;
+        aborts_if len(judges) < MIN_JUDGES || len(judges) > MAX_JUDGES;
+        aborts_if contains(players, tx_context::sender(ctx)) with E_ADMIN_CANT_BE_PLAYER;
     }
-    */
-
 }
 
 #[test_only]
@@ -183,8 +168,7 @@ module beef::tests
         };
     }
 
-    // #[test]
-    // #[expected_failure(abort_code = 0)]
+    // #[test, expected_failure(abort_code = 0)]
     // fun test_create_judges_cant_be_players() // TODO
     // {
     //     let players = vector[@0xA1, @0xA2, @0xB1];
@@ -193,8 +177,7 @@ module beef::tests
     //     };
     // }
 
-    #[test]
-    #[expected_failure(abort_code = 1)]
+    #[test, expected_failure(abort_code = 1)]
     fun test_create_admin_cant_be_player()
     {
         let players = vector[@0xA1, @0xA2, ADMIN_ADDR];
@@ -203,8 +186,7 @@ module beef::tests
         };
     }
 
-    #[test]
-    #[expected_failure(abort_code = 2)]
+    #[test, expected_failure(abort_code = 2)]
     fun test_create_invalid_number_of_players()
     {
         let players = vector[@0xA1];
@@ -213,8 +195,7 @@ module beef::tests
         };
     }
 
-    #[test]
-    #[expected_failure(abort_code = 3)]
+    #[test, expected_failure(abort_code = 3)]
     fun test_create_invalid_number_of_judges()
     {
         let judges = vector[];
@@ -223,8 +204,7 @@ module beef::tests
         };
     }
 
-    // #[test]
-    // #[expected_failure(abort_code = 4)]
+    // #[test, expected_failure(abort_code = 4)]
     // fun test_create_invalid_quorum() // TODO
     // {
     //     let scen = &mut ts::begin(&ADMIN_ADDR); {
