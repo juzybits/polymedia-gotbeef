@@ -49,7 +49,7 @@ module beef::bet
         info: Info,
         phase: u8,
         title: String,
-        quorum: u8,
+        quorum: u64,
         bet_size: u64,
         admin: address,
         players: vector<address>,
@@ -70,7 +70,7 @@ module beef::bet
     /// Anybody can define a new bet
     public entry fun create<T>(
         title: vector<u8>,
-        quorum: u8,
+        quorum: u64,
         bet_size: u64,
         players: vector<address>,
         judges: vector<address>,
@@ -96,7 +96,7 @@ module beef::bet
         assert!(!has_dup_players, E_DUPLICATE_PLAYERS);
         assert!(!has_dup_judges, E_DUPLICATE_JUDGES);
         assert!(!judge_is_player, E_JUDGES_CANT_BE_PLAYERS);
-        // TODO: E_INVALID_QUORUM
+        assert!((quorum > judge_len/2) && (quorum <= judge_len), E_INVALID_QUORUM);
 
         let bet = Bet<T> {
             info: object::new(ctx),
@@ -162,6 +162,7 @@ module beef::bet
         aborts_if len(players) < MIN_PLAYERS || len(players) > MAX_PLAYERS;
         aborts_if len(judges) < MIN_JUDGES || len(judges) > MAX_JUDGES;
         aborts_if contains(players, tx_context::sender(ctx)) with E_ADMIN_CANT_BE_PLAYER;
+        aborts_if quorum <= len(judges)/2 || quorum > len(judges) with E_INVALID_QUORUM;
         // aborts_if players/judges have duplicates => can this be expressed here?
         // aborts_if players & judges have elements in common => can this be expressed here?
     }
@@ -221,7 +222,7 @@ module beef::bet_tests
     use beef::bet::{Self, Bet};
 
     const TITLE: vector<u8> = b"Frazier vs Ali";
-    const QUORUM: u8 = 2;
+    const QUORUM: u64 = 2;
     const BET_SIZE: u64 = 5000;
     const ADMIN_ADDR: address = @0x777;
     const PLAYERS: vector<address> = vector[@0xA1, @0xA2];
@@ -293,13 +294,14 @@ module beef::bet_tests
         };
     }
 
-    // #[test, expected_failure(abort_code = 6)]
-    // fun test_create_invalid_quorum() // TODO
-    // {
-    //     let scen = &mut ts::begin(&ADMIN_ADDR); {
-    //         bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
-    //     };
-    // }
+    #[test, expected_failure(abort_code = 6)]
+    fun test_create_invalid_quorum()
+    {
+        let quorum = 1;
+        let scen = &mut ts::begin(&ADMIN_ADDR); {
+            bet::create<SUI>( TITLE, quorum, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+        };
+    }
 }
 
 #[test_only]
