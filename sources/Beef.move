@@ -81,11 +81,13 @@ module beef::bet
         let judge_len = vector::length(&judges);
         let has_dup_players = vector_util::has_duplicates(&players);
         let has_dup_judges = vector_util::has_duplicates(&judges);
+        let judge_is_player = vector_util::intersect(&players, &judges);
         spec {
-            // Assume there's no duplicates, because IDK how to express
-            // such an abort condition in the function spec.
+            // Assume there's no duplicates or overlapping addresses, because
+            // IDK how to express those abort conditions in the function spec.
             assume !has_dup_players;
             assume !has_dup_judges;
+            assume !judge_is_player;
         };
 
         assert!(player_len >= MIN_PLAYERS && player_len <= MAX_PLAYERS, E_INVALID_NUMBER_OF_PLAYERS);
@@ -93,9 +95,8 @@ module beef::bet
         assert!(!vector::contains(&players, &admin_addr), E_ADMIN_CANT_BE_PLAYER);
         assert!(!has_dup_players, E_DUPLICATE_PLAYERS);
         assert!(!has_dup_judges, E_DUPLICATE_JUDGES);
-
-        // TODO: deduplicate players and judges
-        // TODO: E_JUDGES_CANT_BE_PLAYERS, E_INVALID_QUORUM
+        assert!(!judge_is_player, E_JUDGES_CANT_BE_PLAYERS);
+        // TODO: E_INVALID_QUORUM
 
         let bet = Bet<T> {
             info: object::new(ctx),
@@ -113,8 +114,7 @@ module beef::bet
     }
 
     /// Player locks funds for the bet
-    // TODO: unit tests
-    public entry fun fund<T>(
+    public entry fun fund<T>( // TODO: unit tests
         bet: &mut Bet<T>,
         player_coin:
         Coin<T>,
@@ -126,6 +126,7 @@ module beef::bet
         assert!(!vec_map::contains(&bet.funds, &player_addr), E_ALREADY_FUNDED);
         assert!(coin::value(&player_coin) >= bet.bet_size, E_FUNDS_BELOW_BET_SIZE);
 
+        // TODO: return change
         vec_map::insert(&mut bet.funds, player_addr, player_coin);
 
         // If all players have funded the Bet, move to the "vote" phase
@@ -134,7 +135,7 @@ module beef::bet
         }
     }
 
-    /// Judges can cast a vote for one of the player addresses
+    /// Judge casts a vote for one of the player addresses
     public entry fun vote(_ctx: &mut TxContext)
     {
 
@@ -162,6 +163,7 @@ module beef::bet
         aborts_if len(judges) < MIN_JUDGES || len(judges) > MAX_JUDGES;
         aborts_if contains(players, tx_context::sender(ctx)) with E_ADMIN_CANT_BE_PLAYER;
         // aborts_if players/judges have duplicates => can this be expressed here?
+        // aborts_if players & judges have elements in common => can this be expressed here?
     }
 }
 
@@ -170,6 +172,7 @@ module beef::vector_util
 {
     use std::vector;
 
+    /// Returns true if any vector elements appear more than once
     public fun has_duplicates<T>(vec: &vector<T>): bool {
         let vec_len = vector::length(vec);
         let i = 0;
@@ -184,6 +187,26 @@ module beef::vector_util
                 z = z + 1;
             };
             i = i + 1;
+        };
+        return false
+    }
+
+    /// Returns true if any of the elements in one vector are present in the other vector
+    public fun intersect<T>(vec1: &vector<T>, vec2: &vector<T>): bool {
+        let vec_len1 = vector::length(vec1);
+        let vec_len2 = vector::length(vec2);
+        let i1 = 0;
+        while (i1 < vec_len1) {
+            let addr1 = vector::borrow(vec1, i1);
+            let i2 = 0;
+            while (i2 < vec_len2) {
+                let addr2 = vector::borrow(vec2, i2);
+                if (addr1 == addr2) {
+                    return true
+                };
+                i2 = i2 + 1;
+            };
+            i1 = i1 + 1;
         };
         return false
     }
@@ -216,14 +239,14 @@ module beef::bet_tests
         };
     }
 
-    // #[test, expected_failure(abort_code = 0)]
-    // fun test_create_judges_cant_be_players() // TODO
-    // {
-    //     let players = vector[@0xA1, @0xA2, @0xB1];
-    //     let scen = &mut ts::begin(&ADMIN_ADDR); {
-    //         bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
-    //     };
-    // }
+    #[test, expected_failure(abort_code = 0)]
+    fun test_create_judges_cant_be_players()
+    {
+        let players = vector[@0xA1, @0xA2, @0xB1];
+        let scen = &mut ts::begin(&ADMIN_ADDR); {
+            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
+        };
+    }
 
     #[test, expected_failure(abort_code = 1)]
     fun test_create_admin_cant_be_player()
@@ -296,5 +319,36 @@ module beef::vector_util_tests
             assert!(vu::has_duplicates(&vector[@0x222, @0x333, @0x100, @0x444, @0x100]), 0);
             assert!(vu::has_duplicates(&vector[@0x100, @0x100]), 0);
         };
+    }
+
+    #[test]
+    fun test_intersect()
+    {
+        test_scenario::begin(&@0x777); {
+            assert!(!vu::intersect(
+                &vector[@0x1,  @0x2,  @0x3],
+                &vector[@0x11, @0x22, @0x33],
+            ), 0);
+            assert!(!vu::intersect(
+                &vector[@0x1,  @0x2,  @0x3],
+                &vector[@0x11],
+            ), 0);
+            assert!(!vu::intersect(
+                &vector[@0x1,  @0x2,  @0x3],
+                &vector[],
+            ), 0);
+            assert!(vu::intersect(
+                &vector[@0x1,  @0x2,  @0x3],
+                &vector[@0x1,  @0x22, @0x33],
+            ), 0);
+            assert!(vu::intersect(
+                &vector[@0x1,  @0x2,  @0x3],
+                &vector[@0x11, @0x22, @0x3],
+            ), 0);
+            assert!(vu::intersect(
+                &vector[@0x1,  @0x2,  @0x3],
+                &vector[@0x2],
+            ), 0);
+        }
     }
 }
