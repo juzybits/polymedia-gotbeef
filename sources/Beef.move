@@ -181,6 +181,19 @@ module beef::bet
         // aborts_if players/judges have duplicates => can this be expressed here?
         // aborts_if players & judges have elements in common => can this be expressed here?
     }
+
+    /*
+    spec fund
+    {
+        pragma aborts_if_is_strict;
+        aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
+        aborts_if !contains(bet.players, tx_context::sender(ctx)) with E_ONLY_PLAYERS_CAN_FUND;
+        aborts_if coin::value(player_coin) < bet.bet_size with E_FUNDS_BELOW_BET_SIZE;
+        // How to express this?:
+        // aborts_if vec_map::contains(bet.funds, tx_context::sender(ctx)) with E_ALREADY_FUNDED;
+        // aborts_if contains(bet.funds.contents, tx_context::sender(ctx) ) with E_ALREADY_FUNDED;
+    }
+    */
 }
 
 #[test_only]
