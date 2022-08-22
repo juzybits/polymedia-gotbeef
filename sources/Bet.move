@@ -16,7 +16,6 @@ module beef::bet
 
     // create()
     const E_JUDGES_CANT_BE_PLAYERS: u64 = 0;
-    const E_ADMIN_CANT_BE_PLAYER: u64 = 1;
     const E_INVALID_NUMBER_OF_PLAYERS: u64 = 2;
     const E_INVALID_NUMBER_OF_JUDGES: u64 = 3;
     const E_DUPLICATE_PLAYERS: u64 = 4;
@@ -58,7 +57,6 @@ module beef::bet
         title: String,
         quorum: u64,
         bet_size: u64, // Amount of Coin<T> that each participant will bet
-        admin: address, // TODO: remove. Let players create their own bets.
         players: vector<address>,
         judges: vector<address>,
         votes: VecMap<address, address>, // <judge_addr,  player_addr>
@@ -92,7 +90,6 @@ module beef::bet
         judges: vector<address>,
         ctx: &mut TxContext)
     {
-        let admin_addr = tx_context::sender(ctx);
         let player_len = vector::length(&players);
         let judge_len = vector::length(&judges);
         let has_dup_players = vectors::has_duplicates(&players);
@@ -108,7 +105,6 @@ module beef::bet
 
         assert!( player_len >= MIN_PLAYERS && player_len <= MAX_PLAYERS, E_INVALID_NUMBER_OF_PLAYERS );
         assert!( judge_len >= MIN_JUDGES && judge_len <= MAX_JUDGES, E_INVALID_NUMBER_OF_JUDGES );
-        assert!( !vector::contains(&players, &admin_addr), E_ADMIN_CANT_BE_PLAYER );
         assert!( !has_dup_players, E_DUPLICATE_PLAYERS );
         assert!( !has_dup_judges, E_DUPLICATE_JUDGES );
         assert!( !judge_is_player, E_JUDGES_CANT_BE_PLAYERS );
@@ -120,7 +116,6 @@ module beef::bet
             title: utf8::string_unsafe(title),
             quorum: quorum,
             bet_size: bet_size,
-            admin: admin_addr,
             players: players,
             judges: judges,
             votes: vec_map::empty(),
@@ -188,19 +183,20 @@ module beef::bet
 
         // If it's no longer possible for any player to win, cancel the bet
         if ( is_stalemate(bet) ) {
-            bet.phase = PHASE_STALEMATE; // TODO implement implications of this phase
+            // refund(); // TODO
+            bet.phase = PHASE_STALEMATE;
             return
         };
     }
 
     /// Returns true if it is no longer possible for any player to win the bet
     fun is_stalemate<T>(bet: &Bet<T>): bool {
-        let votes_so_far = vec_map::size(&bet.votes);
         let number_of_judges = vector::length(&bet.judges);
+        let votes_so_far = vec_map::size(&bet.votes);
         let votes_remaining = number_of_judges - votes_so_far;
         let distance_to_win = bet.quorum - bet.most_votes;
 
-        return distance_to_win > votes_remaining
+        return votes_remaining < distance_to_win
     }
 
     /// Whether a given player address won the bet
@@ -263,7 +259,6 @@ module beef::bet
         aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
         aborts_if len(players) < MIN_PLAYERS || len(players) > MAX_PLAYERS;
         aborts_if len(judges) < MIN_JUDGES || len(judges) > MAX_JUDGES;
-        aborts_if contains(players, tx_context::sender(ctx)) with E_ADMIN_CANT_BE_PLAYER;
         aborts_if quorum <= len(judges)/2 || quorum > len(judges) with E_INVALID_QUORUM;
         // aborts_if players/judges have duplicates => can this be expressed here?
         // aborts_if players & judges have elements in common => can this be expressed here?
@@ -310,7 +305,7 @@ module beef::bet_tests
     const TITLE: vector<u8> = b"Frazier vs Ali";
     const QUORUM: u64 = 2;
     const BET_SIZE: u64 = 500;
-    const ADMIN_ADDR: address = @0x777;
+    const CREATOR: address = @0x777;
     const PLAYER_1: address = @0xA1;
     const PLAYER_2: address = @0xA2;
     const PLAYERS: vector<address> = vector[@0xA1, @0xA2];
@@ -324,10 +319,10 @@ module beef::bet_tests
     #[test]
     fun test_create_success()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
-        ts::next_tx(scen, &ADMIN_ADDR); {
+        ts::next_tx(scen, &CREATOR); {
             let bet = ts::take_shared<Bet<SUI>>(scen);
             ts::return_shared(scen, bet);
         };
@@ -337,16 +332,7 @@ module beef::bet_tests
     fun test_create_judges_cant_be_players()
     {
         let players = vector[PLAYER_1, PLAYER_2, JUDGE_1];
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
-        };
-    }
-
-    #[test, expected_failure(abort_code = 1)]
-    fun test_create_admin_cant_be_player()
-    {
-        let players = vector[PLAYER_1, PLAYER_2, ADMIN_ADDR];
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
     }
@@ -355,7 +341,7 @@ module beef::bet_tests
     fun test_create_invalid_number_of_players()
     {
         let players = vector[PLAYER_1];
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
     }
@@ -364,7 +350,7 @@ module beef::bet_tests
     fun test_create_invalid_number_of_judges()
     {
         let judges = vector[];
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
         };
     }
@@ -373,7 +359,7 @@ module beef::bet_tests
     fun test_create_duplicate_players()
     {
         let players = vector[@0xCAFE, @0x123, @0xCAFE];
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
     }
@@ -382,7 +368,7 @@ module beef::bet_tests
     fun test_create_duplicate_judges()
     {
         let judges = vector[@0xAAA, @0xBBB, @0xAAA];
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
         };
     }
@@ -391,7 +377,7 @@ module beef::bet_tests
     fun test_create_invalid_quorum()
     {
         let quorum = 1;
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, quorum, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
     }
@@ -421,10 +407,10 @@ module beef::bet_tests
     #[test]
     fun test_fund_success()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
 
-        // Admin checks changes
-        ts::next_tx(scen, &ADMIN_ADDR);
+        // Verify bet initialization
+        ts::next_tx(scen, &SOMEONE);
         {
             let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
             let bet = ts::borrow_mut(&mut bet_wrapper);
@@ -486,7 +472,7 @@ module beef::bet_tests
     /// Non-player tries to funds the bet
     fun test_fund_only_players_can_fund()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &SOMEONE); { fund_bet(scen, BET_SIZE); };
     }
 
@@ -494,7 +480,7 @@ module beef::bet_tests
     /// Player tries to fund the bet for the second time
     fun test_fund_already_funded()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
     }
@@ -503,7 +489,7 @@ module beef::bet_tests
     /// Player tries to fund the bet with not enough coins
     fun test_fund_funds_below_bet_size()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE/2); };
     }
 
@@ -512,7 +498,7 @@ module beef::bet_tests
     #[test]
     fun vote_success()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
 
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
@@ -546,7 +532,7 @@ module beef::bet_tests
     /// Judge tries to vote before all players have sent their funds
     fun test_vote_not_in_voting_phase()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &PLAYER_1); { cast_vote(scen, PLAYER_1); };
     }
@@ -555,7 +541,7 @@ module beef::bet_tests
     /// Non-judge tries to vote
     fun test_vote_only_judges_can_vote()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &SOMEONE); { cast_vote(scen, PLAYER_1); };
@@ -565,7 +551,7 @@ module beef::bet_tests
     /// Judge tries to vote twice
     fun test_vote_already_voted()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
@@ -576,7 +562,7 @@ module beef::bet_tests
     /// Judge tries to vote for a non-player
     fun test_vote_player_not_found()
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, SOMEONE); };
@@ -591,7 +577,7 @@ module beef::bet_tests
         quorum: u64,
         expect_phase: u8)
     {
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
+        let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
         };
 
@@ -638,6 +624,7 @@ module beef::bet_tests
             /* quorum */  1,
             /* expect_phase */ 2, // PHASE_SETTLED
         );
+
         /* 2-of-2 */
         test_stalemate(
             /* players */ vector[@0xA1, @0xA2],
