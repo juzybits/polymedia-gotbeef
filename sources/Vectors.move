@@ -47,18 +47,18 @@ module beef::vectors
 module beef::vectors_tests
 {
     use sui::test_scenario;
-    use beef::vectors as vu;
+    use beef::vectors as v;
 
     #[test]
     fun test_has_duplicates()
     {
         test_scenario::begin(&@0x1); {
-            assert!(!vu::has_duplicates(&vector[@0x100, @0x222, @0x333, @0x444]), 0);
-            assert!(!vu::has_duplicates(&vector[@0x100]), 0);
-            assert!(!vu::has_duplicates(&vector<address>[]), 0);
-            assert!(vu::has_duplicates(&vector[@0x100, @0x100, @0x222, @0x333, @0x444]), 0);
-            assert!(vu::has_duplicates(&vector[@0x222, @0x333, @0x100, @0x444, @0x100]), 0);
-            assert!(vu::has_duplicates(&vector[@0x100, @0x100]), 0);
+            assert!(!v::has_duplicates(&vector[@0x100, @0x222, @0x333, @0x444]), 0);
+            assert!(!v::has_duplicates(&vector[@0x100]), 0);
+            assert!(!v::has_duplicates(&vector<address>[]), 0);
+            assert!(v::has_duplicates(&vector[@0x100, @0x100, @0x222, @0x333, @0x444]), 0);
+            assert!(v::has_duplicates(&vector[@0x222, @0x333, @0x100, @0x444, @0x100]), 0);
+            assert!(v::has_duplicates(&vector[@0x100, @0x100]), 0);
         };
     }
 
@@ -66,27 +66,27 @@ module beef::vectors_tests
     fun test_intersect()
     {
         test_scenario::begin(&@0x1); {
-            assert!(!vu::intersect(
+            assert!(!v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x11, @0x22, @0x33],
             ), 0);
-            assert!(!vu::intersect(
+            assert!(!v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x11],
             ), 0);
-            assert!(!vu::intersect(
+            assert!(!v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[],
             ), 0);
-            assert!(vu::intersect(
+            assert!(v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x1,  @0x22, @0x33],
             ), 0);
-            assert!(vu::intersect(
+            assert!(v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x11, @0x22, @0x3],
             ), 0);
-            assert!(vu::intersect(
+            assert!(v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x2],
             ), 0);

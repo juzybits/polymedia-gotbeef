@@ -3,13 +3,13 @@ module beef::bet
 {
     // use std::debug::print as print;
     use std::vector;
-    use sui::balance;
     use sui::coin::{Self, Coin};
     use sui::object::{Self, UID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::utf8::{Self, String};
     use sui::vec_map::{Self, VecMap};
+    use beef::transfers;
     use beef::vectors;
 
     /** Errors **/
@@ -26,12 +26,16 @@ module beef::bet
     const E_ONLY_PLAYERS_CAN_FUND: u64 = 100;
     const E_ALREADY_FUNDED: u64 = 101;
     const E_FUNDS_BELOW_BET_SIZE: u64 = 102;
+    const E_NOT_IN_FUNDING_PHASE: u64 = 103;
 
     // vote()
     const E_NOT_IN_VOTING_PHASE: u64 = 200;
     const E_ONLY_JUDGES_CAN_VOTE: u64 = 201;
     const E_ALREADY_VOTED: u64 = 202; // maybe: allow judges to update their vote
     const E_PLAYER_NOT_FOUND: u64 = 203;
+
+    // cancel()
+    const E_CANCEL_NOT_ALLOWED: u64 = 300;
 
     /** Settings **/
 
@@ -134,6 +138,7 @@ module beef::bet
         let player_addr = tx_context::sender(ctx);
         let coin_value = coin::value(&player_coin);
 
+        assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
         assert!( vector::contains(&bet.players, &player_addr), E_ONLY_PLAYERS_CAN_FUND );
         assert!( !vec_map::contains(&bet.funds, &player_addr), E_ALREADY_FUNDED );
         assert!( coin_value >= bet.bet_size, E_FUNDS_BELOW_BET_SIZE );
@@ -176,17 +181,27 @@ module beef::bet
 
         // If the player that just received a vote is the winner, settle the bet
         if ( player_vote_count >= bet.quorum ) {
-            pay_winner(&mut bet.funds, player_addr, ctx);
+            transfers::pay_winner(&mut bet.funds, player_addr, ctx);
             bet.phase = PHASE_SETTLED;
             return
         };
 
-        // If it's no longer possible for any player to win, cancel the bet
+        // If it's no longer possible for any player to win, refund everyone and end the bet
         if ( is_stalemate(bet) ) {
-            refund_all(&mut bet.funds);
+            transfers::refund_all(&mut bet.funds);
             bet.phase = PHASE_STALEMATE;
             return
         };
+    }
+
+    /// Some scenarios where we might want to cancel the bet and refund the players:
+    /// - (done) If there's no funding, any judge or player may cancel it at any time.
+    /// - (todo) If all players agree on cancelling the bet.
+    /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
+    /// - (maybe) If a quorum of judges agree on cancelling the bet.
+    public entry fun cancel<T>(bet: &mut Bet<T>) {
+        assert!( vec_map::is_empty(&bet.funds), E_CANCEL_NOT_ALLOWED );
+        bet.phase = PHASE_CANCELED;
     }
 
     /// Returns true if it is no longer possible for any player to win the bet
@@ -216,55 +231,6 @@ module beef::bet
         };
         return player_votes
     }
-
-    /// Send all funds to the winner
-    fun pay_winner<T>( // TODO: unit tests
-        funds: &mut VecMap<address, Coin<T>>,
-        winner_addr: address,
-        ctx: &mut TxContext)
-    {
-        let total_balance = balance::zero();
-        let i = vec_map::size(funds);
-        while (i > 0) {
-            i = i - 1;
-            // Find player address
-            let (player_addr, _) = vec_map::get_entry_by_idx(funds, i);
-            // Grab player funds
-            let (_, player_coin) = vec_map::remove(funds, &*player_addr);
-            // Accumulate balance
-            balance::join(
-                &mut total_balance,
-                coin::into_balance(player_coin)
-            );
-        };
-        // Send all funds to the winner
-        transfer::transfer(
-            coin::from_balance(total_balance, ctx),
-            winner_addr
-        );
-    }
-
-    /// Send all funds back to the players
-    fun refund_all<T>(funds: &mut VecMap<address, Coin<T>>) // TODO: unit tests
-    {
-        let i = vec_map::size(funds);
-        while (i > 0) {
-            i = i - 1;
-            // Find player address
-            let (player_addr_ref, _) = vec_map::get_entry_by_idx(funds, i);
-            // Grab player funds
-            let (player_addr, player_coin) = vec_map::remove(funds, &*player_addr_ref);
-            // Return funds
-            transfer::transfer(player_coin, player_addr);
-        }
-    }
-
-    /// Some scenarios where we might want to cancel the bet and refund the players:
-    /// - If there's no funding, any judge or player may cancel it at any time.
-    /// - If end_epoch is reached without a quorum, any judge or player can cancel the bet.
-    /// - If all players agree on cancelling the bet.
-    /// - If a quorum of judges agree on cancelling the bet.
-    // public entry fun cancel(_ctx: &mut TxContext) {}
 
     /** Specs **/
 
@@ -313,6 +279,7 @@ module beef::bet_tests
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::vec_map;
+    use sui::tx_context;
     use sui::test_scenario::{Self as ts, Scenario};
     use beef::bet::{Self, Bet};
 
