@@ -11,6 +11,7 @@ module beef::bet
     use sui::vec_map::{Self, VecMap};
     use beef::transfers;
     use beef::vectors;
+    use beef::vec_maps;
 
     /** Errors **/
 
@@ -99,13 +100,6 @@ module beef::bet
         let has_dup_players = vectors::has_duplicates(&players);
         let has_dup_judges = vectors::has_duplicates(&judges);
         let judge_is_player = vectors::intersect(&players, &judges);
-        spec {
-            // Assume there's no duplicates or overlapping addresses, because
-            // IDK how to express those abort conditions in the function spec.
-            assume !has_dup_players;
-            assume !has_dup_judges;
-            assume !judge_is_player;
-        };
 
         assert!( player_len >= MIN_PLAYERS && player_len <= MAX_PLAYERS, E_INVALID_NUMBER_OF_PLAYERS );
         assert!( judge_len >= MIN_JUDGES && judge_len <= MAX_JUDGES, E_INVALID_NUMBER_OF_JUDGES );
@@ -174,7 +168,7 @@ module beef::bet
         vec_map::insert(&mut bet.votes, judge_addr, player_addr);
 
         // Is this the most voted player so far?
-        let player_vote_count = count_votes(&bet.votes, &player_addr);
+        let player_vote_count = vec_maps::count_value(&bet.votes, &player_addr);
         if ( player_vote_count > bet.most_votes ) {
             bet.most_votes = player_vote_count;
         };
@@ -199,7 +193,7 @@ module beef::bet
     /// - (todo) If all players agree on cancelling the bet.
     /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
     /// - (maybe) If a quorum of judges agree on cancelling the bet.
-    public entry fun cancel<T>(bet: &mut Bet<T>) {
+    public entry fun cancel<T>(bet: &mut Bet<T>) { // TODO: unit test
         assert!( vec_map::is_empty(&bet.funds), E_CANCEL_NOT_ALLOWED );
         bet.phase = PHASE_CANCELED;
     }
@@ -213,62 +207,6 @@ module beef::bet
 
         return votes_remaining < distance_to_win
     }
-
-    /// Whether a given player address won the bet
-    fun count_votes( // TODO: unit tests
-        votes: &VecMap<address, address>,
-        player_addr: &address): u64
-    {
-        let player_votes = 0;
-        let total_votes = vec_map::size(votes);
-        let i = 0;
-        while (i < total_votes) {
-            let (_judge, voted_addr) = vec_map::get_entry_by_idx(votes, i);
-            if ( voted_addr == player_addr ) {
-                player_votes = player_votes + 1;
-            };
-            i = i + 1;
-        };
-        return player_votes
-    }
-
-    /** Specs **/
-
-    spec create
-    {
-        pragma aborts_if_is_strict;
-        aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
-        aborts_if len(players) < MIN_PLAYERS || len(players) > MAX_PLAYERS;
-        aborts_if len(judges) < MIN_JUDGES || len(judges) > MAX_JUDGES;
-        aborts_if quorum <= len(judges)/2 || quorum > len(judges) with E_INVALID_QUORUM;
-        // aborts_if players/judges have duplicates => can this be expressed here?
-        // aborts_if players & judges have elements in common => can this be expressed here?
-    }
-
-    /*
-    spec fund
-    {
-        pragma aborts_if_is_strict;
-        aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
-        aborts_if !contains(bet.players, tx_context::sender(ctx)) with E_ONLY_PLAYERS_CAN_FUND;
-        aborts_if coin::value(player_coin) < bet.bet_size with E_FUNDS_BELOW_BET_SIZE;
-        // How to express this?:
-        // aborts_if vec_map::contains(bet.funds, tx_context::sender(ctx)) with E_ALREADY_FUNDED;
-        // aborts_if contains(bet.funds.contents, tx_context::sender(ctx) ) with E_ALREADY_FUNDED;
-    }
-    */
-
-    /*
-    spec vote
-    {
-        pragma aborts_if_is_strict;
-        aborts_if !contains(bet.judges, tx_context::sender(ctx)) with E_ONLY_JUDGES_CAN_VOTE;
-        aborts_if !contains(bet.players, player_addr) with E_PLAYER_NOT_FOUND;
-        aborts_if bet.phase != PHASE_VOTE with E_NOT_IN_VOTING_PHASE;
-        // How to express this?:
-        // aborts_if vec_map::contains(bet.votes, tx_context::sender(ctx)) with E_ALREADY_VOTED;
-    }
-    */
 }
 
 #[test_only]
@@ -665,3 +603,50 @@ module beef::bet_tests
 
     }
 }
+
+/* Specs */
+
+/*
+spec create
+{
+    pragma aborts_if_is_strict;
+    aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
+    aborts_if len(players) < MIN_PLAYERS || len(players) > MAX_PLAYERS;
+    aborts_if len(judges) < MIN_JUDGES || len(judges) > MAX_JUDGES;
+    aborts_if quorum <= len(judges)/2 || quorum > len(judges) with E_INVALID_QUORUM;
+    // aborts_if players/judges have duplicates => can this be expressed here?
+    // aborts_if players & judges have elements in common => can this be expressed here?
+}
+spec {
+    // Assume there's no duplicates or overlapping addresses, because
+    // IDK how to express those abort conditions in the function spec.
+    assume !has_dup_players;
+    assume !has_dup_judges;
+    assume !judge_is_player;
+};
+*/
+
+/*
+spec fund
+{
+    pragma aborts_if_is_strict;
+    aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
+    aborts_if !contains(bet.players, tx_context::sender(ctx)) with E_ONLY_PLAYERS_CAN_FUND;
+    aborts_if coin::value(player_coin) < bet.bet_size with E_FUNDS_BELOW_BET_SIZE;
+    // How to express this?:
+    // aborts_if vec_map::contains(bet.funds, tx_context::sender(ctx)) with E_ALREADY_FUNDED;
+    // aborts_if contains(bet.funds.contents, tx_context::sender(ctx) ) with E_ALREADY_FUNDED;
+}
+*/
+
+/*
+spec vote
+{
+    pragma aborts_if_is_strict;
+    aborts_if !contains(bet.judges, tx_context::sender(ctx)) with E_ONLY_JUDGES_CAN_VOTE;
+    aborts_if !contains(bet.players, player_addr) with E_PLAYER_NOT_FOUND;
+    aborts_if bet.phase != PHASE_VOTE with E_NOT_IN_VOTING_PHASE;
+    // How to express this?:
+    // aborts_if vec_map::contains(bet.votes, tx_context::sender(ctx)) with E_ALREADY_VOTED;
+}
+*/
