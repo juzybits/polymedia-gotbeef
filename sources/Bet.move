@@ -181,7 +181,7 @@ module beef::bet
 
         // If the player that just received a vote is the winner, settle the bet
         if ( player_vote_count >= bet.quorum ) {
-            transfers::pay_winner(&mut bet.funds, player_addr, ctx);
+            transfers::send_all(&mut bet.funds, player_addr, ctx);
             bet.phase = PHASE_SETTLED;
             return
         };
@@ -279,7 +279,6 @@ module beef::bet_tests
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::vec_map;
-    use sui::tx_context;
     use sui::test_scenario::{Self as ts, Scenario};
     use beef::bet::{Self, Bet};
 
