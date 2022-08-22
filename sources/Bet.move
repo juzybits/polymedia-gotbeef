@@ -176,14 +176,14 @@ module beef::bet
 
         // If the player that just received a vote is the winner, settle the bet
         if ( player_vote_count >= bet.quorum ) {
-            distribute_funds(&mut bet.funds, player_addr, ctx);
+            pay_winner(&mut bet.funds, player_addr, ctx);
             bet.phase = PHASE_SETTLED;
             return
         };
 
         // If it's no longer possible for any player to win, cancel the bet
         if ( is_stalemate(bet) ) {
-            // refund(); // TODO
+            refund_all(&mut bet.funds);
             bet.phase = PHASE_STALEMATE;
             return
         };
@@ -218,7 +218,7 @@ module beef::bet
     }
 
     /// Send all funds to the winner
-    fun distribute_funds<T>( // TODO: unit tests
+    fun pay_winner<T>( // TODO: unit tests
         funds: &mut VecMap<address, Coin<T>>,
         winner_addr: address,
         ctx: &mut TxContext)
@@ -244,11 +244,26 @@ module beef::bet
         );
     }
 
+    /// Send all funds back to the players
+    fun refund_all<T>(funds: &mut VecMap<address, Coin<T>>) // TODO: unit tests
+    {
+        let i = vec_map::size(funds);
+        while (i > 0) {
+            i = i - 1;
+            // Find player address
+            let (player_addr_ref, _) = vec_map::get_entry_by_idx(funds, i);
+            // Grab player funds
+            let (player_addr, player_coin) = vec_map::remove(funds, &*player_addr_ref);
+            // Return funds
+            transfer::transfer(player_coin, player_addr);
+        }
+    }
+
     /// Some scenarios where we might want to cancel the bet and refund the players:
-    /// - If there's no funding, the bet admin may cancel it at any time.
-    /// - If after the last vote there is no quorum, the bet automatically cancels.
-    /// - If end_epoch is reached without a quorum, any participant can cancel the bet.
-    /// - If the players both agree on cancelling the bet (adds complexity).
+    /// - If there's no funding, any judge or player may cancel it at any time.
+    /// - If end_epoch is reached without a quorum, any judge or player can cancel the bet.
+    /// - If all players agree on cancelling the bet.
+    /// - If a quorum of judges agree on cancelling the bet.
     // public entry fun cancel(_ctx: &mut TxContext) {}
 
     /** Specs **/
@@ -646,6 +661,13 @@ module beef::bet_tests
             /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
             /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
             /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* quorum */  3,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+        );
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4, @0xA5],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
+            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3, @0xA4],
             /* quorum */  3,
             /* expect_phase */ 4, // PHASE_STALEMATE
         );
