@@ -1,6 +1,7 @@
 /// Create bets between 2 or more players. Includes escrow and voting functionality.
 module beef::bet
 {
+    // use std::debug::print as print;
     use std::vector;
     use sui::balance;
     use sui::coin::{Self, Coin};
@@ -46,21 +47,23 @@ module beef::bet
     const PHASE_VOTE: u8 = 1;
     const PHASE_SETTLED: u8 = 2;
     const PHASE_CANCELED: u8 = 3;
+    const PHASE_STALEMATE: u8 = 4;
 
     /** Structs **/
 
     struct Bet<phantom T> has key, store
     {
         id: UID,
-        phase: u8,
+        phase: u8, // A bet goes through various stages: funding/voting/settled/...
         title: String,
         quorum: u64,
-        bet_size: u64,
-        admin: address,
+        bet_size: u64, // Amount of Coin<T> that each participant will bet
+        admin: address, // TODO: remove. Let players create their own bets.
         players: vector<address>,
         judges: vector<address>,
         votes: VecMap<address, address>, // <judge_addr,  player_addr>
         funds: VecMap<address, Coin<T>>, // <player_addr, player_funds>
+        most_votes: u64, // number of votes received by the leading player
 
         // Maybe:
         // description: String,
@@ -122,6 +125,7 @@ module beef::bet
             judges: judges,
             votes: vec_map::empty(),
             funds: vec_map::empty(),
+            most_votes: 0,
         };
         transfer::share_object(bet);
     }
@@ -169,43 +173,52 @@ module beef::bet
         // Cast the vote
         vec_map::insert(&mut bet.votes, judge_addr, player_addr);
 
+        // Is this the most voted player so far?
+        let player_vote_count = count_votes(&bet.votes, &player_addr);
+        if ( player_vote_count > bet.most_votes ) {
+            bet.most_votes = player_vote_count;
+        };
+
         // If the player that just received a vote is the winner, settle the bet
-        if ( is_winner<T>(&player_addr, &bet.votes, bet.quorum) ) {
+        if ( player_vote_count >= bet.quorum ) {
             distribute_funds(&mut bet.funds, player_addr, ctx);
             bet.phase = PHASE_SETTLED;
-        }
-        // TODO: detect stalemate and refund players
+            return
+        };
+
+        // If it's no longer possible for any player to win, cancel the bet
+        if ( is_stalemate(bet) ) {
+            bet.phase = PHASE_STALEMATE; // TODO implement implications of this phase
+            return
+        };
+    }
+
+    /// Returns true if it is no longer possible for any player to win the bet
+    fun is_stalemate<T>(bet: &Bet<T>): bool {
+        let votes_so_far = vec_map::size(&bet.votes);
+        let number_of_judges = vector::length(&bet.judges);
+        let votes_remaining = number_of_judges - votes_so_far;
+        let distance_to_win = bet.quorum - bet.most_votes;
+
+        return distance_to_win > votes_remaining
     }
 
     /// Whether a given player address won the bet
-    fun is_winner<T>( // TODO: unit tests
-        potential_winner: &address,
+    fun count_votes( // TODO: unit tests
         votes: &VecMap<address, address>,
-        quorum: u64): bool
+        player_addr: &address): u64
     {
-        // Exit early if not enough votes to reach consensus
-        let votes_len = vec_map::size(votes);
-        if ( votes_len < quorum ) {
-            return false
-        };
-
-        let vote_count = 0;
+        let player_votes = 0;
+        let total_votes = vec_map::size(votes);
         let i = 0;
-        while (i < votes_len) {
-            // Get the vote
-            let (_judge_addr, voted_addr) = vec_map::get_entry_by_idx(votes, i);
-            // We only care about 1 address
-            if ( voted_addr != potential_winner ) {
-                continue
+        while (i < total_votes) {
+            let (_judge, voted_addr) = vec_map::get_entry_by_idx(votes, i);
+            if ( voted_addr == player_addr ) {
+                player_votes = player_votes + 1;
             };
-            vote_count = vote_count + 1;
-            // Did the player win?
-            if ( vote_count >= quorum ) {
-                return true
-            };
+            i = i + 1;
         };
-
-        return false
+        return player_votes
     }
 
     /// Send all funds to the winner
@@ -293,6 +306,7 @@ module beef::bet_tests
     use sui::test_scenario::{Self as ts, Scenario};
     use beef::bet::{Self, Bet};
 
+    // default bet settings
     const TITLE: vector<u8> = b"Frazier vs Ali";
     const QUORUM: u64 = 2;
     const BET_SIZE: u64 = 500;
@@ -304,28 +318,6 @@ module beef::bet_tests
     const JUDGE_2: address = @0xB2;
     const JUDGES: vector<address> = vector[@0xB1, @0xB2];
     const SOMEONE: address = @0xC0B1E;
-
-    /* Helpers */
-
-    fun create_bet(scen: &mut Scenario) {
-        bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
-    }
-
-    fun fund_bet(scen: &mut Scenario, amount: u64) {
-        let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-        let bet = ts::borrow_mut(&mut bet_wrapper);
-        let ctx = ts::ctx(scen);
-        let funds = coin::mint_for_testing<SUI>(amount, ctx);
-        bet::fund<SUI>(bet, funds, ctx);
-        ts::return_shared(scen, bet_wrapper);
-    }
-
-    fun cast_vote(scen: &mut Scenario, player_addr: address) {
-        let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-        let bet = ts::borrow_mut(&mut bet_wrapper);
-        bet::vote(bet, player_addr, ts::ctx(scen));
-        ts::return_shared(scen, bet_wrapper);
-    }
 
     /* create() */
 
@@ -406,13 +398,30 @@ module beef::bet_tests
 
     /* fund() */
 
+    fun create_bet(scen: &mut Scenario) {
+        bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+    }
+
+    fun fund_bet(scen: &mut Scenario, amount: u64) {
+        let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+        let bet = ts::borrow_mut(&mut bet_wrapper);
+        let ctx = ts::ctx(scen);
+        let funds = coin::mint_for_testing<SUI>(amount, ctx);
+        bet::fund<SUI>(bet, funds, ctx);
+        ts::return_shared(scen, bet_wrapper);
+    }
+
+    fun cast_vote(scen: &mut Scenario, player_addr: address) {
+        let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+        let bet = ts::borrow_mut(&mut bet_wrapper);
+        bet::vote(bet, player_addr, ts::ctx(scen));
+        ts::return_shared(scen, bet_wrapper);
+    }
+
     #[test]
     fun test_fund_success()
     {
-        // Admin creates a new bet
-        let scen = &mut ts::begin(&ADMIN_ADDR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
-        };
+        let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
 
         // Admin checks changes
         ts::next_tx(scen, &ADMIN_ADDR);
@@ -427,11 +436,8 @@ module beef::bet_tests
             ts::return_shared(scen, bet_wrapper);
         };
 
-        // Player 1 funds the bet
-        ts::next_tx(scen, &PLAYER_1); {
-            // send too much, expect change back
-            fund_bet(scen, BET_SIZE+100);
-        };
+        // Player 1 funds the bet (sends too much, expects change back)
+        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE+100); };
 
         // Player 1 checks changes
         ts::next_tx(scen, &PLAYER_1);
@@ -454,11 +460,8 @@ module beef::bet_tests
             ts::return_owned(scen, change_coin);
         };
 
-        // Player 2 funds the bet
-        ts::next_tx(scen, &PLAYER_2); {
-            // send exact amount, expect no change
-            fund_bet(scen, BET_SIZE);
-        };
+        // Player 2 funds the bet (send exact amount, expect no change)
+        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
 
         // Player 2 checks changes
         ts::next_tx(scen, &PLAYER_2);
@@ -480,31 +483,27 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 100)]
+    /// Non-player tries to funds the bet
     fun test_fund_only_players_can_fund()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // A non-player tries to funds the bet
         ts::next_tx(scen, &SOMEONE); { fund_bet(scen, BET_SIZE); };
     }
 
     #[test, expected_failure(abort_code = 101)]
+    /// Player tries to fund the bet for the second time
     fun test_fund_already_funded()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 funds the bet
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        // Player 1 tries to fund the bet again
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
     }
 
     #[test, expected_failure(abort_code = 102)]
+    /// Player tries to fund the bet with not enough coins
     fun test_fund_funds_below_bet_size()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 tries to fund the bet with not enough coins
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE/2); };
     }
 
@@ -513,16 +512,14 @@ module beef::bet_tests
     #[test]
     fun vote_success()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 funds the bet
+
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        // Player 2 funds the bet
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        // Judge 1 votes
+
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
-        // Judge 2 votes, which in turn settles the bet
         ts::next_tx(scen, &JUDGE_2); { cast_vote(scen, PLAYER_1); };
+
         // Anybody can verify the outcome
         ts::next_tx(scen, &SOMEONE); {
             // Bet funds have been distributed
@@ -534,6 +531,7 @@ module beef::bet_tests
             assert!( bet::phase(bet) == &2, 0 );
             ts::return_shared(scen, bet_wrapper);
         };
+
         // The winner received the funds
         ts::next_tx(scen, &PLAYER_1); {
             let player_coin = ts::take_owned<Coin<SUI>>(scen);
@@ -545,54 +543,150 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 200)]
+    /// Judge tries to vote before all players have sent their funds
     fun test_vote_not_in_voting_phase()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 funds the bet
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        // Judge 1 tries to vote
         ts::next_tx(scen, &PLAYER_1); { cast_vote(scen, PLAYER_1); };
     }
 
     #[test, expected_failure(abort_code = 201)]
+    /// Non-judge tries to vote
     fun test_vote_only_judges_can_vote()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 funds the bet
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        // Player 2 funds the bet
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        // A non-judge tries to vote
         ts::next_tx(scen, &SOMEONE); { cast_vote(scen, PLAYER_1); };
     }
 
     #[test, expected_failure(abort_code = 202)]
+    /// Judge tries to vote twice
     fun test_vote_already_voted()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 funds the bet
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        // Player 2 funds the bet
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        // Judge 1 votes
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
-        // Judge 1 tries to vote again
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
     }
 
     #[test, expected_failure(abort_code = 203)]
+    /// Judge tries to vote for a non-player
     fun test_vote_player_not_found()
     {
-        // Admin creates a new bet
         let scen = &mut ts::begin(&ADMIN_ADDR); { create_bet(scen); };
-        // Player 1 funds the bet
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        // Player 2 funds the bet
         ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        // Judge 1 tries to vote for a non-player
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, SOMEONE); };
+    }
+
+    /* is_stalemate() */
+
+    fun test_stalemate(
+        players: vector<address>,
+        judges: vector<address>,
+        votes: vector<address>,
+        quorum: u64,
+        expect_phase: u8)
+    {
+        let scen = &mut ts::begin(&ADMIN_ADDR); {
+            bet::create<SUI>( TITLE, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
+        };
+
+        // All players fund the bet
+        let players_len = vector::length(&players);
+        let i = 0;
+        while (i < players_len) {
+            let player_addr = vector::borrow(&players, i);
+            ts::next_tx(scen, player_addr); {
+                fund_bet(scen, BET_SIZE);
+            };
+            i = i + 1;
+        };
+
+        // Some votes are cast
+        let votes_len = vector::length(&votes);
+        let i = 0;
+        while (i < votes_len) {
+            let judge_addr = vector::borrow(&judges, i);
+            let player_addr = vector::borrow(&votes, i);
+            ts::next_tx(scen, judge_addr); {
+                cast_vote(scen, *player_addr);
+            };
+            i = i + 1;
+        };
+
+        // Verify that the bet in the correct phase
+        ts::next_tx(scen, &SOMEONE); {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+            assert!( *bet::phase(bet) == expect_phase, 0 );
+            ts::return_shared(scen, bet_wrapper);
+        };
+    }
+
+    #[test]
+    fun test_is_stalemate()
+    {
+        /* 1-of-1 */
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2],
+            /* judges */  vector[@0xB1],
+            /* votes */   vector[@0xA1],
+            /* quorum */  1,
+            /* expect_phase */ 2, // PHASE_SETTLED
+        );
+        /* 2-of-2 */
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2],
+            /* judges */  vector[@0xB1, @0xB2],
+            /* votes */   vector[@0xA1, @0xA2],
+            /* quorum */  2,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+        );
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2],
+            /* judges */  vector[@0xB1, @0xB2],
+            /* votes */   vector[@0xA1, @0xA1],
+            /* quorum */  2,
+            /* expect_phase */ 2, // PHASE_SETTLED
+        );
+
+        /* 3-of-5 */
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
+            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* quorum */  3,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+        );
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
+            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3],
+            /* quorum */  3,
+            /* expect_phase */ 1, // PHASE_VOTE
+        );
+
+        /* 5-of-7 */
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
+            /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2, @0xA2],
+            /* quorum */  5,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+        );
+
+        /* 5-of-7 */
+        test_stalemate(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
+            /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2],
+            /* quorum */  5,
+            /* expect_phase */ 1, // PHASE_VOTE
+        );
+
     }
 }
