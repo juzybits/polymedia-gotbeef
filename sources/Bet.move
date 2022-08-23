@@ -36,7 +36,8 @@ module beef::bet
     const E_PLAYER_NOT_FOUND: u64 = 203;
 
     // cancel()
-    const E_CANCEL_NOT_ALLOWED: u64 = 300;
+    const E_CANCEL_BET_HAS_FUNDS: u64 = 300;
+    const E_CANCEL_NOT_AUTHORIZED: u64 = 301;
 
     /** Settings **/
 
@@ -97,15 +98,12 @@ module beef::bet
     {
         let player_len = vector::length(&players);
         let judge_len = vector::length(&judges);
-        let has_dup_players = vectors::has_duplicates(&players);
-        let has_dup_judges = vectors::has_duplicates(&judges);
-        let judge_is_player = vectors::intersect(&players, &judges);
 
         assert!( player_len >= MIN_PLAYERS && player_len <= MAX_PLAYERS, E_INVALID_NUMBER_OF_PLAYERS );
         assert!( judge_len >= MIN_JUDGES && judge_len <= MAX_JUDGES, E_INVALID_NUMBER_OF_JUDGES );
-        assert!( !has_dup_players, E_DUPLICATE_PLAYERS );
-        assert!( !has_dup_judges, E_DUPLICATE_JUDGES );
-        assert!( !judge_is_player, E_JUDGES_CANT_BE_PLAYERS );
+        assert!( !vectors::has_duplicates(&players), E_DUPLICATE_PLAYERS );
+        assert!( !vectors::has_duplicates(&judges), E_DUPLICATE_JUDGES );
+        assert!( !vectors::intersect(&players, &judges), E_JUDGES_CANT_BE_PLAYERS );
         assert!( (quorum > judge_len/2) && (quorum <= judge_len), E_INVALID_QUORUM );
 
         let bet = Bet<T> {
@@ -152,7 +150,7 @@ module beef::bet
         };
     }
 
-    /// Judge casts a vote for one of the player addresses
+    /// Judge casts a vote for one of the players
     public entry fun vote<T>(
         bet: &mut Bet<T>,
         player_addr: address,
@@ -193,8 +191,12 @@ module beef::bet
     /// - (todo) If all players agree on cancelling the bet.
     /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
     /// - (maybe) If a quorum of judges agree on cancelling the bet.
-    public entry fun cancel<T>(bet: &mut Bet<T>) { // TODO: unit test
-        assert!( vec_map::is_empty(&bet.funds), E_CANCEL_NOT_ALLOWED );
+    public entry fun cancel<T>(bet: &mut Bet<T>, ctx: &mut TxContext) {
+        let sender = tx_context::sender(ctx);
+        let is_player = vector::contains(&bet.players, &sender);
+        let is_judge = vector::contains(&bet.judges, &sender);
+        assert!( vec_map::is_empty(&bet.funds), E_CANCEL_BET_HAS_FUNDS );
+        assert!( is_player || is_judge, E_CANCEL_NOT_AUTHORIZED );
         bet.phase = PHASE_CANCELED;
     }
 
@@ -204,7 +206,6 @@ module beef::bet
         let votes_so_far = vec_map::size(&bet.votes);
         let votes_remaining = number_of_judges - votes_so_far;
         let distance_to_win = bet.quorum - bet.most_votes;
-
         return votes_remaining < distance_to_win
     }
 }
@@ -412,6 +413,21 @@ module beef::bet_tests
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE/2); };
     }
 
+    #[test, expected_failure(abort_code = 103)]
+    /// Player tries to fund the a closed bet
+    fun test_fund_not_in_funding_phase()
+    {
+        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
+
+        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
+
+        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, &JUDGE_2); { cast_vote(scen, PLAYER_1); };
+
+        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
+    }
+
     /* vote() */
 
     #[test]
@@ -600,7 +616,54 @@ module beef::bet_tests
             /* quorum */  5,
             /* expect_phase */ 1, // PHASE_VOTE
         );
+    }
 
+    /* cancel() */
+
+    #[test]
+    fun cancel_success()
+    {
+        let scen = &mut ts::begin(&CREATOR); {
+            create_bet(scen);
+        };
+        ts::next_tx(scen, &PLAYER_2); {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+            bet::cancel( bet, ts::ctx(scen) );
+            assert!( *bet::phase(bet) == 3, 0 );
+            ts::return_shared(scen, bet_wrapper);
+        };
+    }
+
+    #[test, expected_failure(abort_code = 300)]
+    /// Try to cancel a bet with funds
+    fun test_cancel_bet_has_funds()
+    {
+        let scen = &mut ts::begin(&CREATOR); {
+            create_bet(scen);
+        };
+        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, &PLAYER_2); {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+            bet::cancel( bet, ts::ctx(scen) );
+            ts::return_shared(scen, bet_wrapper);
+        };
+    }
+
+    #[test, expected_failure(abort_code = 301)]
+    /// A non-participant tries to cancel a bet
+    fun test_cancel_not_authorized()
+    {
+        let scen = &mut ts::begin(&CREATOR); {
+            create_bet(scen);
+        };
+        ts::next_tx(scen, &SOMEONE); {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+            bet::cancel( bet, ts::ctx(scen) );
+            ts::return_shared(scen, bet_wrapper);
+        };
     }
 }
 
