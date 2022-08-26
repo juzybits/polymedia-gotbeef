@@ -43,7 +43,7 @@ module beef::bet
 
     // create() constraints
     const MIN_PLAYERS: u64 = 2;
-    const MAX_PLAYERS: u64 = 128;
+    const MAX_PLAYERS: u64 = 256;
     const MIN_JUDGES: u64 = 1;
     const MAX_JUDGES: u64 = 32;
 
@@ -414,7 +414,7 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 103)]
-    /// Player tries to fund the a closed bet
+    /// Player tries to fund a closed bet
     fun test_fund_not_in_funding_phase()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
