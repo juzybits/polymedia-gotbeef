@@ -1,6 +1,7 @@
 /// Create bets between 2 or more players. Includes escrow and voting functionality.
 module beef::bet
 {
+    use std::option::{Self, Option};
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::object::{Self, UID};
@@ -12,7 +13,7 @@ module beef::bet
     use beef::vec_maps;
     use beef::vectors;
 
-    /** Errors **/
+    /* Errors */
 
     // create()
     const E_JUDGES_CANT_BE_PLAYERS: u64 = 0;
@@ -38,7 +39,7 @@ module beef::bet
     const E_CANCEL_BET_HAS_FUNDS: u64 = 300;
     const E_CANCEL_NOT_AUTHORIZED: u64 = 301;
 
-    /** Settings **/
+    /* Settings */
 
     // create() constraints
     const MIN_PLAYERS: u64 = 2;
@@ -53,7 +54,7 @@ module beef::bet
     const PHASE_CANCELED: u8 = 3;
     const PHASE_STALEMATE: u8 = 4;
 
-    /** Structs **/
+    /* Structs */
 
     struct Bet<phantom T> has key, store
     {
@@ -66,17 +67,17 @@ module beef::bet
         judges: vector<address>,
         votes: VecMap<address, address>, // <judge_addr,  player_addr>
         funds: VecMap<address, Coin<T>>, // <player_addr, player_funds>
-        most_votes: u64, // number of votes received by the leading player
+        most_votes: u64, // number of votes received by the leading player (to detect stalemates)
+        winner: Option<address>,
 
         // Maybe:
         // description: String,
-        // winner: address, // record winner for posterity?
         // start_epoch: Option<u64>, // voting starts on this day
         // end_epoch: Option<u64>, // voting ends on this day
         // funds: vector<Item>, // prize can be any asset(s)
     }
 
-    /** Accessors **/
+    /* Accessors */
 
     public fun phase<T>(bet: &Bet<T>): u8 {
         bet.phase
@@ -105,8 +106,11 @@ module beef::bet
     public fun most_votes<T>(bet: &Bet<T>): u64 {
         bet.most_votes
     }
+    public fun winner<T>(bet: &Bet<T>): &Option<address> {
+        &bet.winner
+    }
 
-    /** Core functionality **/
+    /* Core functionality */
 
     /// Anybody can define a new bet
     public entry fun create<T>(
@@ -138,6 +142,7 @@ module beef::bet
             votes: vec_map::empty(),
             funds: vec_map::empty(),
             most_votes: 0,
+            winner: option::none(),
         };
         transfer::share_object(bet);
     }
@@ -195,6 +200,7 @@ module beef::bet
         // If the player that just received a vote is the winner, settle the bet
         if ( player_vote_count >= bet.quorum ) {
             transfers::send_all(&mut bet.funds, player_addr, ctx);
+            bet.winner = option::some(player_addr);
             bet.phase = PHASE_SETTLED;
             return
         };
@@ -236,6 +242,7 @@ module beef::bet
 #[test_only]
 module beef::bet_tests
 {
+    use std::option::{Self, Option};
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
@@ -472,6 +479,9 @@ module beef::bet_tests
             assert!( vec_map::size(funds) == 0, 0 );
             // The bet is now in the settled phase
             assert!( bet::phase(bet) == 2, 0 );
+            // The bet winner is player 1
+            let winner_opt = bet::winner(bet);
+            assert!( option::contains(winner_opt, &PLAYER_1), 0 );
             ts::return_shared(scen, bet_wrapper);
         };
 
@@ -525,121 +535,6 @@ module beef::bet_tests
         ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, SOMEONE); };
     }
 
-    /* is_stalemate() */
-
-    fun test_stalemate(
-        players: vector<address>,
-        judges: vector<address>,
-        votes: vector<address>,
-        quorum: u64,
-        expect_phase: u8)
-    {
-        let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
-        };
-
-        // All players fund the bet
-        let players_len = vector::length(&players);
-        let i = 0;
-        while (i < players_len) {
-            let player_addr = vector::borrow(&players, i);
-            ts::next_tx(scen, player_addr); {
-                fund_bet(scen, BET_SIZE);
-            };
-            i = i + 1;
-        };
-
-        // Some votes are cast
-        let votes_len = vector::length(&votes);
-        let i = 0;
-        while (i < votes_len) {
-            let judge_addr = vector::borrow(&judges, i);
-            let player_addr = vector::borrow(&votes, i);
-            ts::next_tx(scen, judge_addr); {
-                cast_vote(scen, *player_addr);
-            };
-            i = i + 1;
-        };
-
-        // Verify that the bet in the correct phase
-        ts::next_tx(scen, &SOMEONE); {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
-            assert!( bet::phase(bet) == expect_phase, 0 );
-            ts::return_shared(scen, bet_wrapper);
-        };
-    }
-
-    #[test]
-    fun test_is_stalemate()
-    {
-        /* 1-of-1 */
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2],
-            /* judges */  vector[@0xB1],
-            /* votes */   vector[@0xA1],
-            /* quorum */  1,
-            /* expect_phase */ 2, // PHASE_SETTLED
-        );
-
-        /* 2-of-2 */
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2],
-            /* judges */  vector[@0xB1, @0xB2],
-            /* votes */   vector[@0xA1, @0xA2],
-            /* quorum */  2,
-            /* expect_phase */ 4, // PHASE_STALEMATE
-        );
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2],
-            /* judges */  vector[@0xB1, @0xB2],
-            /* votes */   vector[@0xA1, @0xA1],
-            /* quorum */  2,
-            /* expect_phase */ 2, // PHASE_SETTLED
-        );
-
-        /* 3-of-5 */
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
-            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
-            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA4],
-            /* quorum */  3,
-            /* expect_phase */ 4, // PHASE_STALEMATE
-        );
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4, @0xA5],
-            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
-            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3, @0xA4],
-            /* quorum */  3,
-            /* expect_phase */ 4, // PHASE_STALEMATE
-        );
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
-            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
-            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3],
-            /* quorum */  3,
-            /* expect_phase */ 1, // PHASE_VOTE
-        );
-
-        /* 5-of-7 */
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
-            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
-            /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2, @0xA2],
-            /* quorum */  5,
-            /* expect_phase */ 4, // PHASE_STALEMATE
-        );
-
-        /* 5-of-7 */
-        test_stalemate(
-            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
-            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
-            /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2],
-            /* quorum */  5,
-            /* expect_phase */ 1, // PHASE_VOTE
-        );
-    }
-
     /* cancel() */
 
     #[test]
@@ -686,6 +581,132 @@ module beef::bet_tests
             bet::cancel( bet, ts::ctx(scen) );
             ts::return_shared(scen, bet_wrapper);
         };
+    }
+
+    /* is_stalemate() */
+
+    fun test_expectations(
+        players: vector<address>,
+        judges: vector<address>,
+        votes: vector<address>,
+        quorum: u64,
+        expect_phase: u8,
+        expect_winner: Option<address>)
+    {
+        let scen = &mut ts::begin(&CREATOR); {
+            bet::create<SUI>( TITLE, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
+        };
+
+        // All players fund the bet
+        let players_len = vector::length(&players);
+        let i = 0;
+        while (i < players_len) {
+            let player_addr = vector::borrow(&players, i);
+            ts::next_tx(scen, player_addr); {
+                fund_bet(scen, BET_SIZE);
+            };
+            i = i + 1;
+        };
+
+        // Some votes are cast
+        let votes_len = vector::length(&votes);
+        let i = 0;
+        while (i < votes_len) {
+            let judge_addr = vector::borrow(&judges, i);
+            let player_addr = vector::borrow(&votes, i);
+            ts::next_tx(scen, judge_addr); {
+                cast_vote(scen, *player_addr);
+            };
+            i = i + 1;
+        };
+
+        // Verify that the bet in the correct phase
+        ts::next_tx(scen, &SOMEONE); {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+            assert!( bet::phase(bet) == expect_phase, 0 );
+            assert!( bet::winner(bet) == &expect_winner, 0 );
+            ts::return_shared(scen, bet_wrapper);
+        };
+    }
+
+    #[test]
+    /// Verify the outcome in various situations
+    fun test_end_to_end()
+    {
+        /* 1-of-1 */
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2],
+            /* judges */  vector[@0xB1],
+            /* votes */   vector[@0xA1],
+            /* quorum */  1,
+            /* expect_phase */ 2, // PHASE_SETTLED
+            /* expect_winner */ option::some(@0xA1),
+        );
+
+        /* 2-of-2 */
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2],
+            /* judges */  vector[@0xB1, @0xB2],
+            /* votes */   vector[@0xA1, @0xA2],
+            /* quorum */  2,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_winner */ option::none<address>(),
+        );
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2],
+            /* judges */  vector[@0xB1, @0xB2],
+            /* votes */   vector[@0xA1, @0xA1],
+            /* quorum */  2,
+            /* expect_phase */ 2, // PHASE_SETTLED
+            /* expect_winner */ option::some(@0xA1),
+        );
+
+        /* 3-of-5 */
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
+            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* quorum */  3,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_winner */ option::none<address>(),
+        );
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4, @0xA5],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
+            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3, @0xA4],
+            /* quorum */  3,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_winner */ option::none<address>(),
+        );
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
+            /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3],
+            /* quorum */  3,
+            /* expect_phase */ 1, // PHASE_VOTE
+            /* expect_winner */ option::none<address>(),
+        );
+
+        /* 5-of-7 */
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
+            /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2, @0xA2],
+            /* quorum */  5,
+            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_winner */ option::none<address>(),
+        );
+
+        /* 5-of-7 */
+        test_expectations(
+            /* players */ vector[@0xA1, @0xA2, @0xA3, @0xA4],
+            /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
+            /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2],
+            /* quorum */  5,
+            /* expect_phase */ 1, // PHASE_VOTE
+            /* expect_winner */ option::none<address>(),
+        );
     }
 }
 
