@@ -1,7 +1,6 @@
 /// Create bets between 2 or more players. Includes escrow and voting functionality.
 module beef::bet
 {
-    // use std::debug::print as print;
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::object::{Self, UID};
@@ -10,8 +9,8 @@ module beef::bet
     use sui::utf8::{Self, String};
     use sui::vec_map::{Self, VecMap};
     use beef::transfers;
-    use beef::vectors;
     use beef::vec_maps;
+    use beef::vectors;
 
     /** Errors **/
 
@@ -213,7 +212,6 @@ module beef::bet
 #[test_only]
 module beef::bet_tests
 {
-    // use std::debug::print as print;
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
