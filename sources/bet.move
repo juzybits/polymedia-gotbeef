@@ -76,15 +76,37 @@ module beef::bet
         // funds: vector<Item>, // prize can be any asset(s)
     }
 
-    /** Functions **/
+    /** Accessors **/
 
+    public fun phase<T>(bet: &Bet<T>): u8 {
+        bet.phase
+    }
+    public fun title<T>(bet: &Bet<T>): &String {
+        &bet.title
+    }
+    public fun quorum<T>(bet: &Bet<T>): u64 {
+        bet.quorum
+    }
+    public fun bet_size<T>(bet: &Bet<T>):u64 {
+        bet.bet_size
+    }
+    public fun players<T>(bet: &Bet<T>): &vector<address> {
+        &bet.players
+    }
+    public fun judges<T>(bet: &Bet<T>): &vector<address> {
+        &bet.judges
+    }
+    public fun votes<T>(bet: &Bet<T>): &VecMap<address, address> {
+        &bet.votes
+    }
     public fun funds<T>(bet: &Bet<T>): &VecMap<address, Coin<T>> {
         &bet.funds
     }
-
-    public fun phase<T>(bet: &Bet<T>): &u8 {
-        &bet.phase
+    public fun most_votes<T>(bet: &Bet<T>): u64 {
+        bet.most_votes
     }
+
+    /** Core functionality **/
 
     /// Anybody can define a new bet
     public entry fun create<T>(
@@ -198,6 +220,8 @@ module beef::bet
         assert!( is_player || is_judge, E_CANCEL_NOT_AUTHORIZED );
         bet.phase = PHASE_CANCELED;
     }
+
+    /* Helpers */
 
     /// Returns true if it is no longer possible for any player to win the bet
     fun is_stalemate<T>(bet: &Bet<T>): bool {
@@ -336,7 +360,7 @@ module beef::bet_tests
             // nobody has funded the bet yet
             assert!( vec_map::is_empty(funds), 0 );
             // the bet phase is set to PHASE_FUND
-            assert!( bet::phase(bet) == &0, 0 );
+            assert!( bet::phase(bet) == 0, 0 );
             ts::return_shared(scen, bet_wrapper);
         };
 
@@ -355,7 +379,7 @@ module beef::bet_tests
             // and it's who you'd expect
             assert!( vec_map::contains(funds, &PLAYER_1), 0 );
             // the bet remains in the funding phase
-            assert!( bet::phase(bet) == &0, 0 );
+            assert!( bet::phase(bet) == 0, 0 );
             ts::return_shared(scen, bet_wrapper);
 
             // Player 1 got their change
@@ -378,7 +402,7 @@ module beef::bet_tests
             // both players have funded the bet
             assert!( vec_map::contains(funds, &PLAYER_2), 0 );
             // the bet is now in the voting phase
-            assert!( bet::phase(bet) == &1, 0 );
+            assert!( bet::phase(bet) == 1, 0 );
             ts::return_shared(scen, bet_wrapper);
 
             // Player 2 didn't get any change
@@ -447,7 +471,7 @@ module beef::bet_tests
             let funds = bet::funds<SUI>(bet);
             assert!( vec_map::size(funds) == 0, 0 );
             // The bet is now in the settled phase
-            assert!( bet::phase(bet) == &2, 0 );
+            assert!( bet::phase(bet) == 2, 0 );
             ts::return_shared(scen, bet_wrapper);
         };
 
@@ -541,7 +565,7 @@ module beef::bet_tests
         ts::next_tx(scen, &SOMEONE); {
             let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
             let bet = ts::borrow_mut(&mut bet_wrapper);
-            assert!( *bet::phase(bet) == expect_phase, 0 );
+            assert!( bet::phase(bet) == expect_phase, 0 );
             ts::return_shared(scen, bet_wrapper);
         };
     }
@@ -628,7 +652,7 @@ module beef::bet_tests
             let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
             let bet = ts::borrow_mut(&mut bet_wrapper);
             bet::cancel( bet, ts::ctx(scen) );
-            assert!( *bet::phase(bet) == 3, 0 );
+            assert!( bet::phase(bet) == 3, 0 );
             ts::return_shared(scen, bet_wrapper);
         };
     }
