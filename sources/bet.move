@@ -61,6 +61,7 @@ module beef::bet
         id: UID,
         phase: u8, // A bet goes through various stages: funding/voting/settled/...
         title: String,
+        description: String,
         quorum: u64,
         bet_size: u64, // Amount of Coin<T> that each participant will bet
         players: vector<address>,
@@ -71,7 +72,6 @@ module beef::bet
         winner: Option<address>,
 
         // Maybe:
-        // description: String,
         // start_epoch: Option<u64>, // voting starts on this day
         // end_epoch: Option<u64>, // voting ends on this day
         // funds: vector<Item>, // prize can be any asset(s)
@@ -84,6 +84,9 @@ module beef::bet
     }
     public fun title<T>(bet: &Bet<T>): &String {
         &bet.title
+    }
+    public fun description<T>(bet: &Bet<T>): &String {
+        &bet.description
     }
     public fun quorum<T>(bet: &Bet<T>): u64 {
         bet.quorum
@@ -115,6 +118,7 @@ module beef::bet
     /// Anybody can define a new bet
     public entry fun create<T>(
         title: vector<u8>,
+        description: vector<u8>,
         quorum: u64,
         bet_size: u64,
         players: vector<address>,
@@ -135,6 +139,7 @@ module beef::bet
             id: object::new(ctx),
             phase: PHASE_FUND,
             title: utf8::string_unsafe(title),
+            description: utf8::string_unsafe(description),
             quorum: quorum,
             bet_size: bet_size,
             players: players,
@@ -252,6 +257,7 @@ module beef::bet_tests
 
     // default bet settings
     const TITLE: vector<u8> = b"Frazier vs Ali";
+    const DESC: vector<u8> = b"The Fight of the Century";
     const QUORUM: u64 = 2;
     const BET_SIZE: u64 = 500;
     const CREATOR: address = @0x777;
@@ -269,7 +275,7 @@ module beef::bet_tests
     fun test_create_success()
     {
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
         ts::next_tx(scen, &CREATOR); {
             let bet = ts::take_shared<Bet<SUI>>(scen);
@@ -282,7 +288,7 @@ module beef::bet_tests
     {
         let players = vector[PLAYER_1, PLAYER_2, JUDGE_1];
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
     }
 
@@ -291,7 +297,7 @@ module beef::bet_tests
     {
         let players = vector[PLAYER_1];
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
     }
 
@@ -300,7 +306,7 @@ module beef::bet_tests
     {
         let judges = vector[];
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
         };
     }
 
@@ -309,7 +315,7 @@ module beef::bet_tests
     {
         let players = vector[@0xCAFE, @0x123, @0xCAFE];
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
     }
 
@@ -318,7 +324,7 @@ module beef::bet_tests
     {
         let judges = vector[@0xAAA, @0xBBB, @0xAAA];
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
         };
     }
 
@@ -327,14 +333,14 @@ module beef::bet_tests
     {
         let quorum = 1;
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, quorum, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, quorum, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
     }
 
     /* fund() */
 
     fun create_bet(scen: &mut Scenario) {
-        bet::create<SUI>( TITLE, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+        bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
     }
 
     fun fund_bet(scen: &mut Scenario, amount: u64) {
@@ -460,7 +466,7 @@ module beef::bet_tests
     /* vote() */
 
     #[test]
-    fun vote_success()
+    fun test_vote_success()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
 
@@ -594,7 +600,7 @@ module beef::bet_tests
         expect_winner: Option<address>)
     {
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
         };
 
         // All players fund the bet
