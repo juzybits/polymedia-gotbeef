@@ -1,0 +1,16 @@
+{
+    "name": "beef-webapp",
+    "private": true,
+    "dependencies": {
+        "react": "18",
+        "react-dom": "18"
+    },
+    "devDependencies": {
+        "@parcel/transformer-less": "2.7.0",
+        "parcel": "2",
+        "process": "^0.11.10"
+    },
+    "scripts": {
+        "serve": "parcel src/index.html"
+    }
+}
