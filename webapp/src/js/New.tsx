@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function Home(props) {
+export function New(props) {
     return <React.Fragment>
-        <h2>Home</h2>
+        <h2>New</h2>
         <div>
-            In the home page
+            In the new page
         </div>
     </React.Fragment>;
 }

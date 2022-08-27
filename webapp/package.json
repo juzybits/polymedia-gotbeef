@@ -3,7 +3,8 @@
     "private": true,
     "dependencies": {
         "react": "18",
-        "react-dom": "18"
+        "react-dom": "18",
+        "react-router-dom": "6"
     },
     "devDependencies": {
         "@parcel/transformer-less": "2.7.0",

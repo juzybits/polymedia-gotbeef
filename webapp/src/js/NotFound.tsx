@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function Home(props) {
+export function NotFound(props) {
     return <React.Fragment>
-        <h2>Home</h2>
+        <h2>404</h2>
         <div>
-            In the home page
+            In the 404 page
         </div>
     </React.Fragment>;
 }

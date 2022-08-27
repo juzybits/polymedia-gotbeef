@@ -1,10 +1,10 @@
 import React from 'react';
 
-export function Home(props) {
+export function Search(props) {
     return <React.Fragment>
-        <h2>Home</h2>
+        <h2>Search</h2>
         <div>
-            In the home page
+            In the search page
         </div>
     </React.Fragment>;
 }
