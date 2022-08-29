@@ -12,6 +12,10 @@
         "process": "^0.11.10"
     },
     "scripts": {
-        "serve": "parcel src/index.html"
+        "serve": "parcel src/index.html",
+        "build": "rm -rf dist/ && parcel build --no-source-maps src/index.html",
+        "preview": "firebase serve --only hosting:prod",
+        "deploy-dev": "firebase deploy --only hosting:dev",
+        "deploy-prod": "firebase deploy --only hosting:prod"
     }
 }

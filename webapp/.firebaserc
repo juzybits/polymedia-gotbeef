@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "gotbeef-1"
+  },
+  "targets": {
+    "gotbeef-1": {
+      "hosting": {
+        "prod": [
+          "gotbeef-1"
+        ],
+        "dev": [
+          "gotbeef-dev-1"
+        ]
+      }
+    }
+  }
+}
