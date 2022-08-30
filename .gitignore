@@ -3,3 +3,4 @@
 .trace
 beef.txt
 build/
+sui.log.*

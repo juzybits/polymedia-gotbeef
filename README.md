@@ -15,3 +15,9 @@ sui move coverage summary
 sui move coverage source --module bet
 sui move coverage bytecode --module bet
 ```
+
+## How to publish
+```
+sui client switch --gateway https://gateway.devnet.sui.io:443/
+sui client publish --path ./beef --gas-budget 30000
+```
