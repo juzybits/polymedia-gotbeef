@@ -6,7 +6,7 @@ import { Fund } from './js/Fund';
 import { Home } from './js/Home';
 import { New } from './js/New';
 import { NotFound } from './js/NotFound';
-import { Search } from './js/Search';
+import { Find } from './js/Find';
 import { View } from './js/View';
 import { Vote } from './js/Vote';
 
@@ -18,7 +18,7 @@ ReactDOM
             <Route path='/' element={<App />} >
                 <Route index element={<Home />} />
                 <Route path='new' element={<New />} />
-                <Route path='search' element={<Search />} />
+                <Route path='find' element={<Find />} />
                 <Route path='bet/:uid'>
                     <Route index element={<View />} />
                     <Route path='fund' element={<Fund />} />

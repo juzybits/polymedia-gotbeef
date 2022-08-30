@@ -12,7 +12,7 @@ export function App(props) {
             <nav id='nav'>
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
-                &nbsp;~ <Link to='/search'>FIND</Link>
+                &nbsp;~ <Link to='/find'>FIND</Link>
             </nav>
         </div>
 

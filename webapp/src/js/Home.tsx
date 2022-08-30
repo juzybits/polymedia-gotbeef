@@ -15,7 +15,7 @@ export function Home(props) {
             </ul>
             <br/>
             <div id='built-by'>
-                Built with <i class="nes-icon heart is-small"></i> by <a href='https://twitter.com/juzybits' target='_blank'>@juzybits</a>
+                Built with <i className="nes-icon heart is-small"></i> by <a href='https://twitter.com/juzybits' target='_blank'>@juzybits</a>
             </div>
         </div>
     </React.Fragment>;
