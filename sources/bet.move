@@ -2,12 +2,12 @@
 module beef::bet
 {
     use std::option::{Self, Option};
+    use std::string::{Self, String};
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::object::{Self, UID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
-    use sui::utf8::{Self, String};
     use sui::vec_map::{Self, VecMap};
     use beef::transfers;
     use beef::vec_maps;
@@ -138,8 +138,8 @@ module beef::bet
         let bet = Bet<T> {
             id: object::new(ctx),
             phase: PHASE_FUND,
-            title: utf8::string_unsafe(title),
-            description: utf8::string_unsafe(description),
+            title: string::utf8(title),
+            description: string::utf8(description),
             quorum: quorum,
             bet_size: bet_size,
             players: players,
