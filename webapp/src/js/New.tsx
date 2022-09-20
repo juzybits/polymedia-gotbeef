@@ -19,8 +19,8 @@ export function New(props) {
 
             <label htmlFor='currency_select'>Currency</label>
             <div className='nes-select'>
-                <select required id='currency_select'>
-                    <option selected value='SUI'>SUI</option>
+                <select required id='currency_select' defaultValue='SUI'>
+                    <option>SUI</option>
                 </select>
             </div>
             <br/>
