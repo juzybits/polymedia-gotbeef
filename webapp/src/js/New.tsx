@@ -28,9 +28,9 @@ export function New(props)
             players.split(/\W+/),
             judges.split(/\W+/),
         )
-        .then(result => {
-            console.debug("[new] Success:\n", result)
-            setResult( "SUCCESS:\n" + JSON.stringify(result) );
+        .then(response => {
+            console.debug("[new] Success:\n", response)
+            setResult( "SUCCESS:\n" + JSON.stringify(response) );
         })
         .catch(error => {
             console.warn("[new] Error:\n", error)

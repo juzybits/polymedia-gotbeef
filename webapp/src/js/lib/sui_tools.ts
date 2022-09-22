@@ -48,6 +48,11 @@ export function createBet(
     });
 }
 
+export function getBet(objId: string): Promise<GetObjectDataResponse> {
+    console.debug("[sui_tools.getBet] Looking up:", objId);
+    return rpc.getObject(objId);
+}
+
 // DEV_ONLY
 
 export async function testSdk(): void {
