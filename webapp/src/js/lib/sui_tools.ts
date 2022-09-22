@@ -1,8 +1,11 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
+const BEEF_PACKAGE = '0x854ecb501c90ef40b0b08c11929fa0c6c5cec90e';
+const BET_MODULE = 'bet';
+
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
-let wallet = new SuiWalletAdapter();
+export const wallet = new SuiWalletAdapter();
 window.wallet = wallet; // DEV_ONLY
 
 export async function connect(): void {
@@ -17,8 +20,38 @@ export function isConnected(): bool {
     return wallet.connected;
 };
 
+export function createBet(
+    currency: string, // e.g. '0x2::sui::SUI'
+    title: string,
+    description: string,
+    quorum: number,
+    size: number,
+    players: array,
+    judges: array,
+): Promise<SuiTransactionResponse>
+{
+    console.debug(`[sui_tools.createBet] Calling ${BET_MODULE}::create() on package: ${BEEF_PACKAGE}`);
+    return wallet.executeMoveCall({
+        packageObjectId: BEEF_PACKAGE,
+        module: BET_MODULE,
+        function: 'create',
+        typeArguments: [ currency ],
+        arguments: [
+            title,
+            description,
+            quorum,
+            size,
+            players,
+            judges,
+        ],
+        gasBudget: 10000,
+    });
+}
+
+// DEV_ONLY
+
 export async function testSdk(): void {
-    // let rpc = new JsonRpcProvider('http://127.0.0.1:5001');
+    // const rpc = new JsonRpcProvider('http://127.0.0.1:5001');
 
     console.debug("--- testSdk ---");
 

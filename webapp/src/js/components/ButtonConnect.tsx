@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect, disconnect, isConnected, testSdk, testWalletAdapter } from '../lib/sui_tools';
+import { connect, disconnect, isConnected } from '../lib/sui_tools';
 import { useOutletContext } from 'react-router-dom';
 
 export function ButtonConnect(props)
