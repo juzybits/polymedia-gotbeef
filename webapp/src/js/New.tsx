@@ -20,7 +20,7 @@ export function New(props)
 
         <div className='nes-field'>
             <label htmlFor='description_field'>Description (optional)</label>
-            <textarea id="description_field" className="nes-textarea"></textarea>
+            <textarea id='description_field' className='nes-textarea'></textarea>
         </div>
         <br/>
 
@@ -40,14 +40,14 @@ export function New(props)
         <br/>
 
         <div className='nes-field'>
-            <label htmlFor="players_field">Player addresses (2-256)</label>
-            <textarea id="players_field" className="nes-textarea"></textarea>
+            <label htmlFor='players_field'>Player addresses (2-256)</label>
+            <textarea id='players_field' className='nes-textarea'></textarea>
         </div>
         <br/>
 
         <div className='nes-field'>
-        <label htmlFor="judges_field">Judge addresses (1-32)</label>
-            <textarea id="judges_field" className="nes-textarea"></textarea>
+        <label htmlFor='judges_field'>Judge addresses (1-32)</label>
+            <textarea id='judges_field' className='nes-textarea'></textarea>
         </div>
         <br/>
 
