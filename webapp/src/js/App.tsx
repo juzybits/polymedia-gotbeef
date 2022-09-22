@@ -15,7 +15,7 @@ export function App(props)
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
-                &nbsp;~ <ButtonConnect connected={connected} setConnected={setConnected} />
+                {/*&nbsp;~ <ButtonConnect connected={connected} setConnected={setConnected} />*/}
             </nav>
         </div>
 

@@ -11,7 +11,8 @@
     "devDependencies": {
         "@parcel/transformer-less": "latest",
         "parcel": "latest",
-        "process": "latest"
+        "process": "latest",
+        "react-devtools": "latest"
     },
     "scripts": {
         "serve": "parcel src/index.html",
