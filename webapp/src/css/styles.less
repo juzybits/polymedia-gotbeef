@@ -1,45 +1,84 @@
+/* Variables */
+
+@page-background-color: #f7f7f7;
+
+/* Default elements */
+
 body {
-	background: #5c94fc;
-	background-image:  url(../img/clouds.png);
-	background-repeat: repeat;
+    background: #5c94fc;
+    background-image:  url(../img/clouds.png);
+    background-repeat: repeat;
 }
 ul {
-	margin-top: 0.4em;
-	list-style: square;
+    margin-top: 0.4em;
+    list-style: square;
 }
 li {
-	margin-bottom: 0.4em;
+    margin-bottom: 0.4em;
 }
 h2 {
-	margin: 0.1em 0 0.6em ;
-}
-#page {
-	max-width: 800px;
-	background: #f7f7f7;
-	border: 4px solid black;
-	margin: 2em auto;
-	padding: 1.2em 1.8em 1.6em;
-}
-#header {
-	text-align: center;
-}
-#title {
-	font-size: 2.2em;
-}
-#nav {
-	border-bottom: 4px solid pink;
-	padding-bottom: 1em;
-}
-#content {
-	padding-top: 1.5em;
-}
-#built-by {
-	font-size: 0.8em;
+    margin: 0.1em 0 0.6em ;
 }
 
+/* Specific elements */
+
+#page {
+    max-width: 800px;
+    background: @page-background-color;
+    border: 4px solid black;
+    margin: 2em auto;
+    padding: 1.2em 1.8em 1.6em;
+}
+#header {
+    text-align: center;
+}
+#title {
+    font-size: 2.2em;
+}
+#nav {
+    border-bottom: 4px solid pink;
+    padding-bottom: 1em;
+}
+#content {
+    padding-top: 1.5em;
+}
+#built-by {
+    font-size: 0.8em;
+}
+#bet-actions {
+    text-align: center;
+    .nes-btn {
+        margin: 0 1em 0 0;
+        &:last-child {
+            margin-right: 0;
+        }
+    };
+}
+
+/* Mobile */
+
 @media (max-width: 800px) {
-	#page {
-		border-width: 0 0 4px 0;
-		margin-top: 0
-	}
+    #page {
+        border-width: 0 0 4px 0;
+        margin-top: 0
+    }
+    #bet-actions {
+        .nes-btn {
+            width: 50%;
+            min-width: 7.5em;
+            display: block;
+            margin: 0 auto 1em auto;
+            &:last-child {
+                margin: 0 auto 0 auto;
+            }
+        };
+    }
+}
+
+/* Customize NES.css */
+
+.nes-container {
+    &.with-title > .title {
+        background-color: @page-background-color;
+    }
 }
