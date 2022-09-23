@@ -4,7 +4,7 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import { getBet } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 
-export function View(props)
+export function View()
 {
     const [connected, setConnected] = useOutletContext();
     const [data, setData] = useState(undefined);
@@ -20,23 +20,23 @@ export function View(props)
     const fetchBetData = (): void => {
         getBet(betObjId)
         .then(bet => {
-            console.debug('[bet] Success:\n', bet);
+            console.debug('[view] Success:\n', bet);
             setData(bet.details.data.fields);
         })
         .catch(error => {
-            console.warn('[bet] Error:\n', error);
+            console.warn('[view] Error:\n', error);
             setData(null);
         });
-    }
+    };
 
     const getPhaseName = (phaseCode: number): string => {
         return ['fund', 'vote', 'settled', 'canceled', 'stalemate'][phaseCode];
-    }
+    };
 
     const getCollateralType = (vaultType: string): string => {
         let match = vaultType.match(/, (0x.*)>/);
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
-    }
+    };
 
     const makeHtml = () => {
         if (typeof data === 'undefined')
@@ -85,7 +85,7 @@ export function View(props)
                 Quorum: {data.quorum} <br/>
             </div>
         </React.Fragment>;
-    }
+    };
 
     return <React.Fragment>
         <h2>View</h2>

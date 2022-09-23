@@ -4,8 +4,10 @@ import { useOutletContext } from 'react-router-dom';
 import { createBet } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 
-export function New(props)
+export function New()
 {
+    useEffect(() => { document.title = 'got beef? - New' }, []);
+
     const [connected, setConnected] = useOutletContext();
 
     const [title, setTitle] = useState('some title');
@@ -18,10 +20,6 @@ export function New(props)
 
     const [result, setResult] = useState('');
 
-    useEffect(() => {
-        document.title = 'got beef? - New';
-    }, []);
-
     const onClickCreate = (e) => {
         createBet(
             currency,
@@ -32,15 +30,31 @@ export function New(props)
             players.split(/\W+/),
             judges.split(/\W+/),
         )
-        .then(response => {
-            console.debug('[new] Success:\n', response)
-            setResult( 'SUCCESS:\n' + JSON.stringify(response) );
+        .then(resp => {
+            if (resp.effects.status.status != 'success') {
+                setResult( 'ERROR: ' + resp.effects.status.error );
+            } else {
+                // TODO link to /bet/:uid
+                setResult( 'SUCCESS: ' + JSON.stringify(resp.effects.created[0].reference.objectId) );
+            }
+
         })
         .catch(error => {
-            console.warn('[new] Error:\n', error)
-            setResult( 'ERROR:\n' + JSON.stringify(error.message) );
+            setResult( 'ERROR: ' + JSON.stringify(error.message) );
         });
     };
+
+    const makeResultHtml = () => {
+        if (!result)
+            return '';
+
+        return <React.Fragment>
+            <br/>
+            Last result:
+            <br/><br/>
+            {result}
+        </React.Fragment>;
+    }
 
     return <React.Fragment>
 
@@ -115,10 +129,7 @@ export function New(props)
         }
     </div>
 
-    <br/>
-    Last result:
-    <br/><br/>
-    {result}
+    { makeResultHtml() }
 
     </React.Fragment>;
 }
