@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 import { createBet } from './lib/sui_tools';
@@ -18,6 +18,10 @@ export function New(props)
 
     const [result, setResult] = useState('');
 
+    useEffect(() => {
+        document.title = 'got beef? - New';
+    }, []);
+
     const onClickCreate = (e) => {
         createBet(
             currency,
@@ -29,12 +33,12 @@ export function New(props)
             judges.split(/\W+/),
         )
         .then(response => {
-            console.debug("[new] Success:\n", response)
-            setResult( "SUCCESS:\n" + JSON.stringify(response) );
+            console.debug('[new] Success:\n', response)
+            setResult( 'SUCCESS:\n' + JSON.stringify(response) );
         })
         .catch(error => {
-            console.warn("[new] Error:\n", error)
-            setResult( "ERROR:\n" + JSON.stringify(error.message) );
+            console.warn('[new] Error:\n', error)
+            setResult( 'ERROR:\n' + JSON.stringify(error.message) );
         });
     };
 

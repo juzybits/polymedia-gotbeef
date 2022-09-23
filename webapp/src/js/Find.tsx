@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export function Find() {
+    useEffect(() => {
+        document.title = 'got beef? - Find';
+    }, []);
+
     return <React.Fragment>
         <h2>FIND BET</h2>
         <div>

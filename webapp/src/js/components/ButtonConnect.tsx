@@ -8,15 +8,15 @@ export function ButtonConnect(props)
         await connect();
         props.setConnected( isConnected() );
         if ( isConnected() ) {
-            console.debug("[ButtonConnect] Connected.");
+            console.debug('[ButtonConnect] Connected.');
         } else {
-            console.warn("[ButtonConnect] Failed to connect.");
+            console.warn('[ButtonConnect] Failed to connect.');
         }
     };
     const onClickDisconnect = () => {
         disconnect();
         props.setConnected(false);
-        console.debug("[ButtonConnect] Disconnected.");
+        console.debug('[ButtonConnect] Disconnected.');
     };
 
     return <React.Fragment>

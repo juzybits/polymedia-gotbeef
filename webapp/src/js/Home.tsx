@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export function Home(props) {
+    useEffect(() => {
+        document.title = `got beef?`;
+    }, []);
     return <React.Fragment>
         <div>
             <i>got beef?</i> is a dApp to create on-chain bets on the <a href='https://sui.io/' target='_blank'>Sui</a> network.

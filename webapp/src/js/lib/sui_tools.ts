@@ -49,7 +49,7 @@ export function createBet(
 }
 
 export function getBet(objId: string): Promise<GetObjectDataResponse> {
-    console.debug("[sui_tools.getBet] Looking up:", objId);
+    console.debug('[sui_tools.getBet] Looking up:', objId);
     return rpc.getObject(objId);
 }
 
@@ -58,40 +58,40 @@ export function getBet(objId: string): Promise<GetObjectDataResponse> {
 export async function testSdk(): void {
     // const rpc = new JsonRpcProvider('http://127.0.0.1:5001');
 
-    console.debug("--- testSdk ---");
+    console.debug('--- testSdk ---');
 
     const LOOKUP_ADDR = '0xff524a4a89513ebaa96905c5335f0c51615e48da';
-    console.debug("Looking up address:", LOOKUP_ADDR);
+    console.debug('Looking up address:', LOOKUP_ADDR);
     const objects = await rpc.getObjectsOwnedByAddress(LOOKUP_ADDR);
-    console.debug("Found " + objects.length + " objects:");
+    console.debug('Found ' + objects.length + ' objects:');
     console.log(objects);
 
     let OBJECT_ID = '0x6d34ab1a878b93cbb8ee9a53241a517805340824';
-    console.debug("Looking up object:", OBJECT_ID);
+    console.debug('Looking up object:', OBJECT_ID);
     const object = await rpc.getObject(OBJECT_ID);
     console.log(object);
 };
 
 export async function testWalletAdapter(): void {
-    console.debug("--- testWalletAdapter ---");
+    console.debug('--- testWalletAdapter ---');
 
-    console.debug("Calling sui::devnet_nft::mint()");
+    console.debug('Calling sui::devnet_nft::mint()');
     wallet.executeMoveCall({
         packageObjectId: '0x2',
         module: 'devnet_nft',
         function: 'mint',
         typeArguments: [],
-        arguments: ["Isaac", "The OG of gravity", "https://upload.wikimedia.org/wikipedia/commons/3/39/GodfreyKneller-IsaacNewton-1689.jpg"],
+        arguments: ['Isaac', 'The OG of gravity', 'https://upload.wikimedia.org/wikipedia/commons/3/39/GodfreyKneller-IsaacNewton-1689.jpg'],
         gasBudget: 10000,
     })
     .then(
-        (result) => { console.debug("SUCCESS! Result:\n", result) },
-        (error) => { console.error("ERROR! Result:\n", error) },
+        (result) => { console.debug('SUCCESS! Result:\n', result) },
+        (error) => { console.error('ERROR! Result:\n', error) },
     );
 
     /*
     const PACKAGE_ID = '0x854ecb501c90ef40b0b08c11929fa0c6c5cec90e';
-    console.debug("Calling bet::create() on package:", PACKAGE_ID);
+    console.debug('Calling bet::create() on package:', PACKAGE_ID);
     wallet.executeMoveCall({
         packageObjectId: PACKAGE_ID,
         module: 'bet',
@@ -108,8 +108,8 @@ export async function testWalletAdapter(): void {
         gasBudget: 10000,
     })
     .then(
-        (result) => { console.debug("SUCCESS! Result:\n-----\n", result) },
-        (error) => { console.debug("ERROR! Result:\n-----\n", error) },
+        (result) => { console.debug('SUCCESS! Result:\n-----\n', result) },
+        (error) => { console.debug('ERROR! Result:\n-----\n', error) },
     );
     */
 }
