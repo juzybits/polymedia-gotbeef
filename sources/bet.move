@@ -22,6 +22,7 @@ module beef::bet
     const E_DUPLICATE_PLAYERS: u64 = 4;
     const E_DUPLICATE_JUDGES: u64 = 5;
     const E_INVALID_QUORUM: u64 = 6;
+    const E_INVALID_BET_SIZE: u64 = 7;
 
     // fund()
     const E_ONLY_PLAYERS_CAN_FUND: u64 = 100;
@@ -134,6 +135,7 @@ module beef::bet
         assert!( !vectors::has_duplicates(&judges), E_DUPLICATE_JUDGES );
         assert!( !vectors::intersect(&players, &judges), E_JUDGES_CANT_BE_PLAYERS );
         assert!( (quorum > judge_len/2) && (quorum <= judge_len), E_INVALID_QUORUM );
+        assert!( bet_size > 0, E_INVALID_BET_SIZE );
 
         let bet = Bet<T> {
             id: object::new(ctx),
@@ -284,7 +286,7 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 0)]
-    fun test_create_judges_cant_be_players()
+    fun test_create_e_judges_cant_be_players()
     {
         let players = vector[PLAYER_1, PLAYER_2, JUDGE_1];
         let scen = &mut ts::begin(&CREATOR); {
@@ -293,7 +295,7 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 2)]
-    fun test_create_invalid_number_of_players()
+    fun test_create_e_invalid_number_of_players()
     {
         let players = vector[PLAYER_1];
         let scen = &mut ts::begin(&CREATOR); {
@@ -302,7 +304,7 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 3)]
-    fun test_create_invalid_number_of_judges()
+    fun test_create_e_invalid_number_of_judges()
     {
         let judges = vector[];
         let scen = &mut ts::begin(&CREATOR); {
@@ -311,7 +313,7 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 4)]
-    fun test_create_duplicate_players()
+    fun test_create_e_duplicate_players()
     {
         let players = vector[@0xCAFE, @0x123, @0xCAFE];
         let scen = &mut ts::begin(&CREATOR); {
@@ -320,7 +322,7 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 5)]
-    fun test_create_duplicate_judges()
+    fun test_create_e_duplicate_judges()
     {
         let judges = vector[@0xAAA, @0xBBB, @0xAAA];
         let scen = &mut ts::begin(&CREATOR); {
@@ -329,11 +331,20 @@ module beef::bet_tests
     }
 
     #[test, expected_failure(abort_code = 6)]
-    fun test_create_invalid_quorum()
+    fun test_create_e_invalid_quorum()
     {
         let quorum = 1;
         let scen = &mut ts::begin(&CREATOR); {
             bet::create<SUI>( TITLE, DESC, quorum, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+        };
+    }
+
+    #[test, expected_failure(abort_code = 7)]
+    fun test_create_e_invalid_bet_size()
+    {
+        let bet_size = 0;
+        let scen = &mut ts::begin(&CREATOR); {
+            bet::create<SUI>( TITLE, DESC, QUORUM, bet_size, PLAYERS, JUDGES, ts::ctx(scen) );
         };
     }
 
@@ -425,7 +436,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 100)]
     /// Non-player tries to funds the bet
-    fun test_fund_only_players_can_fund()
+    fun test_fund_e_only_players_can_fund()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &SOMEONE); { fund_bet(scen, BET_SIZE); };
@@ -433,7 +444,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 101)]
     /// Player tries to fund the bet for the second time
-    fun test_fund_already_funded()
+    fun test_fund_e_already_funded()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
@@ -442,7 +453,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 102)]
     /// Player tries to fund the bet with not enough coins
-    fun test_fund_funds_below_bet_size()
+    fun test_fund_e_funds_below_bet_size()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE/2); };
@@ -450,7 +461,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 103)]
     /// Player tries to fund a closed bet
-    fun test_fund_not_in_funding_phase()
+    fun test_fund_e_not_in_funding_phase()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
 
@@ -503,7 +514,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 200)]
     /// Judge tries to vote before all players have sent their funds
-    fun test_vote_not_in_voting_phase()
+    fun test_e_vote_not_in_voting_phase()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
@@ -512,7 +523,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 201)]
     /// Non-judge tries to vote
-    fun test_vote_only_judges_can_vote()
+    fun test_e_vote_only_judges_can_vote()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
@@ -522,7 +533,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 202)]
     /// Judge tries to vote twice
-    fun test_vote_already_voted()
+    fun test_e_vote_already_voted()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
@@ -533,7 +544,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 203)]
     /// Judge tries to vote for a non-player
-    fun test_vote_player_not_found()
+    fun test_e_vote_player_not_found()
     {
         let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
         ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
@@ -560,7 +571,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 300)]
     /// Try to cancel a bet with funds
-    fun test_cancel_bet_has_funds()
+    fun test_cancel_e_bet_has_funds()
     {
         let scen = &mut ts::begin(&CREATOR); {
             create_bet(scen);
@@ -576,7 +587,7 @@ module beef::bet_tests
 
     #[test, expected_failure(abort_code = 301)]
     /// A non-participant tries to cancel a bet
-    fun test_cancel_not_authorized()
+    fun test_cancel_e_not_authorized()
     {
         let scen = &mut ts::begin(&CREATOR); {
             create_bet(scen);
