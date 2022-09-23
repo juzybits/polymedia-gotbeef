@@ -92,7 +92,7 @@ module beef::bet
     public fun quorum<T>(bet: &Bet<T>): u64 {
         bet.quorum
     }
-    public fun bet_size<T>(bet: &Bet<T>):u64 {
+    public fun bet_size<T>(bet: &Bet<T>): u64 {
         bet.bet_size
     }
     public fun players<T>(bet: &Bet<T>): &vector<address> {

@@ -2,6 +2,7 @@
 module beef::bet_tests
 {
     use std::option::{Self, Option};
+    use std::string::{Self};
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
@@ -22,6 +23,35 @@ module beef::bet_tests
     const JUDGE_2: address = @0xB2;
     const JUDGES: vector<address> = vector[@0xB1, @0xB2];
     const SOMEONE: address = @0xC0B1E;
+
+    /* Accessor tests */
+
+    #[test]
+    fun test_accessors()
+    {
+        let scen = &mut ts::begin(&CREATOR); {
+            bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
+        };
+        ts::next_tx(scen, &SOMEONE);
+        {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+
+            assert!( bet::phase(bet) == 0, 0 );
+            assert!( bet::title(bet) == &string::utf8(TITLE), 0 );
+            assert!( bet::description(bet) ==  &string::utf8(DESC), 0 );
+            assert!( bet::quorum(bet) == QUORUM, 0 );
+            assert!( bet::bet_size(bet) == BET_SIZE, 0 );
+            assert!( vector::length( bet::players(bet) ) == 2, 0 );
+            assert!( vector::length( bet::judges(bet) ) == 2, 0 );
+            assert!( vec_map::size( bet::votes(bet) ) == 0, 0 );
+            assert!( vec_map::size( bet::funds(bet) ) == 0, 0 );
+            assert!( bet::most_votes(bet) == 0, 0 );
+            assert!( bet::winner(bet) == &option::none<address>(), 0 );
+
+            ts::return_shared(scen, bet_wrapper);
+        };
+    }
 
     /* create() tests */
 
