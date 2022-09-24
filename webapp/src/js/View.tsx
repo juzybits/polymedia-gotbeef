@@ -11,10 +11,10 @@ export function View()
 {
     /* Data */
 
+    const betObjId = useParams().uid;
+    const [connected, setConnected] = useOutletContext();
     const [data, setData] = useState(undefined);
     const [modalHtml, setModalHtml] = useState(undefined);
-    const [connected, setConnected] = useOutletContext();
-    const betObjId = useParams().uid;
 
     /* Refresh */
 

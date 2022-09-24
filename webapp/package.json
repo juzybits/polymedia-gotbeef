@@ -1,5 +1,5 @@
 {
-    "name": "beef-webapp",
+    "name": "gotbeef-webapp",
     "private": true,
     "dependencies": {
         "@mysten/sui.js": "latest",

@@ -1,7 +1,7 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
-const BEEF_PACKAGE = '0xffb3deddef032b8c12c21854e28a965d7fcf4db1';
+const GOTBEEF_PACKAGE = '0xffb3deddef032b8c12c21854e28a965d7fcf4db1';
 const BET_MODULE = 'bet';
 
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
@@ -30,9 +30,9 @@ export function createBet(
     judges: array,
 ): Promise<SuiTransactionResponse>
 {
-    console.debug(`[sui_tools.createBet] Calling ${BET_MODULE}::create() on package: ${BEEF_PACKAGE}`);
+    console.debug(`[sui_tools.createBet] Calling ${BET_MODULE}::create() on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
-        packageObjectId: BEEF_PACKAGE,
+        packageObjectId: GOTBEEF_PACKAGE,
         module: BET_MODULE,
         function: 'create',
         typeArguments: [ currency ],

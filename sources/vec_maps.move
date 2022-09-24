@@ -1,5 +1,5 @@
 /// Utility functions for VecMap
-module beef::vec_maps
+module gotbeef::vec_maps
 {
     use sui::vec_map::{Self, VecMap};
 
@@ -24,10 +24,10 @@ module beef::vec_maps
 }
 
 #[test_only]
-module beef::vec_maps_tests
+module gotbeef::vec_maps_tests
 {
     use sui::vec_map::{Self, VecMap};
-    use beef::vec_maps;
+    use gotbeef::vec_maps;
 
     #[test]
     fun test_count_value()

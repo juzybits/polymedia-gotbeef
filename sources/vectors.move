@@ -1,5 +1,5 @@
 /// Utility functions for vectors
-module beef::vectors
+module gotbeef::vectors
 {
     use std::vector;
 
@@ -44,10 +44,10 @@ module beef::vectors
 }
 
 #[test_only]
-module beef::vectors_tests
+module gotbeef::vectors_tests
 {
     use sui::test_scenario;
-    use beef::vectors as v;
+    use gotbeef::vectors as v;
 
     #[test]
     fun test_has_duplicates()

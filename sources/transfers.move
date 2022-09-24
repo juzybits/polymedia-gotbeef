@@ -1,5 +1,5 @@
 /// Functions to send funds to addresses
-module beef::transfers
+module gotbeef::transfers
 {
     use sui::balance;
     use sui::coin::{Self, Coin};
@@ -45,13 +45,13 @@ module beef::transfers
 }
 
 #[test_only]
-module beef::transfers_tests
+module gotbeef::transfers_tests
 {
     use sui::sui::SUI;
     use sui::coin::{Self, Coin};
     use sui::test_scenario as ts;
     use sui::vec_map::{Self, VecMap};
-    use beef::transfers;
+    use gotbeef::transfers;
 
     const AMOUNT: u64 = 100;
     const ADDR_1: address = @0xA1;

@@ -1,9 +1,9 @@
 [package]
-name = "Beef"
+name = "GotBeef"
 version = "0.0.1"
 
 [dependencies]
 Sui = { local = "../sui/crates/sui-framework" }
 
 [addresses]
-beef = "0x0"
+gotbeef = "0x0"

@@ -1,5 +1,5 @@
 #[test_only]
-module beef::bet_tests
+module gotbeef::bet_tests
 {
     use std::option::{Self, Option};
     use std::string::{Self};
@@ -8,7 +8,7 @@ module beef::bet_tests
     use sui::sui::SUI;
     use sui::vec_map;
     use sui::test_scenario::{Self as ts, Scenario};
-    use beef::bet::{Self, Bet};
+    use gotbeef::bet::{Self, Bet};
 
     // Default bet settings
     const TITLE: vector<u8> = b"Frazier vs Ali";

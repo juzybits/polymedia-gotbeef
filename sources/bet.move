@@ -1,5 +1,5 @@
 /// Create bets between 2 or more players. Includes escrow and voting functionality.
-module beef::bet
+module gotbeef::bet
 {
     use std::option::{Self, Option};
     use std::string::{Self, String};
@@ -9,9 +9,9 @@ module beef::bet
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::vec_map::{Self, VecMap};
-    use beef::transfers;
-    use beef::vec_maps;
-    use beef::vectors;
+    use gotbeef::transfers;
+    use gotbeef::vec_maps;
+    use gotbeef::vectors;
 
     /* Errors */
 

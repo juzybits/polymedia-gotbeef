@@ -9,8 +9,8 @@ export function Find()
 
     const [betId, setbetId] = useState('0x508208ac45f4c91d3875bd71441815d1fe7847fc');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
 
+    const navigate = useNavigate();
     const onSubmitSearch = (e) => {
         e.preventDefault();
         getBet(betId)

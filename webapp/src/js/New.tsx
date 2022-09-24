@@ -8,6 +8,8 @@ export function New()
 {
     useEffect(() => { document.title = 'got beef? - New' }, []);
 
+    const [connected, setConnected] = useOutletContext();
+
     // Inputs
     const [title, setTitle] = useState('some title');
     const [description, setDescription] = useState('some description');
@@ -16,11 +18,10 @@ export function New()
     const [players, setPlayers] = useState('0x2f3a989fc5310b6a819bcd5af20385b433e08588\n0x39e55822370a1a00f5bb6e8157c882c84443bca9');
     const [judges, setJudges] = useState('0xd77c7589b30d1468105ed3ec8f6f111ea01e55f0');
     const [quorum, setQuorum] = useState(1);
+
     // Result
     const [newObjId, setNewObjId] = useState();
     const [error, setError] = useState();
-
-    const [connected, setConnected] = useOutletContext();
 
     const onClickCreate = (e) => { // TODO: validate inputs
         createBet(
