@@ -30,7 +30,7 @@ export function createBet(
     judges: array,
 ): Promise<SuiTransactionResponse>
 {
-    console.debug(`[sui_tools.createBet] Calling ${BET_MODULE}::create() on package: ${GOTBEEF_PACKAGE}`);
+    console.debug(`[createBet] Calling ${BET_MODULE}::create() on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: BET_MODULE,
@@ -48,10 +48,23 @@ export function createBet(
     });
 }
 
-export function getBet(objId: string): Promise<GetObjectDataResponse> {
-    console.debug('[sui_tools.getBet] Looking up:', objId);
+export function getObject(objId: string): Promise<GetObjectDataResponse> {
+    console.debug('[getObject] Looking up:', objId);
     return rpc.getObject(objId);
 }
+
+export function isBetObject(obj: object): bool {
+    return obj && obj.status == 'Exists' && obj.details.data.type.match(/^0x.+::bet::Bet<0x.+::.+::.+>$/);
+}
+
+export function getPhaseName(phaseCode: number): string {
+    return ['fund', 'vote', 'settled', 'canceled', 'stalemate'][phaseCode];
+};
+
+export function getCollateralType(vaultType: string): string {
+    const match = vaultType.match(/, (0x.*)>/);
+    return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
+};
 
 // DEV_ONLY
 

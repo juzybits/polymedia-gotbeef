@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
 
-import { getBet } from './lib/sui_tools';
+import { getObject, isBetObject, getPhaseName, getCollateralType } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
@@ -16,42 +16,37 @@ export function View()
     const [data, setData] = useState(undefined);
     const [modalHtml, setModalHtml] = useState(undefined);
 
-    /* Refresh */
+    /* Load Bet object data */
 
     const location = useLocation();
     useEffect(() => {
         document.title = `got beef? - View: ${betObjId}`;
-        // Do this only once
-        if (!data) {
-            // Was the Bet object data already fetched by the previous page (Find.tsx)
-            if (location.state && location.state.data) {
-                setData(location.state.data);
-            } else {
-                fetchBetData();
-            }
+        if (location.state && location.state.data) {
+            // Reuse the Bet object data that Find.tsx has already fetched
+            setData(location.state.data);
+        } else {
+            // The user came directly to this URL, fetch Bet object from Sui
+            fetchBetData();
         }
     }, []);
 
     /* Helpers */
 
     const fetchBetData = (): void => {
-        getBet(betObjId)
+        getObject(betObjId)
         .then(bet => {
-            // TODO: validate object type. See onSubmitSearch() in Find.tsx
-            setData(bet.details.data.fields);
+            if (isBetObject(bet)) {
+                setData(bet.details.data.fields);
+                console.debug('[view] Found Bet object:', bet);
+            } else {
+                setData(null);
+                console.warn('[view] Bet object not found. Response:', bet);
+            }
         })
         .catch(error => {
             setData(null);
+            console.warn('[view] RPC error:', error.message);
         });
-    };
-
-    const getPhaseName = (phaseCode: number): string => {
-        return ['fund', 'vote', 'settled', 'canceled', 'stalemate'][phaseCode];
-    };
-
-    const getCollateralType = (vaultType: string): string => {
-        const match = vaultType.match(/, (0x.*)>/);
-        return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
     /* Render */
@@ -60,7 +55,7 @@ export function View()
         return <React.Fragment>Loading</React.Fragment>;
 
     if (data === null)
-        return <React.Fragment>Not found</React.Fragment>;
+        return <React.Fragment>Bet not found.</React.Fragment>;
 
     const actionsHtml = !connected
         ? <ButtonConnect connected={connected} setConnected={setConnected} />
