@@ -2,11 +2,8 @@ import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
 const GOTBEEF_PACKAGE = '0xffb3deddef032b8c12c21854e28a965d7fcf4db1';
-const BET_MODULE = 'bet';
-
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
-export const wallet = new SuiWalletAdapter();
-window.wallet = wallet; // DEV_ONLY
+const wallet = new SuiWalletAdapter();
 
 export async function connect(): void {
     await wallet.connect();
@@ -30,10 +27,10 @@ export function createBet(
     judges: array,
 ): Promise<SuiTransactionResponse>
 {
-    console.debug(`[createBet] Calling ${BET_MODULE}::create() on package: ${GOTBEEF_PACKAGE}`);
+    console.debug(`[createBet] Calling bet::create() on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
-        module: BET_MODULE,
+        module: 'bet',
         function: 'create',
         typeArguments: [ currency ],
         arguments: [
@@ -48,21 +45,36 @@ export function createBet(
     });
 }
 
-export function getObject(objId: string): Promise<GetObjectDataResponse> {
+export async function getBetObj(objId: string): Promise<object|null> {
     console.debug('[getObject] Looking up:', objId);
-    return rpc.getObject(objId);
+    return rpc.getObject(objId)
+        .then(obj => {
+            window.x = obj; // DEV_ONLY
+            if (obj.status != 'Exists') {
+                console.warn('[getBetObj] Object does not exist. Status:', obj.status);
+                return null;
+            } else
+            if (!obj.details.data.type.match(/^0x.+::bet::Bet<0x.+::.+::.+>$/)) {
+                console.warn('[getBetObj] Found wrong object type:', obj.details.data.type);
+                return null;
+            } else {
+                console.debug('[getBetObj] Found bet object:', obj);
+                return obj;
+            }
+        })
+        .catch(error => {
+            console.warn('[getBetObj] RPC error:', error.message);
+            return null;
+        });
 }
 
-export function isBetObject(obj: object): bool {
-    return obj && obj.status == 'Exists' && obj.details.data.type.match(/^0x.+::bet::Bet<0x.+::.+::.+>$/);
-}
-
-export function getPhaseName(phaseCode: number): string {
+export function getPhaseName(betObj: object): string {
+    const phaseCode = betObj.details.data.fields.phase;
     return ['fund', 'vote', 'settled', 'canceled', 'stalemate'][phaseCode];
 };
 
-export function getCollateralType(vaultType: string): string {
-    const match = vaultType.match(/, (0x.*)>/);
+export function getCollateralType(betObj: object): string {
+    const match = betObj.details.data.type.match(/<(.+)>$/);
     return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
 };
 

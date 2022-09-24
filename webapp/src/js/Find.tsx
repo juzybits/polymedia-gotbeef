@@ -1,39 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getObject, isBetObject } from './lib/sui_tools';
+import { getBetObj } from './lib/sui_tools';
 
 export function Find()
 {
     useEffect(() => { document.title = 'got beef? - Find' }, []);
 
-    const [betId, setbetId] = useState('0x508208ac45f4c91d3875bd71441815d1fe7847fc');
-    const [data, setData] = useState(undefined);
+    const [betId, setBetId] = useState('0x508208ac45f4c91d3875bd71441815d1fe7847fc');
+    const [betObj, setBetObj] = useState(undefined);
 
     const navigate = useNavigate();
     const onSubmitSearch = (e) => {
         e.preventDefault();
-        getObject(betId)
-        .then(bet => {
-            if (isBetObject(bet)) {
-                navigate('/bet/' + bet.details.reference.objectId, {
-                    state: { data: bet.details.data.fields }
-                });
-                setData(bet.details.data.fields);
-                console.debug('[find] Found Bet object:', bet);
-            } else {
-                setData(null);
-                console.warn('[find] Bet object not found. Response:', bet);
-            }
-        })
-        .catch(error => {
-            setData(null);
-            console.warn('[find] RPC error:', error.message);
+        getBetObj(betId).then(
+        (bet: object|null) => {
+            setBetObj(bet);
+            bet && navigate('/bet/' + betId, {
+                state: { betObj: bet }
+            });
         });
     };
 
     const makeErrorHtml = () => {
-        if (data !== null) {
+        if (betObj !== null) {
             return '';
         }
         return <React.Fragment>
@@ -54,7 +44,7 @@ export function Find()
                 <label htmlFor='uid_field'>Object ID</label>
                 <input type='text' id='uid_field' className='nes-input'
                     spellCheck='false' autoCorrect='off' autoComplete='off'
-                    value={betId} onChange={(e) => setbetId(e.target.value)}
+                    value={betId} onChange={(e) => setBetId(e.target.value)}
                />
             </div>
             <br/>

@@ -4,9 +4,9 @@ export function Vote(props) {
     return <React.Fragment>
         <h2>Vote winner</h2>
         <div>
-            Voting: {props.betObjId}
+            Voting: {props.betObj.details.data.fields.id.id}
             <br/>
-            Players: {props.data.players}
+            Players: {props.betObj.details.data.fields.players}
         </div>
         <br/>
     </React.Fragment>;

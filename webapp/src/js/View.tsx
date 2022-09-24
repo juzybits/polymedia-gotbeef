@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
 
-import { getObject, isBetObject, getPhaseName, getCollateralType } from './lib/sui_tools';
+import { getBetObj, getPhaseName, getCollateralType } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
@@ -11,89 +11,73 @@ export function View()
 {
     /* Data */
 
-    const betObjId = useParams().uid;
     const [connected, setConnected] = useOutletContext();
-    const [data, setData] = useState(undefined);
+    const betId = useParams().uid;
+    const [betObj, setBetObj] = useState(undefined);
     const [modalHtml, setModalHtml] = useState(undefined);
 
-    /* Load Bet object data */
+    /* Load bet object data */
 
     const location = useLocation();
     useEffect(() => {
-        document.title = `got beef? - View: ${betObjId}`;
-        if (location.state && location.state.data) {
-            // Reuse the Bet object data that Find.tsx has already fetched
-            setData(location.state.data);
+        document.title = `got beef? - View: ${betId}`;
+        if (location.state && location.state.betObj) {
+            // Reuse the bet object data that Find.tsx has already fetched
+            setBetObj(location.state.betObj);
         } else {
-            // The user came directly to this URL, fetch Bet object from Sui
-            fetchBetData();
+            // The user came directly to this URL, fetch bet object from Sui
+            getBetObj(betId).then( (bet: object|null) => {
+                setBetObj(bet);
+            });
         }
     }, []);
 
-    /* Helpers */
-
-    const fetchBetData = (): void => {
-        getObject(betObjId)
-        .then(bet => {
-            if (isBetObject(bet)) {
-                setData(bet.details.data.fields);
-                console.debug('[view] Found Bet object:', bet);
-            } else {
-                setData(null);
-                console.warn('[view] Bet object not found. Response:', bet);
-            }
-        })
-        .catch(error => {
-            setData(null);
-            console.warn('[view] RPC error:', error.message);
-        });
-    };
-
     /* Render */
 
-    if (typeof data === 'undefined')
+    if (typeof betObj === 'undefined')
         return <React.Fragment>Loading</React.Fragment>;
 
-    if (data === null)
+    if (betObj === null)
         return <React.Fragment>Bet not found.</React.Fragment>;
 
     const actionsHtml = !connected
         ? <ButtonConnect connected={connected} setConnected={setConnected} />
         : <div id='bet-actions'>
             <button type='button' className='nes-btn is-success'
-                onClick={() => setModalHtml(<Fund betObjId={betObjId} data={data} setData={setData}/>)}>
+                onClick={() => setModalHtml(<Fund betObj={betObj} setBetObj={setBetObj}/>)}>
                 Fund
             </button>
             <button type='button' className='nes-btn is-primary'
-                onClick={() => setModalHtml(<Vote betObjId={betObjId} data={data} setData={setData}/>)}>
+                onClick={() => setModalHtml(<Vote betObj={betObj} setBetObj={setBetObj}/>)}>
                 Vote
             </button>
             <button type='button' className='nes-btn is-error'
-                onClick={() => setModalHtml(<Cancel betObjId={betObjId} data={data} setData={setData}/>)}>
+                onClick={() => setModalHtml(<Cancel betObj={betObj} setBetObj={setBetObj}/>)}>
                 Cancel
             </button>
         </div>;
 
+    let fields = betObj.details.data.fields;
     const infoHtml = <React.Fragment>
         <h2>Bet info</h2>
         <div>
-            Bet ID: {betObjId} <br/>
+            Bet ID: {betId} <br/>
             <hr/>
-            Title: {data.title} <br/>
-            Phase: {getPhaseName(data.phase)} <br/>
-            Description: {data.description} <br/>
+            Title: {fields.title} <br/>
+            Phase: {getPhaseName(betObj)} <br/>
+            Description: {fields.description} <br/>
             <hr/>
-            Bet size: {data.bet_size} <br/>
-            Currency: {getCollateralType(data.funds.type)} <br/>
+            Bet size: {fields.bet_size} <br/>
+            Currency: {getCollateralType(betObj)} <br/>
             <hr/>
-            Players: {JSON.stringify(data.players, null, 2)} <br/>
-            Funds: {JSON.stringify(data.funds.fields.contents, null, 2)} <br/>
-            Winner: {JSON.stringify(data.winner.fields.vec, null, 2)} <br/>
-            {/*most_votes: {data.most_votes} <br/>*/}
+            Players: {JSON.stringify(fields.players, null, 2)} <br/>
+            Funds: {JSON.stringify(fields.funds.fields.contents, null, 2)} <br/>
+            Winner: {JSON.stringify(fields.winner.fields.vec, null, 2)} <br/>
+            {/*most_votes: {fields.most_votes} <br/>*/}
             <hr/>
-            Judges: {JSON.stringify(data.judges, null, 2)} <br/>
-            Votes: {JSON.stringify(data.votes.fields.contents, null, 2)} <br/>
-            Quorum: {data.quorum} <br/>
+            Judges: {JSON.stringify(fields.judges, null, 2)} <br/>
+            Votes: {JSON.stringify(fields.votes.fields.contents, null, 2)} <br/>
+            Quorum: {fields.quorum} <br/>
         </div>
     </React.Fragment>;
 
