@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation, useOutletContext, useParams } from 'react-router-dom';
+import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
 
 import { getBet } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
+import { Fund } from './Fund';
+import { Vote } from './Vote';
+import { Cancel } from './Cancel';
 
 export function View()
 {
+    /* Data */
+
     const [data, setData] = useState(undefined);
+    const [modalHtml, setModalHtml] = useState(undefined);
     const [connected, setConnected] = useOutletContext();
     const betObjId = useParams().uid;
 
-    let location = useLocation();
+    /* Refresh */
+
+    const location = useLocation();
     useEffect(() => {
         document.title = `got beef? - View: ${betObjId}`;
         // Do this only once
@@ -23,6 +31,8 @@ export function View()
             }
         }
     }, []);
+
+    /* Helpers */
 
     const fetchBetData = (): void => {
         getBet(betObjId)
@@ -40,63 +50,70 @@ export function View()
     };
 
     const getCollateralType = (vaultType: string): string => {
-        let match = vaultType.match(/, (0x.*)>/);
+        const match = vaultType.match(/, (0x.*)>/);
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
-    const makeHtml = () => {
-        if (typeof data === 'undefined')
-            return <React.Fragment>Loading</React.Fragment>;
+    /* Render */
 
-        if (data === null)
-            return <React.Fragment>Not found</React.Fragment>;
+    if (typeof data === 'undefined')
+        return <React.Fragment>Loading</React.Fragment>;
 
-        let actions = !connected
-            ? <ButtonConnect connected={connected} setConnected={setConnected} />
-            : <div id='bet-actions'>
-                <Link to={`/bet/${betObjId}/fund`} className='nes-btn is-success'>Fund</Link>
-                <Link to={`/bet/${betObjId}/vote`} className='nes-btn is-primary'>Vote</Link>
-                <Link to={`/bet/${betObjId}/cancel`} className='nes-btn is-error'>Cancel</Link>
-            </div>;
+    if (data === null)
+        return <React.Fragment>Not found</React.Fragment>;
 
-        return <React.Fragment>
-            <section className='showcase'>
-                <section className='nes-container with-title'>
-                    <h3 className='title'>Actions</h3>
-                    <div id='bet-actions'>
-                        {actions}
-                    </div>
-                </section>
-            </section>
+    const actionsHtml = !connected
+        ? <ButtonConnect connected={connected} setConnected={setConnected} />
+        : <div id='bet-actions'>
+            <button type='button' className='nes-btn is-success'
+                onClick={() => setModalHtml(<Fund betObjId={betObjId} data={data} setData={setData}/>)}>
+                Fund
+            </button>
+            <button type='button' className='nes-btn is-primary'
+                onClick={() => setModalHtml(<Vote betObjId={betObjId} data={data} setData={setData}/>)}>
+                Vote
+            </button>
+            <button type='button' className='nes-btn is-error'
+                onClick={() => setModalHtml(<Cancel betObjId={betObjId} data={data} setData={setData}/>)}>
+                Cancel
+            </button>
+        </div>;
 
-            <br/>
-
-            <div>
-                Bet ID: {betObjId} <br/>
-                <hr/>
-                Title: {data.title} <br/>
-                Phase: {getPhaseName(data.phase)} <br/>
-                Description: {data.description} <br/>
-                <hr/>
-                Bet size: {data.bet_size} <br/>
-                Currency: {getCollateralType(data.funds.type)} <br/>
-                <hr/>
-                Players: {JSON.stringify(data.players, null, 2)} <br/>
-                Funds: {JSON.stringify(data.funds.fields.contents, null, 2)} <br/>
-                Winner: {JSON.stringify(data.winner.fields.vec, null, 2)} <br/>
-                {/*most_votes: {data.most_votes} <br/>*/}
-                <hr/>
-                Judges: {JSON.stringify(data.judges, null, 2)} <br/>
-                Votes: {JSON.stringify(data.votes.fields.contents, null, 2)} <br/>
-                Quorum: {data.quorum} <br/>
-            </div>
-        </React.Fragment>;
-    };
+    const infoHtml = <React.Fragment>
+        <h2>Bet info</h2>
+        <div>
+            Bet ID: {betObjId} <br/>
+            <hr/>
+            Title: {data.title} <br/>
+            Phase: {getPhaseName(data.phase)} <br/>
+            Description: {data.description} <br/>
+            <hr/>
+            Bet size: {data.bet_size} <br/>
+            Currency: {getCollateralType(data.funds.type)} <br/>
+            <hr/>
+            Players: {JSON.stringify(data.players, null, 2)} <br/>
+            Funds: {JSON.stringify(data.funds.fields.contents, null, 2)} <br/>
+            Winner: {JSON.stringify(data.winner.fields.vec, null, 2)} <br/>
+            {/*most_votes: {data.most_votes} <br/>*/}
+            <hr/>
+            Judges: {JSON.stringify(data.judges, null, 2)} <br/>
+            Votes: {JSON.stringify(data.votes.fields.contents, null, 2)} <br/>
+            Quorum: {data.quorum} <br/>
+        </div>
+    </React.Fragment>;
 
     return <React.Fragment>
-        <Outlet context={[data, setData]} />
-
-        <h2>Bet info</h2>
-        { makeHtml() }
+        <section className='showcase'>
+            <section className='nes-container with-title'>
+                <h3 className='title'>Actions</h3>
+                <div id='bet-actions'>
+                    { actionsHtml }
+                </div>
+            </section>
+        </section>
+        <br/>
+        { modalHtml }
+        { infoHtml }
     </React.Fragment>;
+
 }

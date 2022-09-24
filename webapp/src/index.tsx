@@ -19,11 +19,7 @@ ReactDOM
                 <Route index element={<Home />} />
                 <Route path='new' element={<New />} />
                 <Route path='find' element={<Find />} />
-                <Route path='bet/:uid' element={<View />} >
-                    <Route path='fund' element={<Fund />} />
-                    <Route path='vote' element={<Vote />} />
-                    <Route path='cancel' element={<Cancel />} />
-                </Route>
+                <Route path='bet/:uid' element={<View />} />
                 <Route path='*' element={<NotFound />} />
             </Route>
         </Routes>
