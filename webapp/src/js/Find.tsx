@@ -7,20 +7,22 @@ export function Find()
 {
     useEffect(() => { document.title = 'got beef? - Find' }, []);
 
-    const [betId, setbetId] = useState('');
+    const [betId, setbetId] = useState('0x508208ac45f4c91d3875bd71441815d1fe7847fc');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const onSubmitSearch = (e) => {
         e.preventDefault();
         getBet(betId)
-        .then(obj => {
-            let isBetType = obj.details.data.type.match(/^0x.+::bet::Bet<0x.+::.+::.+>$/);
-            if (!isBetType) {
-                setError('Wrong object type: ' + obj.details.data.type);
+        .then(bet => {
+            // TODO: consolidate validation logic. See fetchBetData() in View.tsx
+            let isBetType = bet.details.data.type.match(/^0x.+::bet::Bet<0x.+::.+::.+>$/);
+            if (isBetType) {
+                navigate('/bet/' + bet.details.reference.objectId, {
+                    state: { data: bet.details.data.fields }
+                });
             } else {
-                // TODO: preserve `obj` so /bet/:uid doesn't need to fetch it again
-                navigate('/bet/' + obj.details.reference.objectId);
+                setError('Wrong object type: ' + bet.details.data.type);
             }
         })
         .catch(error => {

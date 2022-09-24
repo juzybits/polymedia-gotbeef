@@ -1,30 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { Link, Outlet, useLocation, useOutletContext, useParams } from 'react-router-dom';
 
 import { getBet } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 
 export function View()
 {
-    const [connected, setConnected] = useOutletContext();
     const [data, setData] = useState(undefined);
+    const [connected, setConnected] = useOutletContext();
     const betObjId = useParams().uid;
 
+    let location = useLocation();
     useEffect(() => {
         document.title = `got beef? - View: ${betObjId}`;
+        // Do this only once
         if (!data) {
-            fetchBetData();
+            // Was the Bet object data already fetched by the previous page (Find.tsx)
+            if (location.state && location.state.data) {
+                setData(location.state.data);
+            } else {
+                fetchBetData();
+            }
         }
     }, []);
 
     const fetchBetData = (): void => {
         getBet(betObjId)
         .then(bet => {
-            console.debug('[view] Success:\n', bet);
+            // TODO: validate object type. See onSubmitSearch() in Find.tsx
             setData(bet.details.data.fields);
         })
         .catch(error => {
-            console.warn('[view] Error:\n', error);
             setData(null);
         });
     };
@@ -48,9 +54,9 @@ export function View()
         let actions = !connected
             ? <ButtonConnect connected={connected} setConnected={setConnected} />
             : <div id='bet-actions'>
-                <button type='button' className='nes-btn is-success'>Fund</button>
-                <button type='button' className='nes-btn is-primary'>Vote</button>
-                <button type='button' className='nes-btn is-error'>Cancel</button>
+                <Link to={`/bet/${betObjId}/fund`} className='nes-btn is-success'>Fund</Link>
+                <Link to={`/bet/${betObjId}/vote`} className='nes-btn is-primary'>Vote</Link>
+                <Link to={`/bet/${betObjId}/cancel`} className='nes-btn is-error'>Cancel</Link>
             </div>;
 
         return <React.Fragment>
@@ -88,7 +94,9 @@ export function View()
     };
 
     return <React.Fragment>
-        <h2>View</h2>
+        <Outlet context={[data, setData]} />
+
+        <h2>Bet info</h2>
         { makeHtml() }
     </React.Fragment>;
 }

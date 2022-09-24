@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 
 import { createBet } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
@@ -8,8 +8,7 @@ export function New()
 {
     useEffect(() => { document.title = 'got beef? - New' }, []);
 
-    const [connected, setConnected] = useOutletContext();
-
+    // Inputs
     const [title, setTitle] = useState('some title');
     const [description, setDescription] = useState('some description');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
@@ -17,10 +16,13 @@ export function New()
     const [players, setPlayers] = useState('0x2f3a989fc5310b6a819bcd5af20385b433e08588\n0x39e55822370a1a00f5bb6e8157c882c84443bca9');
     const [judges, setJudges] = useState('0xd77c7589b30d1468105ed3ec8f6f111ea01e55f0');
     const [quorum, setQuorum] = useState(1);
+    // Result
+    const [newObjId, setNewObjId] = useState();
+    const [error, setError] = useState();
 
-    const [result, setResult] = useState('');
+    const [connected, setConnected] = useOutletContext();
 
-    const onClickCreate = (e) => {
+    const onClickCreate = (e) => { // TODO: validate inputs
         createBet(
             currency,
             title,
@@ -32,28 +34,33 @@ export function New()
         )
         .then(resp => {
             if (resp.effects.status.status != 'success') {
-                setResult( 'ERROR: ' + resp.effects.status.error );
+                setError(resp.effects.status.error);
             } else {
-                // TODO link to /bet/:uid
-                setResult( 'SUCCESS: ' + JSON.stringify(resp.effects.created[0].reference.objectId) );
+                setNewObjId(resp.effects.created[0].reference.objectId);
+                setError(undefined);
             }
-
         })
         .catch(error => {
-            setResult( 'ERROR: ' + JSON.stringify(error.message) );
+            setError(error.message);
         });
     };
 
     const makeResultHtml = () => {
-        if (!result)
-            return '';
+        if (newObjId)
+            return <React.Fragment>
+                <br/>
+                SUCCESS:
+                <br/>
+                <Link to={`/bet/${newObjId}`}>{newObjId}</Link>
+            </React.Fragment>;
 
-        return <React.Fragment>
-            <br/>
-            Last result:
-            <br/><br/>
-            {result}
-        </React.Fragment>;
+        if (error)
+            return <React.Fragment>
+                <br/>
+                ERROR:
+                <br/>
+                {error}
+            </React.Fragment>;
     }
 
     return <React.Fragment>
