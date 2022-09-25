@@ -87,7 +87,16 @@ export function New()
         </div>
         <br/>
 
-        <label htmlFor='currency_select'>Currency</label>
+        <div className='nes-field'>
+            <label htmlFor='size_field'><i className='nes-icon coin is-custom' /> Bet size</label>
+            <input required type='number' id='size_field' className='nes-input' min='1'
+                spellCheck='false' autoCorrect='off' autoComplete='off'
+                value={size} onChange={(e) => setSize(e.target.value)}
+            />
+        </div>
+        <br/>
+
+        <label htmlFor='currency_select'><i className='nes-icon coin is-custom' /> Currency</label>
         <div className='nes-select'>
             <select required id='currency_select'
                 value={currency} onChange={(e) => setCurrency(e.target.value)}
@@ -98,16 +107,7 @@ export function New()
         <br/>
 
         <div className='nes-field'>
-            <label htmlFor='size_field'>Bet size</label>
-            <input required type='number' id='size_field' className='nes-input' min='1'
-                spellCheck='false' autoCorrect='off' autoComplete='off'
-                value={size} onChange={(e) => setSize(e.target.value)}
-            />
-        </div>
-        <br/>
-
-        <div className='nes-field'>
-            <label htmlFor='players_field'>Player addresses (2-256)</label>
+            <label htmlFor='players_field'> <i className='snes-jp-logo custom-logo' /> Player addresses (2-256)</label>
             <textarea id='players_field' className='nes-textarea'
                 value={players} onChange={(e) => setPlayers(e.target.value)}
             ></textarea>
@@ -115,7 +115,7 @@ export function New()
         <br/>
 
         <div className='nes-field'>
-        <label htmlFor='judges_field'>Judge addresses (1-32)</label>
+        <label htmlFor='judges_field'><i className='nes-logo custom-logo' /> Judge addresses (1-32)</label>
             <textarea id='judges_field' className='nes-textarea'
                 value={judges} onChange={(e) => setJudges(e.target.value)}
             ></textarea>
@@ -123,7 +123,7 @@ export function New()
         <br/>
 
         <div className='nes-field'>
-            <label htmlFor='quorum_field'>Quorum (# of votes to win)</label>
+            <label htmlFor='quorum_field'><i className='nes-icon trophy is-custom' /> Quorum (# of votes to win)</label>
             <input required type='number' id='quorum_field' className='nes-input' min='1'
                 spellCheck='false' autoCorrect='off' autoComplete='off'
                 value={quorum} onChange={(e) => setQuorum(e.target.value)}

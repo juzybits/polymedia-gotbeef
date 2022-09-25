@@ -59,20 +59,26 @@ export function View()
 
     let fields = betObj.details.data.fields;
     const infoHtml = <React.Fragment>
-        <h2>Bet info</h2>
+        <h2>{fields.title}</h2>
         <div>
-            Bet ID: {betId} <br/>
-            <hr/>
-            Title: {fields.title} <br/>
+            ID: <a target='_blank' href={'https://explorer.devnet.sui.io/objects/'+betId}>{betId}</a> <br/>
+            {
+                !fields.winner.fields.vec ? '' : <React.Fragment>
+                    &nbsp;<i className='nes-icon trophy is-small' />: {fields.winner.fields.vec} <br/>
+                </React.Fragment>
+            }
             Phase: {getPhaseName(betObj)} <br/>
-            Description: {fields.description} <br/>
+            {
+                !fields.description ? '' : <React.Fragment>
+                    Deets: {fields.description} <br/>
+                </React.Fragment>
+            }
             <hr/>
-            Bet size: {fields.bet_size} <br/>
-            Currency: {getCollateralType(betObj)} <br/>
+            Bet size: <i className='nes-icon coin is-small' /> {fields.bet_size}  <br/>
+            Currency: <i className='nes-icon coin is-small' /> {getCollateralType(betObj)} <br/>
             <hr/>
             Players: {JSON.stringify(fields.players, null, 2)} <br/>
             Funds: {JSON.stringify(fields.funds.fields.contents, null, 2)} <br/>
-            Winner: {JSON.stringify(fields.winner.fields.vec, null, 2)} <br/>
             {/*most_votes: {fields.most_votes} <br/>*/}
             <hr/>
             Judges: {JSON.stringify(fields.judges, null, 2)} <br/>
