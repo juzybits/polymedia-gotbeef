@@ -1,3 +1,11 @@
+/*
+   ___  ___ _____   ___ ___ ___ ___   ___
+  / __|/ _ \_   _| | _ ) __| __| __| | __\
+ | (_ | (_) || |   | _ \ _|| _|| _|    /_/
+  \___|\___/ |_|   |___/___|___|_|    (_)
+                   by @juzybits
+*/
+
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { App } from './js/App';

@@ -38,6 +38,7 @@ export function New()
             if (resp.effects.status.status != 'success') {
                 setError( getErrorName(resp.effects.status.error) );
             } else {
+                // TODO: redirect to View page
                 setNewObjId(resp.effects.created[0].reference.objectId);
                 setError(undefined);
             }

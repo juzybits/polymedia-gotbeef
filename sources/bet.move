@@ -1,3 +1,11 @@
+/*
+   ___  ___ _____   ___ ___ ___ ___   ___
+  / __|/ _ \_   _| | _ ) __| __| __| | __\
+ | (_ | (_) || |   | _ \ _|| _|| _|    /_/
+  \___|\___/ |_|   |___/___|___|_|    (_)
+                   by @juzybits
+*/
+
 /// Create bets between 2 or more players. Includes escrow and voting functionality.
 module gotbeef::bet
 {

@@ -1,5 +1,6 @@
 {
     "name": "gotbeef-webapp",
+    "author": "juzybits <https://twitter.com/juzybits>",
     "private": true,
     "dependencies": {
         "@mysten/sui.js": "latest",

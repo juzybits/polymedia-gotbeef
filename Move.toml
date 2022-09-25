@@ -1,6 +1,7 @@
 [package]
 name = "GotBeef"
 version = "0.0.1"
+authors = ["juzybits <https://twitter.com/juzybits>"]
 
 [dependencies]
 Sui = { local = "../sui/crates/sui-framework" }
