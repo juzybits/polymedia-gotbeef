@@ -23,15 +23,16 @@ export function New()
     const [newObjId, setNewObjId] = useState();
     const [error, setError] = useState();
 
-    const onClickCreate = (e) => { // TODO: validate inputs
+    const onSubmitCreate = (e) => { // TODO: validate inputs
+        e.preventDefault();
         createBet(
             currency,
             title,
             description,
             quorum,
             size,
-            players.split(/\W+/),
-            judges.split(/\W+/),
+            players.match(/(0x[0-9a-fA-F]+)/g) || [],
+            judges.match(/(0x[0-9a-fA-F]+)/g) || [],
         )
         .then(resp => {
             if (resp.effects.status.status != 'success') {
@@ -68,7 +69,7 @@ export function New()
 
     <h2>NEW BET</h2>
 
-    <div>
+    <form onSubmit={onSubmitCreate}>
         <div className='nes-field'>
             <label htmlFor='title_field'>Bet title</label>
             <input required type='text' id='title_field' className='nes-input'
@@ -132,10 +133,10 @@ export function New()
 
         {
             connected
-            ? <button type='button' className='nes-btn is-primary' onClick={onClickCreate}>CREATE</button>
+            ? <button type='input' className='nes-btn is-primary'>CREATE</button>
             : <ButtonConnect connected={connected} setConnected={setConnected} />
         }
-    </div>
+    </form>
 
     { makeResultHtml() }
 
