@@ -7,7 +7,7 @@ export function Find()
 {
     useEffect(() => { document.title = 'got beef? - Find' }, []);
 
-    const [betId, setBetId] = useState('0x508208ac45f4c91d3875bd71441815d1fe7847fc');
+    const [betId, setBetId] = useState('0x2c406118770cce6ddcaa8b17048de0ca3d234d94');
     const [betObj, setBetObj] = useState(undefined);
 
     const navigate = useNavigate();

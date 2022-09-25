@@ -11,8 +11,8 @@ export function New()
     const [connected, setConnected] = useOutletContext();
 
     // Inputs
-    const [title, setTitle] = useState('some title');
-    const [description, setDescription] = useState('some description');
+    const [title, setTitle] = useState('Ali vs Frazier');
+    const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(5000);
     const [players, setPlayers] = useState('0x2f3a989fc5310b6a819bcd5af20385b433e08588\n0x39e55822370a1a00f5bb6e8157c882c84443bca9');
