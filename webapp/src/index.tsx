@@ -1,14 +1,11 @@
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { App } from './js/App';
-import { Cancel } from './js/Cancel';
-import { Fund } from './js/Fund';
 import { Home } from './js/Home';
 import { New } from './js/New';
 import { NotFound } from './js/NotFound';
 import { Find } from './js/Find';
 import { View } from './js/View';
-import { Vote } from './js/Vote';
 
 ReactDOM
     .createRoot( document.getElementById('app') )

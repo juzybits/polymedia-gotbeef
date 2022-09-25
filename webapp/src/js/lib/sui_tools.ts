@@ -2,6 +2,30 @@ import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
 const GOTBEEF_PACKAGE = '0xffb3deddef032b8c12c21854e28a965d7fcf4db1';
+const ERROR_NAMES = { // from bet.move
+    // create()
+    '0': 'E_JUDGES_CANT_BE_PLAYERS',
+    '2': 'E_INVALID_NUMBER_OF_PLAYERS',
+    '3': 'E_INVALID_NUMBER_OF_JUDGES',
+    '4': 'E_DUPLICATE_PLAYERS',
+    '5': 'E_DUPLICATE_JUDGES',
+    '6': 'E_INVALID_QUORUM',
+    '7': 'E_INVALID_BET_SIZE',
+    // fund()
+    '100': 'E_ONLY_PLAYERS_CAN_FUND',
+    '101': 'E_ALREADY_FUNDED',
+    '102': 'E_FUNDS_BELOW_BET_SIZE',
+    '103': 'E_NOT_IN_FUNDING_PHASE',
+    // vote()
+    '200': 'E_NOT_IN_VOTING_PHASE',
+    '201': 'E_ONLY_JUDGES_CAN_VOTE',
+    '202': 'E_ALREADY_VOTED',
+    '203': 'E_PLAYER_NOT_FOUND',
+    // cancel()
+    '300': 'E_CANCEL_BET_HAS_FUNDS',
+    '301': 'E_CANCEL_NOT_AUTHORIZED',
+}
+
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();
 
@@ -77,6 +101,15 @@ export function getCollateralType(betObj: object): string {
     const match = betObj.details.data.type.match(/<(.+)>$/);
     return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
 };
+
+export function getErrorName(error: string): string {
+    const match = error.match(/^MoveAbort.+, (\d+)\)$/)
+    if (!error.match(/^MoveAbort/)) {
+        return error;
+    }
+    const errCode = match[1];
+    return ERROR_NAMES[errCode] || error;
+}
 
 // DEV_ONLY
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 
-import { createBet } from './lib/sui_tools';
+import { createBet, getErrorName } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 
 export function New()
@@ -36,7 +36,7 @@ export function New()
         )
         .then(resp => {
             if (resp.effects.status.status != 'success') {
-                setError(resp.effects.status.error);
+                setError( getErrorName(resp.effects.status.error) );
             } else {
                 setNewObjId(resp.effects.created[0].reference.objectId);
                 setError(undefined);
