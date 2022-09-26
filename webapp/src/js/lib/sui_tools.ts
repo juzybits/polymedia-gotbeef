@@ -17,9 +17,27 @@ export function isConnected(): bool {
     return wallet.connected;
 };
 
+/// Get all `Coin<T>` objects owned by the current address
+export async function getCoinObjects(type: string): Promise<any[]> {
+    console.debug('[getCoinObjects] Looking for objects of type:', type);
+    return wallet.getAccounts().then(accounts => {
+        return !accounts ? [] : rpc.getObjectsOwnedByAddress(accounts[0])
+            .then(objects => {
+                const expected_type = `0x2::coin::Coin<${type}>`;
+                return objects.filter(obj => obj.type == expected_type);
+            })
+            .catch(error => {
+                return [];
+            });
+    }).catch(error => {
+        return [];
+    });
+}
+
+/// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
-    id: string,
-    collat_type: string,
+    id: string, // The Sui object UID
+    collat_type: string, // The type of collateral, i.e. the `T` in `Bet<T>`
     title: string,
     description: string,
     quorum: number,
@@ -175,7 +193,7 @@ export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
     });
 }
 
-export async function vote(bet: Bet, player_addr: string): Promise<SuiTransactionResponse>
+export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransactionResponse>
 {
     console.debug(`[fundBet] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({

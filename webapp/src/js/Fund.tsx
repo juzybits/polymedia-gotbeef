@@ -1,11 +1,17 @@
 import React, { useEffect } from 'react';
 
-import { fundBet } from './lib/sui_tools';
+import { fundBet, getCoinObjects } from './lib/sui_tools';
 
 export function Fund(props) {
 
     useEffect(() => {
-        // TODO: check if the user has enough Coin<T> to fund the bet
+        getCoinObjects(props.bet.collat_type).then(res => {
+            // TODO: check if the user has enough Coin<T> to fund the bet
+            console.debug('Address coins:', res);
+        })
+        .catch(error => {
+            console.debug('Failed to fetch address objects. Error:', error);
+        });
     });
 
     const onClickFund = () => {

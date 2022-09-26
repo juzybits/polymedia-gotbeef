@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { vote } from './lib/sui_tools';
+import { castVote } from './lib/sui_tools';
 
 export function Vote(props) {
 
     const onClickVote = (e) => {
         const player_addr = e.target.value;
-        vote(props.bet, player_addr)
+        castVote(props.bet, player_addr)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 // setError(undefined);
