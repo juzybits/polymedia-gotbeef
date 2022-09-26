@@ -6,12 +6,12 @@ export function Vote(props) {
 
     const onClickVote = (e) => {
         const player_addr = e.target.value;
-        vote(props.betObj, player_addr)
+        vote(props.bet, player_addr)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 // setError(undefined);
                 console.log("Success:", resp); // TODO Remove
-                // TODO setBetObj
+                // TODO setBet
             } else {
                 console.log("Error1:", resp); // TODO Remove
                 // setError( getErrorName(resp.effects.status.error) );
@@ -29,7 +29,7 @@ export function Vote(props) {
             Click the address of the winner.
             <br/>
             {
-                props.betObj.details.data.fields.players.map(player => {
+                props.bet.players.map(player => {
                     return <button type='button' className='nes-btn is-primary'
                         key={player} value={player} onClick={onClickVote}>{player}
                     </button>;

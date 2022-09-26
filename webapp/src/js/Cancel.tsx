@@ -6,12 +6,12 @@ export function Cancel(props) {
 
     const onClickCancel = () => {
         console.log("TODO: onClickCancel()");
-        cancelBet(props.betObj)
+        cancelBet(props.bet)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 // setError(undefined);
                 console.log("Success:", resp); // TODO Remove
-                // TODO setBetObj
+                // TODO setBet
             } else {
                 console.log("Error1:", resp); // TODO Remove
                 // setError( getErrorName(resp.effects.status.error) );

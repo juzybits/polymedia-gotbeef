@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getBetObj } from './lib/sui_tools';
+import { getbet, Bet } from './lib/sui_tools';
 
 export function Find()
 {
     useEffect(() => { document.title = 'got beef? - Find' }, []);
 
     const [betId, setBetId] = useState('0xf8d188a74df338c450918722783e310bc9ce092d');
-    const [betObj, setBetObj] = useState(undefined);
+    const [bet, setBet] = useState(undefined);
 
     const navigate = useNavigate();
     const onSubmitSearch = (e) => {
         e.preventDefault();
-        getBetObj(betId).then(
-        (bet: object|null) => {
-            setBetObj(bet);
+        getbet(betId).then(
+        (bet: Bet|null) => {
+            setBet(bet);
             bet && navigate('/bet/' + betId, {
-                state: { betObj: bet }
+                state: { bet: bet }
             });
         });
     };
 
     const makeErrorHtml = () => {
-        if (betObj !== null) {
+        if (bet !== null) {
             return '';
         }
         return <React.Fragment>
