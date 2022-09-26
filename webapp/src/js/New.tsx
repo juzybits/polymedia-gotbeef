@@ -15,7 +15,7 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(5000);
-    const [players, setPlayers] = useState('0x2f3a989fc5310b6a819bcd5af20385b433e08588\n0x39e55822370a1a00f5bb6e8157c882c84443bca9');
+    const [players, setPlayers] = useState('0x73ae9f9568058bf43d2df62939f1e2166beb3f4d\n0x2f3a989fc5310b6a819bcd5af20385b433e08588');
     const [judges, setJudges] = useState('0xd77c7589b30d1468105ed3ec8f6f111ea01e55f0');
     const [quorum, setQuorum] = useState(1);
 
@@ -35,12 +35,12 @@ export function New()
             judges.match(/(0x[0-9a-fA-F]+)/g) || [],
         )
         .then(resp => {
-            if (resp.effects.status.status != 'success') {
-                setError( getErrorName(resp.effects.status.error) );
-            } else {
+            if (resp.effects.status.status == 'success') {
                 // TODO: redirect to View page
                 setNewObjId(resp.effects.created[0].reference.objectId);
                 setError(undefined);
+            } else {
+                setError( getErrorName(resp.effects.status.error) );
             }
         })
         .catch(error => {

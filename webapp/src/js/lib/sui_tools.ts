@@ -51,7 +51,7 @@ export function createBet(
     judges: array,
 ): Promise<SuiTransactionResponse>
 {
-    console.debug(`[createBet] Calling bet::create() on package: ${GOTBEEF_PACKAGE}`);
+    console.debug(`[createBet] Calling bet::create on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -64,6 +64,53 @@ export function createBet(
             size,
             players,
             judges,
+        ],
+        gasBudget: 10000,
+    });
+}
+
+export async function fundBet(betObj: object): Promise<SuiTransactionResponse>
+{
+    console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
+    return wallet.executeMoveCall({
+        packageObjectId: GOTBEEF_PACKAGE,
+        module: 'bet',
+        function: 'fund',
+        typeArguments: [ getCollateralType(betObj) ],
+        arguments: [
+            betObj.details.data.fields.id.id,
+            '0xfad92c3e58e04604c02a619d01a1727786b01565', // TODO find Coin<T> in user wallet
+        ],
+        gasBudget: 10000,
+    });
+}
+
+export async function cancelBet(betObj: object): Promise<SuiTransactionResponse>
+{
+    console.debug(`[fundBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
+    return wallet.executeMoveCall({
+        packageObjectId: GOTBEEF_PACKAGE,
+        module: 'bet',
+        function: 'cancel',
+        typeArguments: [ getCollateralType(betObj) ],
+        arguments: [
+            betObj.details.data.fields.id.id,
+        ],
+        gasBudget: 10000,
+    });
+}
+
+export async function vote(betObj: object, player_addr: string): Promise<SuiTransactionResponse>
+{
+    console.debug(`[fundBet] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
+    return wallet.executeMoveCall({
+        packageObjectId: GOTBEEF_PACKAGE,
+        module: 'bet',
+        function: 'vote',
+        typeArguments: [ getCollateralType(betObj) ],
+        arguments: [
+            betObj.details.data.fields.id.id,
+            player_addr,
         ],
         gasBudget: 10000,
     });
@@ -92,11 +139,13 @@ export async function getBetObj(objId: string): Promise<object|null> {
         });
 }
 
+// TODO: include in betObj
 export function getPhaseName(betObj: object): string {
     const phaseCode = betObj.details.data.fields.phase;
     return ['fund', 'vote', 'settled', 'canceled', 'stalemate'][phaseCode];
 };
 
+// TODO: include in betObj
 export function getCollateralType(betObj: object): string {
     const match = betObj.details.data.type.match(/<(.+)>$/);
     return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
@@ -149,7 +198,7 @@ export async function testWalletAdapter(): void {
 
     /*
     const PACKAGE_ID = '0x854ecb501c90ef40b0b08c11929fa0c6c5cec90e';
-    console.debug('Calling bet::create() on package:', PACKAGE_ID);
+    console.debug('Calling bet::create on package:', PACKAGE_ID);
     wallet.executeMoveCall({
         packageObjectId: PACKAGE_ID,
         module: 'bet',

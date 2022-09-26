@@ -32,6 +32,8 @@ export function View()
         }
     }, []);
 
+    // TODO: when connected, check what action buttons are available to the user
+
     /* Render */
 
     if (typeof betObj === 'undefined')
@@ -47,7 +49,7 @@ export function View()
                 onClick={() => setModalHtml(<Fund betObj={betObj} setBetObj={setBetObj}/>)}>
                 Fund
             </button>
-            <button type='button' className='nes-btn is-primary'
+            <button type='button' className='nes-btn is-success'
                 onClick={() => setModalHtml(<Vote betObj={betObj} setBetObj={setBetObj}/>)}>
                 Vote
             </button>

@@ -8,7 +8,15 @@ A [Sui](https://sui.io/) package to create on-chain bets. It comes with a built-
 
 Tired of [escrowing millions](https://twitter.com/GiganticRebirth/status/1503335929976664065) for your Twitter friends? Try _Got Beef?_.
 
-## How to test
+## Dev setup
+1. [Install Sui](https://docs.sui.io/build/install#binaries)
+2. Connect to devnet: `sui client switch --gateway https://gateway.devnet.sui.io:443/`
+
+## Run the unit tests
+```
+sui move test
+```
+Show test coverage:
 ```
 sui move test --coverage
 sui move coverage summary
@@ -16,8 +24,13 @@ sui move coverage source --module bet
 sui move coverage bytecode --module bet
 ```
 
-## How to publish
+## Publish the package
 ```
-sui client switch --gateway https://gateway.devnet.sui.io:443/
 sui client publish --path ./gotbeef --gas-budget 30000
+```
+
+## Use from `sui console`
+#### Fund a bet
+```
+call --package PACKAGE_ID --module bet --function fund --type-args 0x2::sui::SUI --args BET_ID COIN_ID --gas-budget 1000
 ```
