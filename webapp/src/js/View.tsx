@@ -76,8 +76,8 @@ export function View()
 
     ID: <a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{betId}</a> <br/>
     {
-        !bet.winner.fields.vec ? '' : <React.Fragment>
-            &nbsp;<i className='nes-icon trophy is-small' />: {bet.winner.fields.vec} <br/>
+        !bet.winner || bet.winner.type ? '' : <React.Fragment>
+            &nbsp;<i className='nes-icon trophy is-small' />: {bet.winner} <br/>
         </React.Fragment>
     }
     Size: {bet.size} <i className='nes-icon coin is-small' /> {bet.collat_type} <br/>
@@ -106,7 +106,7 @@ export function View()
         bet.players.map(addr => <React.Fragment key={addr}>
             <tr>
                 <td>{shorten(addr)}</td>
-                <td>todo</td>
+                <td>{bet.funds.get(addr) || '0'}</td>
                 <td>todo</td>
             </tr>
         </React.Fragment>)
@@ -128,7 +128,7 @@ export function View()
         </thead>
         <tbody>
         {
-            bet.players.map(addr => <React.Fragment key={addr}>
+            bet.judges.map(addr => <React.Fragment key={addr}>
             <tr>
                 <td>{shorten(addr)}</td>
                 <td>todo</td>

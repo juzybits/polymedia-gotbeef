@@ -77,6 +77,17 @@ export async function getbet(objId: string): Promise<Bet|null> {
                 console.debug('[getbet] Found bet object:', obj);
 
                 const fields = obj.details.data.fields;
+
+                // Parse `Bet.funds: VecMap<address, Coin<T>>`
+                let funds = fields.funds.fields.contents || [];
+                let fundsByPlayer = new Map(funds.map(obj =>
+                    [obj.fields.key, obj.fields.value.fields.balance]
+                ));
+
+                // Parse `Bet.votes: VecMap<address, address>`
+                let votesByJudge = new Map(); // TODO
+                let votesByPlayer = new Map(); // TODO
+
                 const bet: Bet = {
                     id: fields.id.id,
                     collat_type: getCollateralType(obj.details.data.type),
@@ -87,7 +98,7 @@ export async function getbet(objId: string): Promise<Bet|null> {
                     players: fields.players,
                     judges: fields.judges,
                     phase: getPhaseName(fields.phase),
-                    funds: fields.funds, // TODO
+                    funds: fundsByPlayer,
                     votes: fields.votes, // TODO
                     winner: fields.winner, // TODO
                     // most_votes: fields.most_votes,
@@ -162,7 +173,7 @@ export function createBet(
     });
 }
 
-export async function fundBet(bet: Bet): Promise<SuiTransactionResponse>
+export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionResponse>
 {
     console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
@@ -172,7 +183,7 @@ export async function fundBet(bet: Bet): Promise<SuiTransactionResponse>
         typeArguments: [ bet.collat_type ],
         arguments: [
             bet.id,
-            '0xfad92c3e58e04604c02a619d01a1727786b01565', // TODO find Coin<T> in user wallet
+            coin,
         ],
         gasBudget: 10000,
     });
