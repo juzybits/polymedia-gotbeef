@@ -1,7 +1,7 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
-const GOTBEEF_PACKAGE = '0xffb3deddef032b8c12c21854e28a965d7fcf4db1';
+const GOTBEEF_PACKAGE = '0xee4badd97c6f9a66be8486f4fc60f4906760f576';
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();
 
@@ -83,7 +83,7 @@ export async function getbet(objId: string): Promise<Bet|null> {
                     title: fields.title,
                     description: fields.description,
                     quorum: fields.quorum,
-                    size: fields.bet_size,
+                    size: fields.size,
                     players: fields.players,
                     judges: fields.judges,
                     phase: getPhaseName(fields.phase),

@@ -72,7 +72,7 @@ module gotbeef::bet
         title: String,
         description: String,
         quorum: u64,
-        bet_size: u64, // Amount of Coin<T> that each participant will bet
+        size: u64, // Amount of Coin<T> that each participant will bet
         players: vector<address>,
         judges: vector<address>,
         votes: VecMap<address, address>, // <judge_addr,  player_addr>
@@ -100,8 +100,8 @@ module gotbeef::bet
     public fun quorum<T>(bet: &Bet<T>): u64 {
         bet.quorum
     }
-    public fun bet_size<T>(bet: &Bet<T>): u64 {
-        bet.bet_size
+    public fun size<T>(bet: &Bet<T>): u64 {
+        bet.size
     }
     public fun players<T>(bet: &Bet<T>): &vector<address> {
         &bet.players
@@ -129,7 +129,7 @@ module gotbeef::bet
         title: vector<u8>,
         description: vector<u8>,
         quorum: u64,
-        bet_size: u64,
+        size: u64,
         players: vector<address>,
         judges: vector<address>,
         ctx: &mut TxContext)
@@ -143,7 +143,7 @@ module gotbeef::bet
         assert!( !vectors::has_duplicates(&judges), E_DUPLICATE_JUDGES );
         assert!( !vectors::intersect(&players, &judges), E_JUDGES_CANT_BE_PLAYERS );
         assert!( (quorum > judge_len/2) && (quorum <= judge_len), E_INVALID_QUORUM );
-        assert!( bet_size > 0, E_INVALID_BET_SIZE );
+        assert!( size > 0, E_INVALID_BET_SIZE );
 
         let bet = Bet<T> {
             id: object::new(ctx),
@@ -151,7 +151,7 @@ module gotbeef::bet
             title: string::utf8(title),
             description: string::utf8(description),
             quorum: quorum,
-            bet_size: bet_size,
+            size: size,
             players: players,
             judges: judges,
             votes: vec_map::empty(),
@@ -174,10 +174,10 @@ module gotbeef::bet
         assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
         assert!( vector::contains(&bet.players, &player_addr), E_ONLY_PLAYERS_CAN_FUND );
         assert!( !vec_map::contains(&bet.funds, &player_addr), E_ALREADY_FUNDED );
-        assert!( coin_value >= bet.bet_size, E_FUNDS_BELOW_BET_SIZE );
+        assert!( coin_value >= bet.size, E_FUNDS_BELOW_BET_SIZE );
 
         // Return change to sender
-        let change = coin_value - bet.bet_size;
+        let change = coin_value - bet.size;
         if ( change > 0 ) {
             coin::split(&mut player_coin, change, ctx);
         };

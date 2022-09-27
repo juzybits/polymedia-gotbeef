@@ -26,7 +26,7 @@ sui move coverage bytecode --module bet
 
 ## Publish the package
 ```
-sui client publish --path ./gotbeef --gas-budget 30000
+sui client publish --gas-budget 30000
 ```
 
 ## Use from `sui console`

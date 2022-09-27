@@ -41,7 +41,7 @@ module gotbeef::bet_tests
             assert!( bet::title(bet) == &string::utf8(TITLE), 0 );
             assert!( bet::description(bet) ==  &string::utf8(DESC), 0 );
             assert!( bet::quorum(bet) == QUORUM, 0 );
-            assert!( bet::bet_size(bet) == BET_SIZE, 0 );
+            assert!( bet::size(bet) == BET_SIZE, 0 );
             assert!( vector::length( bet::players(bet) ) == 2, 0 );
             assert!( vector::length( bet::judges(bet) ) == 2, 0 );
             assert!( vec_map::size( bet::votes(bet) ) == 0, 0 );
@@ -124,9 +124,9 @@ module gotbeef::bet_tests
     #[test, expected_failure(abort_code = 7)]
     fun test_create_e_invalid_bet_size()
     {
-        let bet_size = 0;
+        let size = 0;
         let scen = &mut ts::begin(&CREATOR); {
-            bet::create<SUI>( TITLE, DESC, QUORUM, bet_size, PLAYERS, JUDGES, ts::ctx(scen) );
+            bet::create<SUI>( TITLE, DESC, QUORUM, size, PLAYERS, JUDGES, ts::ctx(scen) );
         };
     }
 
@@ -537,7 +537,7 @@ spec fund
     pragma aborts_if_is_strict;
     aborts_if ctx.ids_created == MAX_U64 with EXECUTION_FAILURE;
     aborts_if !contains(bet.players, tx_context::sender(ctx)) with E_ONLY_PLAYERS_CAN_FUND;
-    aborts_if coin::value(player_coin) < bet.bet_size with E_FUNDS_BELOW_BET_SIZE;
+    aborts_if coin::value(player_coin) < bet.size with E_FUNDS_BELOW_BET_SIZE;
     // How to express this?:
     // aborts_if vec_map::contains(bet.funds, tx_context::sender(ctx)) with E_ALREADY_FUNDED;
     // aborts_if contains(bet.funds.contents, tx_context::sender(ctx) ) with E_ALREADY_FUNDED;
