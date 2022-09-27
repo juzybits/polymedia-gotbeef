@@ -24,6 +24,9 @@ h2 {
 button {
     overflow-wrap: initial;
 }
+textarea {
+    min-height: 5em;
+}
 
 /* Specific elements */
 
@@ -64,16 +67,19 @@ button {
     border: 4px solid black;
     border-radius: 16px;
 }
-
 a:hover {
     color: #00baff;
 }
-
 a.rainbow:hover {
     text-decoration: none;
     background-image: linear-gradient(to left, violet, indigo, blue, green, gold, orange, red);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+.field-note {
+    color: #606060;
+    font-size: 0.85em;
+    margin: 0;
 }
 
 /* Mobile */
@@ -117,4 +123,7 @@ a.rainbow:hover {
 }
 .nes-select {
     margin-top: 0;
+}
+.nes-field {
+    margin-top: 1.8em;
 }

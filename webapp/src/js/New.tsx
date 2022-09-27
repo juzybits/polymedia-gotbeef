@@ -23,6 +23,21 @@ export function New()
     const [newObjId, setNewObjId] = useState();
     const [error, setError] = useState();
 
+    // Parse player and judge addresses
+    const addr_regex = /(0x[0-9a-fA-F]+)/g;
+    const player_array = players.match(addr_regex) || [];
+    const judge_array = judges.match(addr_regex) || [];
+
+    // Calculate minimum and maximum allowed quorum values (as per E_INVALID_QUORUM)
+    const min_quorum = 1 + Math.floor(judge_array.length/2);
+    const max_quorum = judge_array.length || 1;
+    if (quorum < min_quorum) {
+        setQuorum(min_quorum);
+    } else
+    if (quorum > max_quorum) {
+        setQuorum(max_quorum);
+    }
+
     const onSubmitCreate = (e) => { // TODO: validate inputs
         e.preventDefault();
         createBet(
@@ -31,8 +46,8 @@ export function New()
             description,
             quorum,
             size,
-            players.match(/(0x[0-9a-fA-F]+)/g) || [],
-            judges.match(/(0x[0-9a-fA-F]+)/g) || [],
+            player_array,
+            judge_array,
         )
         .then(resp => {
             if (resp.effects.status.status == 'success') {
@@ -48,24 +63,6 @@ export function New()
         });
     };
 
-    const makeResultHtml = () => {
-        if (newObjId)
-            return <React.Fragment>
-                <br/>
-                SUCCESS:
-                <br/>
-                <Link to={`/bet/${newObjId}`}>{newObjId}</Link>
-            </React.Fragment>;
-
-        if (error)
-            return <React.Fragment>
-                <br/>
-                ERROR:
-                <br/>
-                {error}
-            </React.Fragment>;
-    }
-
     return <React.Fragment>
 
     <h2>NEW BET</h2>
@@ -78,7 +75,6 @@ export function New()
                 value={title} onChange={(e) => setTitle(e.target.value)}
             />
         </div>
-        <br/>
 
         <div className='nes-field'>
             <label htmlFor='description_field'>Description (optional)</label>
@@ -86,7 +82,6 @@ export function New()
                 value={description} onChange={(e) => setDescription(e.target.value)}
             ></textarea>
         </div>
-        <br/>
 
         <div className='nes-field'>
             <label htmlFor='size_field'><i className='nes-icon coin is-custom' /> Size and currency</label>
@@ -102,31 +97,33 @@ export function New()
                 <option value='0x2::sui::SUI'>SUI</option>
             </select>
         </div>
-        <br/>
 
         <div className='nes-field'>
-            <label htmlFor='players_field'> <i className='snes-jp-logo custom-logo' /> Player addresses (2-256)</label>
+            <label htmlFor='players_field'> <i className='snes-jp-logo custom-logo' /> Player addresses (2—256)</label>
             <textarea id='players_field' className='nes-textarea'
                 value={players} onChange={(e) => setPlayers(e.target.value)}
             ></textarea>
         </div>
-        <br/>
+        <label className='field-note'>(found {player_array.length})</label>
 
         <div className='nes-field'>
-        <label htmlFor='judges_field'><i className='nes-logo custom-logo' /> Judge addresses (1-32)</label>
+        <label htmlFor='judges_field'><i className='nes-logo custom-logo' /> Judge addresses (1—32)</label>
             <textarea id='judges_field' className='nes-textarea'
                 value={judges} onChange={(e) => setJudges(e.target.value)}
             ></textarea>
         </div>
-        <br/>
+        <label className='field-note'>(found {judge_array.length})</label>
 
         <div className='nes-field'>
             <label htmlFor='quorum_field'><i className='nes-icon trophy is-custom' /> Quorum (# of votes to win)</label>
-            <input required type='number' id='quorum_field' className='nes-input' min='1'
+            <input required type='number' id='quorum_field' className='nes-input' min={min_quorum} max={max_quorum}
                 spellCheck='false' autoCorrect='off' autoComplete='off'
                 value={quorum} onChange={(e) => setQuorum(e.target.value)}
             />
         </div>
+        <label className='field-note'>(minimum {min_quorum}/{max_quorum})</label>
+
+        <br/>
         <br/>
 
         {
@@ -136,7 +133,23 @@ export function New()
         }
     </form>
 
-    { makeResultHtml() }
+    {(() => {
+        if (newObjId)
+            return <React.Fragment>
+                <br/>
+                SUCCESS:
+                <br/>
+                <Link to={`/bet/${newObjId}`}>{newObjId}</Link>
+            </React.Fragment>;
+
+        if (error)
+            return <React.Fragment>
+                <br/>
+                ERROR:
+                <br/>
+                {error}
+            </React.Fragment>;
+    })()}
 
     </React.Fragment>;
 }
