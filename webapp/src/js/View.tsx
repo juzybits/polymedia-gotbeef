@@ -74,30 +74,74 @@ export function View()
 
     <h2>{bet.title}</h2>
 
-    <div>
-        ID: <a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{betId}</a> <br/>
+    ID: <a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{betId}</a> <br/>
+    {
+        !bet.winner.fields.vec ? '' : <React.Fragment>
+            &nbsp;<i className='nes-icon trophy is-small' />: {bet.winner.fields.vec} <br/>
+        </React.Fragment>
+    }
+    Size: {bet.size} <i className='nes-icon coin is-small' /> {bet.collat_type} <br/>
+    Phase: {bet.phase}<br/>
+    Quorum: {bet.quorum}/{bet.judges.length}<br/>
+    {
+        !bet.description ? '' : <React.Fragment>
+            Description: {bet.description}<br/>
+        </React.Fragment>
+    }
+    <br/>
+
+{/*        Players: {JSON.stringify(bet.players, null, 2)} <br/>
+    Funds: {JSON.stringify(bet.funds.fields.contents, null, 2)} <br/>*/}
+
+    <table>
+        <thead>
+            <tr>
+                <th><i className='snes-jp-logo custom-logo' /> Players</th>
+                <th>Funded</th>
+                <th>Votes</th>
+            </tr>
+        </thead>
+        <tbody>
         {
-            !bet.winner.fields.vec ? '' : <React.Fragment>
-                &nbsp;<i className='nes-icon trophy is-small' />: {bet.winner.fields.vec} <br/>
-            </React.Fragment>
+        bet.players.map(addr => <React.Fragment key={addr}>
+            <tr>
+                <td>{shorten(addr)}</td>
+                <td>todo</td>
+                <td>todo</td>
+            </tr>
+        </React.Fragment>)
         }
-        Phase: {bet.phase} <br/>
-        {
-            !bet.description ? '' : <React.Fragment>
-                Deets: {bet.description} <br/>
-            </React.Fragment>
-        }
-        <hr/>
-        Bet size: {bet.size} <i className='nes-icon coin is-small' /> {bet.collat_type} <br/>
-        Quorum: {bet.quorum}
-        <hr/>
-        Players: {JSON.stringify(bet.players, null, 2)} <br/>
-        Funds: {JSON.stringify(bet.funds.fields.contents, null, 2)} <br/>
+        </tbody>
+    </table>
+    <br/>
+
         {/*most_votes: {bet.most_votes} <br/>*/}
-        <hr/>
-        Judges: {JSON.stringify(bet.judges, null, 2)} <br/>
-        Votes: {JSON.stringify(bet.votes.fields.contents, null, 2)} <br/>
-    </div>
+{/*        Judges: {JSON.stringify(bet.judges, null, 2)} <br/>
+        Votes: {JSON.stringify(bet.votes.fields.contents, null, 2)} <br/>*/}
+
+    <table>
+        <thead>
+            <tr>
+                <th><i className='nes-logo custom-logo' /> Judges</th>
+                <th>Voted</th>
+            </tr>
+        </thead>
+        <tbody>
+        {
+            bet.players.map(addr => <React.Fragment key={addr}>
+            <tr>
+                <td>{shorten(addr)}</td>
+                <td>todo</td>
+            </tr>
+            </React.Fragment>)
+        }
+        </tbody>
+    </table>
+    <br/>
 
     </React.Fragment>;
+}
+
+function shorten(addr: string): string {
+    return addr.slice(0, 6) + '...' + addr.slice(-4);
 }
