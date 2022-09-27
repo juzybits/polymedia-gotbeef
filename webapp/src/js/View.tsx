@@ -62,7 +62,7 @@ export function View()
     const infoHtml = <React.Fragment>
         <h2>{bet.title}</h2>
         <div>
-            ID: <a target='_blank' href={'https://explorer.devnet.sui.io/objects/'+betId}>{betId}</a> <br/>
+            ID: <a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{betId}</a> <br/>
             {
                 !bet.winner.fields.vec ? '' : <React.Fragment>
                     &nbsp;<i className='nes-icon trophy is-small' />: {bet.winner.fields.vec} <br/>
@@ -75,8 +75,8 @@ export function View()
                 </React.Fragment>
             }
             <hr/>
-            Bet size: <i className='nes-icon coin is-small' /> {bet.bet_size}  <br/>
-            Currency: <i className='nes-icon coin is-small' /> {bet.collat_type} <br/>
+            Bet size: {bet.size} <i className='nes-icon coin is-small' /> {bet.collat_type} <br/>
+            Quorum: {bet.quorum}
             <hr/>
             Players: {JSON.stringify(bet.players, null, 2)} <br/>
             Funds: {JSON.stringify(bet.funds.fields.contents, null, 2)} <br/>
@@ -84,7 +84,6 @@ export function View()
             <hr/>
             Judges: {JSON.stringify(bet.judges, null, 2)} <br/>
             Votes: {JSON.stringify(bet.votes.fields.contents, null, 2)} <br/>
-            Quorum: {bet.quorum} <br/>
         </div>
     </React.Fragment>;
 

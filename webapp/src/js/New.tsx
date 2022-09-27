@@ -72,7 +72,7 @@ export function New()
 
     <form onSubmit={onSubmitCreate}>
         <div className='nes-field'>
-            <label htmlFor='title_field'>Bet title</label>
+            <label htmlFor='title_field'>Title</label>
             <input required type='text' id='title_field' className='nes-input'
                 spellCheck='false' autoCorrect='off' autoComplete='off'
                 value={title} onChange={(e) => setTitle(e.target.value)}
@@ -89,16 +89,13 @@ export function New()
         <br/>
 
         <div className='nes-field'>
-            <label htmlFor='size_field'><i className='nes-icon coin is-custom' /> Bet size</label>
+            <label htmlFor='size_field'><i className='nes-icon coin is-custom' /> Size and currency</label>
             <input required type='number' id='size_field' className='nes-input' min='1'
                 spellCheck='false' autoCorrect='off' autoComplete='off'
                 value={size} onChange={(e) => setSize(e.target.value)}
             />
         </div>
-        <br/>
-
-        <label htmlFor='currency_select'><i className='nes-icon coin is-custom' /> Currency</label>
-        <div className='nes-select'>
+        <div className='nes-select' style={{marginTop: '1em'}}>
             <select required id='currency_select'
                 value={currency} onChange={(e) => setCurrency(e.target.value)}
             >

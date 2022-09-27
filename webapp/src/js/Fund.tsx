@@ -36,7 +36,7 @@ export function Fund(props) {
     return <React.Fragment>
         <h2>Fund bet</h2>
         <div>
-            Bet size is {props.bet.bet_size} <i className="nes-icon coin is-small" /> {props.bet.collat_type}
+            Bet size is {props.bet.size} <i className="nes-icon coin is-small" /> {props.bet.collat_type}
             <br/>
             <br/>
             <button type='button' className='nes-btn is-success' onClick={onClickFund}>
