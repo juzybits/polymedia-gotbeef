@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
+import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
 import { createBet, getErrorName } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
@@ -38,6 +38,7 @@ export function New()
         setQuorum(max_quorum);
     }
 
+    const navigate = useNavigate();
     const onSubmitCreate = (e) => { // TODO: validate inputs
         e.preventDefault();
         createBet(
@@ -51,9 +52,8 @@ export function New()
         )
         .then(resp => {
             if (resp.effects.status.status == 'success') {
-                // TODO: redirect to View page
-                setNewObjId(resp.effects.created[0].reference.objectId);
-                setError(undefined);
+                const newObjId = resp.effects.created[0].reference.objectId;
+                navigate('/bet/' + newObjId);
             } else {
                 setError( getErrorName(resp.effects.status.error) );
             }
@@ -133,23 +133,16 @@ export function New()
         }
     </form>
 
-    {(() => {
-        if (newObjId)
-            return <React.Fragment>
-                <br/>
-                SUCCESS:
-                <br/>
-                <Link to={`/bet/${newObjId}`}>{newObjId}</Link>
-            </React.Fragment>;
-
-        if (error)
-            return <React.Fragment>
-                <br/>
-                ERROR:
-                <br/>
-                {error}
-            </React.Fragment>;
-    })()}
+    {
+        error ?
+        <React.Fragment>
+            <br/>
+            ERROR:
+            <br/>
+            {error}
+        </React.Fragment>
+        : ''
+    }
 
     </React.Fragment>;
 }
