@@ -10,7 +10,7 @@ Tired of [escrowing millions](https://twitter.com/GiganticRebirth/status/1503335
 
 ## Dev setup
 1. [Install Sui](https://docs.sui.io/build/install#binaries)
-2. Connect to devnet: `sui client switch --gateway https://gateway.devnet.sui.io:443/`
+2. Connect to devnet: `sui client switch --rpc https://gateway.devnet.sui.io:443`
 
 ## Run the unit tests
 ```

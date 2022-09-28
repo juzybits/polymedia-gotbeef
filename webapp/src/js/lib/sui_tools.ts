@@ -1,7 +1,7 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
-const GOTBEEF_PACKAGE = '0x5f4632e0fd5405f3cb049093694d414f4aac47e0';
+const GOTBEEF_PACKAGE = '0xefdb1d7ef187fed777f4ac96787172bc8ddbb5b8';
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();
 
