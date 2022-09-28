@@ -72,7 +72,7 @@ export async function getbet(objId: string): Promise<Bet|null> {
     console.debug('[getObject] Looking up:', objId);
 
     const getPhaseName = (phaseCode: number): string => {
-        return ['fund', 'vote', 'settled', 'canceled', 'stalemate'][phaseCode];
+        return ['funding', 'voting', 'settled', 'canceled', 'stalemate'][phaseCode];
     };
 
     const getCollateralType = (betType: string): string => {

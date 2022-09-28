@@ -87,9 +87,9 @@ export function View()
             <br/>
         </React.Fragment> : ''
     }
-    <label className='field-label'>Size:</label>{bet.size} <i className='nes-icon coin is-small' /> {bet.collatType}
+    <label className='field-label'>Phase:</label><span style={{color: phaseColor(bet.phase)}}>{bet.phase}</span>
     <br/>
-    <label className='field-label'>Phase:</label>{bet.phase}
+    <label className='field-label'>Size:</label>{bet.size} <i className='nes-icon coin is-small' /> {bet.collatType}
     <br/>
     <label className='field-label'>Quorum:</label>{bet.quorum}/{bet.judges.length}
     <br/>
@@ -147,4 +147,16 @@ export function View()
 
 function shorten(addr: string): string {
     return !addr ? '' : addr.slice(0, 6) + '...' + addr.slice(-4);
+}
+
+const phaseColors = new Map([
+    ['funding', '#92cc41'],
+    ['voting', '#92cc41'],
+    ['settled', 'grey'],
+    ['canceled', '#e76e55'],
+    ['stalemate', '#e76e55'],
+]);
+
+function phaseColor(phaseName: string): string {
+    return phaseColors.get(phaseName);
 }
