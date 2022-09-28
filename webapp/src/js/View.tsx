@@ -18,6 +18,12 @@ export function View()
 
     /* Load bet object data */
 
+    const reloadBet = () => {
+        getbet(betId).then( (bet: Bet|null) => {
+            setBet(bet);
+        });
+    };
+
     const location = useLocation();
     useEffect(() => {
         document.title = `got beef? - View: ${betId}`;
@@ -26,9 +32,7 @@ export function View()
             setBet(location.state.bet);
         } else {
             // The user came directly to this URL, fetch bet object from Sui
-            getbet(betId).then( (bet: Bet|null) => {
-                setBet(bet);
-            });
+            reloadBet();
         }
     }, []);
 
@@ -41,73 +45,76 @@ export function View()
         return <React.Fragment>Bet not found.</React.Fragment>;
 
     return <React.Fragment>
-
-    <section className='showcase'>
-        <section className='nes-container with-title'>
-            <h3 className='title'>Actions</h3>
-            <div id='bet-actions'>
-            {
-                !connected
-                ? <ButtonConnect connected={connected} setConnected={setConnected} />
-                : <div id='bet-actions'>
-                    {/* TODO: only show the action buttons that the user address can use */}
-                    <button type='button' className='nes-btn is-success'
-                        onClick={() => setModalHtml(<Fund bet={bet} setBet={setBet}/>)}>
-                        Fund
-                    </button>
-                    <button type='button' className='nes-btn is-success'
-                        onClick={() => setModalHtml(<Vote bet={bet} setBet={setBet}/>)}>
-                        Vote
-                    </button>
-                    <button type='button' className='nes-btn is-error'
-                        onClick={() => setModalHtml(<Cancel bet={bet} setBet={setBet}/>)}>
-                        Cancel
-                    </button>
+    {
+        modalHtml ? modalHtml :
+        <section className='showcase'>
+            <section className='nes-container with-title'>
+                <h3 className='title'>Actions</h3>
+                <div id='bet-actions'>
+                {
+                    !connected
+                    ? <ButtonConnect connected={connected} setConnected={setConnected} />
+                    : <div id='bet-actions'>
+                        {/* TODO: only show the action buttons that the user address can use */}
+                        <button type='button' className='nes-btn is-success'
+                            onClick={() => setModalHtml(<Fund bet={bet} reloadBet={reloadBet} setModalHtml={setModalHtml} />)}>
+                            Fund
+                        </button>
+                        <button type='button' className='nes-btn is-success'
+                            onClick={() => setModalHtml(<Vote bet={bet} reloadBet={reloadBet} setModalHtml={setModalHtml} />)}>
+                            Vote
+                        </button>
+                        <button type='button' className='nes-btn is-error'
+                            onClick={() => setModalHtml(<Cancel bet={bet} reloadBet={reloadBet} setModalHtml={setModalHtml} />)}>
+                            Cancel
+                        </button>
+                    </div>
+                }
                 </div>
-            }
-            </div>
+            </section>
         </section>
-    </section>
+    }
     <br/>
-
-    { modalHtml }
 
     <h2>{bet.title}</h2>
 
-    ID: <a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{betId}</a> <br/>
+    <label className='field-label'>ID:</label><a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{shorten(betId)}</a>
+    <br/>
     {
-        !bet.winner || bet.winner.type ? '' : <React.Fragment>
-            &nbsp;<i className='nes-icon trophy is-small' />: {bet.winner} <br/>
-        </React.Fragment>
+        bet.winner ?
+        <React.Fragment>
+            <label className='field-label'>&nbsp;<i className='nes-icon trophy is-small' />:</label>{bet.winner}
+            <br/>
+        </React.Fragment> : ''
     }
-    Size: {bet.size} <i className='nes-icon coin is-small' /> {bet.collat_type} <br/>
-    Phase: {bet.phase}<br/>
-    Quorum: {bet.quorum}/{bet.judges.length}<br/>
+    <label className='field-label'>Size:</label>{bet.size} <i className='nes-icon coin is-small' /> {bet.collatType}
+    <br/>
+    <label className='field-label'>Phase:</label>{bet.phase}
+    <br/>
+    <label className='field-label'>Quorum:</label>{bet.quorum}/{bet.judges.length}
+    <br/>
     {
         !bet.description ? '' : <React.Fragment>
-            Description: {bet.description}<br/>
+            <label className='x'>Description:</label>{bet.description}
+            <br/>
         </React.Fragment>
     }
-    <br/>
-
-{/*        Players: {JSON.stringify(bet.players, null, 2)} <br/>
-    Funds: {JSON.stringify(bet.funds.fields.contents, null, 2)} <br/>*/}
 
     <table>
         <thead>
             <tr>
-                <th><i className='snes-jp-logo custom-logo' /> Players</th>
-                <th>Funded</th>
+                <th><i className='snes-jp-logo custom-logo' /> Player</th>
+                <th>Funds</th>
                 <th>Votes</th>
             </tr>
         </thead>
         <tbody>
         {
-        bet.players.map(addr => <React.Fragment key={addr}>
+        bet.players.map(player_addr => <React.Fragment key={player_addr}>
             <tr>
-                <td>{shorten(addr)}</td>
-                <td>{bet.funds.get(addr) || '0'}</td>
-                <td>todo</td>
+                <td>{shorten(player_addr)}</td>
+                <td>{bet.funds.get(player_addr) || '0'}</td>
+                <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>
             </tr>
         </React.Fragment>)
         }
@@ -115,23 +122,19 @@ export function View()
     </table>
     <br/>
 
-        {/*most_votes: {bet.most_votes} <br/>*/}
-{/*        Judges: {JSON.stringify(bet.judges, null, 2)} <br/>
-        Votes: {JSON.stringify(bet.votes.fields.contents, null, 2)} <br/>*/}
-
     <table>
         <thead>
             <tr>
-                <th><i className='nes-logo custom-logo' /> Judges</th>
-                <th>Voted</th>
+                <th><i className='nes-logo custom-logo' /> Judge</th>
+                <th>Vote</th>
             </tr>
         </thead>
         <tbody>
         {
-            bet.judges.map(addr => <React.Fragment key={addr}>
+            bet.judges.map(judge_addr => <React.Fragment key={judge_addr}>
             <tr>
-                <td>{shorten(addr)}</td>
-                <td>todo</td>
+                <td>{shorten(judge_addr)}</td>
+                <td>{shorten(bet.votesByJudge.get(judge_addr)) || '-'}</td>
             </tr>
             </React.Fragment>)
         }
@@ -143,5 +146,5 @@ export function View()
 }
 
 function shorten(addr: string): string {
-    return addr.slice(0, 6) + '...' + addr.slice(-4);
+    return !addr ? '' : addr.slice(0, 6) + '...' + addr.slice(-4);
 }

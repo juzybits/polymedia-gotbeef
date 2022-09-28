@@ -1,55 +1,73 @@
 import React, { useEffect, useState } from 'react';
 
-import { fundBet, getCoinObjects } from './lib/sui_tools';
+import { fundBet, getCoinObjects, getErrorName } from './lib/sui_tools';
 
 export function Fund(props) {
 
-    const [coins, setCoins] = useState(undefined);
+    const [payCoin, setPayCoin] = useState(undefined);
+    const [error, setError] = useState();
 
+    // Look for a Coin<T> with enough balance to fund the bet
     useEffect(() => {
-        typeof coins === 'undefined' &&
-        getCoinObjects(props.bet.collat_type).then(coins => {
-            // TODO: check if the user has enough Coin<T> to fund the bet
-            console.debug('Address coins:', coins);
-            setCoins(coins);
+        getCoinObjects(props.bet.collatType)
+        .then(coins => {
+            const coin = coins.find(obj => obj.details.data.fields.balance >= props.bet.size);
+            console.debug("[Fund.useEffect] Found payment coin:", coin ? coin.details.data.fields : 'NONE');
+            setPayCoin(coin||null);
+            if (!coin) {
+                setError(`Your wallet doesn't contain a Coin<${props.bet.collatType}> with a balance large enough to fund this bet.`);
+            }
         })
-        .catch(error => {
-            console.debug('Failed to fetch address objects. Error:', error);
-        });
+        .catch(error => setError(error.message) );
     }, []);
 
     const onClickFund = () => {
-        const coin = coins[0].objectId; // TODO find appropriate Coin<T> in user wallet
-        console.debug("[onClickFund] Paying with coin:", coin);
-        fundBet(props.bet, coin)
+        fundBet(props.bet, payCoin.details.reference.objectId)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
-                // setError(undefined);
-                console.log("Success:", resp); // TODO Remove
-                // TODO setBet
+                setError(undefined);
+                props.reloadBet();
+                props.setModalHtml('');
+                console.debug('[onClickFund] Success:', resp);
             } else {
-                console.log("Error1:", resp); // TODO Remove
-                // setError( getErrorName(resp.effects.status.error) );
+                setError( getErrorName(resp.effects.status.error) );
             }
         })
         .catch(error => {
-            console.log("Error2:", error); // TODO Remove
-            // setError(error.message);
+            setError(error.message);
         });
+    };
+
+    const onClickBack = () => {
+        props.setModalHtml('');
     };
 
     return <React.Fragment>
         <h2>Fund bet</h2>
         <div>
-            Bet size is {props.bet.size} <i className="nes-icon coin is-small" /> {props.bet.collat_type}
+            Bet size is {props.bet.size} <i className="nes-icon coin is-small" /> {props.bet.collatType}
             <br/>
             <br/>
-            <button type='button' className='nes-btn is-success' onClick={onClickFund}>
+            <button type='button' className={`nes-btn ${payCoin ? 'is-success' : 'is-disabled'}`} disabled={!payCoin} onClick={onClickFund}>
                 Fund
             </button>
+            &nbsp;
+            <button type='button' className='nes-btn' onClick={onClickBack}>
+                Back
+            </button>
         </div>
+        {
+            error ?
+            <React.Fragment>
+                <br/>
+                ERROR:
+                <br/>
+                {error}
+                <br/>
+            </React.Fragment>
+            : ''
+        }
         <br/>
         <hr/>
-        <br/>
     </React.Fragment>;
 }

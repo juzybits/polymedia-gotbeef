@@ -19,25 +19,32 @@ export function isConnected(): bool {
 
 /// Get all `Coin<T>` objects owned by the current address
 export async function getCoinObjects(type: string): Promise<any[]> {
-    console.debug('[getCoinObjects] Looking for objects of type:', type);
-    return wallet.getAccounts().then(accounts => {
-        return !accounts ? [] : rpc.getObjectsOwnedByAddress(accounts[0])
-            .then(objects => {
-                const expected_type = `0x2::coin::Coin<${type}>`;
-                return objects.filter(obj => obj.type == expected_type);
+    console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
+    return wallet.getAccounts()
+    .then(accounts => {
+        return !accounts
+        ? []
+        : rpc.getObjectsOwnedByAddress(accounts[0])
+            .then(objects_info => {
+                const expectedType = `0x2::coin::Coin<${type}>`;
+                let objectIds = objects_info.reduce((selected, obj) => {
+                    if (obj.type == expectedType)
+                        selected.push(obj.objectId);
+                    return selected;
+                }, []);
+                return rpc.getObjectBatch(objectIds)
+                    .then(objects_data => { return objects_data })
+                    .catch(error => { return [] });
             })
-            .catch(error => {
-                return [];
-            });
-    }).catch(error => {
-        return [];
-    });
+            .catch(error => { return [] });
+    })
+    .catch(error => { return [] });
 }
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
     id: string, // The Sui object UID
-    collat_type: string, // The type of collateral, i.e. the `T` in `Bet<T>`
+    collatType: string, // The type of collateral, i.e. the `T` in `Bet<T>`
     title: string,
     description: string,
     quorum: number,
@@ -46,9 +53,9 @@ export type Bet = {
     judges: string[],
     phase: string,
     funds: object,
-    votes: object,
+    votesByJudge: object,
+    votesByPlayer: object,
     winner?: string,
-    // most_votes: string,
 };
 
 export async function getbet(objId: string): Promise<Bet|null> {
@@ -85,12 +92,19 @@ export async function getbet(objId: string): Promise<Bet|null> {
                 ));
 
                 // Parse `Bet.votes: VecMap<address, address>`
-                let votesByJudge = new Map(); // TODO
-                let votesByPlayer = new Map(); // TODO
+                let votes = fields.votes.fields.contents || [];
+                let votesByJudge = new Map();
+                let votesByPlayer = new Map();
+                votes.forEach(obj => {
+                    let judgeAddr = obj.fields.key;
+                    let playerAddr = obj.fields.value;
+                    votesByJudge.set(judgeAddr, playerAddr);
+                    votesByPlayer.set(playerAddr, 1 + (votesByPlayer.get(playerAddr) || 0) );
+                });
 
                 const bet: Bet = {
                     id: fields.id.id,
-                    collat_type: getCollateralType(obj.details.data.type),
+                    collatType: getCollateralType(obj.details.data.type),
                     title: fields.title,
                     description: fields.description,
                     quorum: fields.quorum,
@@ -99,11 +113,11 @@ export async function getbet(objId: string): Promise<Bet|null> {
                     judges: fields.judges,
                     phase: getPhaseName(fields.phase),
                     funds: fundsByPlayer,
-                    votes: fields.votes, // TODO
-                    winner: fields.winner, // TODO
-                    // most_votes: fields.most_votes,
+                    votesByJudge: votesByJudge,
+                    votesByPlayer: votesByPlayer,
+                    winner: typeof fields.winner === 'object' ? '' : fields.winner,
                 };
-                window.bet = bet; // DEV_ONLY
+                window.fields = fields; // DEV_ONLY
                 return bet;
             }
         })
@@ -180,7 +194,7 @@ export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionRes
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
         function: 'fund',
-        typeArguments: [ bet.collat_type ],
+        typeArguments: [ bet.collatType ],
         arguments: [
             bet.id,
             coin,
@@ -196,7 +210,7 @@ export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
         function: 'cancel',
-        typeArguments: [ bet.collat_type ],
+        typeArguments: [ bet.collatType ],
         arguments: [
             bet.id,
         ],
@@ -211,7 +225,7 @@ export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransa
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
         function: 'vote',
-        typeArguments: [ bet.collat_type ],
+        typeArguments: [ bet.collatType ],
         arguments: [
             bet.id,
             player_addr,
