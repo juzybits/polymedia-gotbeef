@@ -13,7 +13,7 @@ export function Cancel(props) {
                 showConfetti('🧨');
                 setError(undefined);
                 props.reloadBet();
-                props.setModalHtml('');
+                props.setModal('');
                 console.debug('[onClickCancel] Success:', resp);
             } else {
                 setError( getErrorName(resp.effects.status.error) );
@@ -25,7 +25,7 @@ export function Cancel(props) {
     };
 
     const onClickBack = () => {
-        props.setModalHtml('');
+        props.setModal('');
     };
 
     return <React.Fragment>

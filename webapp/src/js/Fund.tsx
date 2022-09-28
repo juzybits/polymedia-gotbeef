@@ -28,7 +28,7 @@ export function Fund(props) {
                 showConfetti('💸');
                 setError(undefined);
                 props.reloadBet();
-                props.setModalHtml('');
+                props.setModal('');
                 console.debug('[onClickFund] Success:', resp);
             } else {
                 setError( getErrorName(resp.effects.status.error) );
@@ -40,7 +40,7 @@ export function Fund(props) {
     };
 
     const onClickBack = () => {
-        props.setModalHtml('');
+        props.setModal('');
     };
 
     return <React.Fragment>

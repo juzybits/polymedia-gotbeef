@@ -14,7 +14,7 @@ export function View()
     const [connected, setConnected] = useOutletContext();
     const betId = useParams().uid;
     const [bet, setBet] = useState(undefined);
-    const [modalHtml, setModalHtml] = useState(undefined);
+    const [modal, setModal] = useState(undefined);
 
     /* Load bet object data */
 
@@ -46,7 +46,7 @@ export function View()
 
     return <React.Fragment>
     {
-        modalHtml ? modalHtml :
+        modal ? modal :
         <section className='showcase'>
             <section className='nes-container with-title'>
                 <h3 className='title'>Actions</h3>
@@ -57,15 +57,15 @@ export function View()
                     : <div id='bet-actions'>
                         {/* TODO: only show the action buttons that the user address can use */}
                         <button type='button' className='nes-btn is-success'
-                            onClick={() => setModalHtml(<Fund bet={bet} reloadBet={reloadBet} setModalHtml={setModalHtml} />)}>
+                            onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                             Fund
                         </button>
                         <button type='button' className='nes-btn is-success'
-                            onClick={() => setModalHtml(<Vote bet={bet} reloadBet={reloadBet} setModalHtml={setModalHtml} />)}>
+                            onClick={() => setModal(<Vote bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                             Vote
                         </button>
                         <button type='button' className='nes-btn is-error'
-                            onClick={() => setModalHtml(<Cancel bet={bet} reloadBet={reloadBet} setModalHtml={setModalHtml} />)}>
+                            onClick={() => setModal(<Cancel bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                             Cancel
                         </button>
                     </div>
@@ -110,13 +110,13 @@ export function View()
         </thead>
         <tbody>
         {
-        bet.players.map(player_addr => <React.Fragment key={player_addr}>
-            <tr>
-                <td>{shorten(player_addr)}</td>
-                <td>{bet.funds.get(player_addr) || '0'}</td>
-                <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>
-            </tr>
-        </React.Fragment>)
+            bet.players.map(player_addr => <React.Fragment key={player_addr}>
+                <tr>
+                    <td>{shorten(player_addr)}</td>
+                    <td>{bet.funds.get(player_addr) || '0'}</td>
+                    <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>
+                </tr>
+            </React.Fragment>)
         }
         </tbody>
     </table>

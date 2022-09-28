@@ -22,16 +22,16 @@ export function Find()
         });
     };
 
-    const makeErrorHtml = () => {
+    const ErrorSection = () => {
         if (bet !== null) {
             return '';
         }
-        return <React.Fragment>
+        return <section>
             <br/>
             <br/>
             <h2>Error</h2>
             Bet not found.
-        </React.Fragment>
+        </section>;
     }
 
     return <React.Fragment>
@@ -51,7 +51,7 @@ export function Find()
 
             <button type='submit' className='nes-btn is-primary'>Search</button>
 
-            { makeErrorHtml() }
+            <ErrorSection />
 
         </form>
 

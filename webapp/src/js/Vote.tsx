@@ -14,7 +14,7 @@ export function Vote(props) {
                 showConfetti();
                 setError(undefined);
                 props.reloadBet();
-                props.setModalHtml('');
+                props.setModal('');
                 console.debug('[onClickVote] Success:', resp);
             } else {
                 setError( getErrorName(resp.effects.status.error) );
@@ -26,7 +26,7 @@ export function Vote(props) {
     };
 
     const onClickBack = () => {
-        props.setModalHtml('');
+        props.setModal('');
     };
 
     return <React.Fragment>
