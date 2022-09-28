@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { cancelBet, getErrorName } from './lib/sui_tools';
+import { cancelBet, getErrorName, showConfetti } from './lib/sui_tools';
 
 export function Cancel(props) {
 
@@ -10,6 +10,7 @@ export function Cancel(props) {
         cancelBet(props.bet)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
+                showConfetti('🧨');
                 setError(undefined);
                 props.reloadBet();
                 props.setModalHtml('');

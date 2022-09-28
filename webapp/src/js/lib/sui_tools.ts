@@ -1,21 +1,31 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
+import JSConfetti from 'js-confetti';
 
 const GOTBEEF_PACKAGE = '0xefdb1d7ef187fed777f4ac96787172bc8ddbb5b8';
 const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();
 
+export function showConfetti(emoji?: string) {
+    let config = !emoji ? {} : {
+        emojis: [emoji],
+        emojiSize: 175,
+        confettiNumber: 18,
+    };
+    (new JSConfetti()).addConfetti(config);
+}
+
 export async function connect(): void {
     await wallet.connect();
-};
+}
 
 export function disconnect(): void {
     wallet.disconnect();
-};
+}
 
 export function isConnected(): bool {
     return wallet.connected;
-};
+}
 
 /// Get all `Coin<T>` objects owned by the current address
 export async function getCoinObjects(type: string): Promise<any[]> {

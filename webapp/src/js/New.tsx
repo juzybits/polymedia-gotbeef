@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
-import { createBet, getErrorName } from './lib/sui_tools';
+import { createBet, getErrorName, showConfetti } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 
 export function New()
@@ -52,6 +52,7 @@ export function New()
         )
         .then(resp => {
             if (resp.effects.status.status == 'success') {
+                showConfetti('🥩');
                 const newObjId = resp.effects.created[0].reference.objectId;
                 navigate('/bet/' + newObjId);
             } else {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { castVote, getErrorName } from './lib/sui_tools';
+import { castVote, getErrorName, showConfetti } from './lib/sui_tools';
 
 export function Vote(props) {
 
@@ -11,6 +11,7 @@ export function Vote(props) {
         castVote(props.bet, player_addr)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
+                showConfetti();
                 setError(undefined);
                 props.reloadBet();
                 props.setModalHtml('');

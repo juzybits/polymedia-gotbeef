@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { fundBet, getCoinObjects, getErrorName } from './lib/sui_tools';
+import { fundBet, getCoinObjects, getErrorName, showConfetti } from './lib/sui_tools';
 
 export function Fund(props) {
 
@@ -25,6 +25,7 @@ export function Fund(props) {
         fundBet(props.bet, payCoin.details.reference.objectId)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
+                showConfetti('💸');
                 setError(undefined);
                 props.reloadBet();
                 props.setModalHtml('');

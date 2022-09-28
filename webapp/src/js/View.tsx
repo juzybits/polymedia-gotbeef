@@ -83,7 +83,7 @@ export function View()
     {
         bet.winner ?
         <React.Fragment>
-            <label className='field-label'>&nbsp;<i className='nes-icon trophy is-small' />:</label>{bet.winner}
+            <label className='field-label'>&nbsp;<i className='nes-icon trophy is-small' />:</label>{shorten(bet.winner)}
             <br/>
         </React.Fragment> : ''
     }
