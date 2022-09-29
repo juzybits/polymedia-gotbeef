@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
-import { createBet, getErrorName, showConfetti } from './lib/sui_tools';
+import { createBet, getErrorName } from './lib/sui_tools';
+import { showConfetti } from './lib/common';
 import { ButtonConnect } from './components/ButtonConnect';
 
 export function New()

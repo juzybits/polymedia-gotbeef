@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getbet, Bet } from './lib/sui_tools';
+import { getBet, Bet } from './lib/sui_tools';
 
 export function Find()
 {
@@ -13,7 +13,7 @@ export function Find()
     const navigate = useNavigate();
     const onSubmitSearch = (e) => {
         e.preventDefault();
-        getbet(betId).then(
+        getBet(betId).then(
         (bet: Bet|null) => {
             setBet(bet);
             bet && navigate('/bet/' + betId, {

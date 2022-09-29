@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import { cancelBet, getErrorName, showConfetti } from './lib/sui_tools';
+import { cancelBet, getErrorName } from './lib/sui_tools';
+import { showConfetti } from './lib/common';
 
 export function Cancel(props) {
 

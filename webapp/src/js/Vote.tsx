@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import { castVote, getErrorName, showConfetti } from './lib/sui_tools';
+import { castVote, getErrorName } from './lib/sui_tools';
+import { showConfetti } from './lib/common';
 
 export function Vote(props) {
 

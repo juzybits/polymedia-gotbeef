@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
 
-import { getbet, Bet } from './lib/sui_tools';
+import { getBet, Bet } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
@@ -19,7 +19,7 @@ export function View()
     /* Load bet object data */
 
     const reloadBet = () => {
-        getbet(betId).then( (bet: Bet|null) => {
+        getBet(betId).then( (bet: Bet|null) => {
             setBet(bet);
         });
     };
