@@ -6,7 +6,7 @@ import { ButtonConnect } from './components/ButtonConnect';
 
 export function New()
 {
-    useEffect(() => { document.title = 'got beef? - New' }, []);
+    useEffect(() => { document.title = 'Got Beef? - New' }, []);
 
     const [connected, setConnected] = useOutletContext();
 

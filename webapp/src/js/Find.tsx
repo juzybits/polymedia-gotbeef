@@ -5,7 +5,7 @@ import { getbet, Bet } from './lib/sui_tools';
 
 export function Find()
 {
-    useEffect(() => { document.title = 'got beef? - Find' }, []);
+    useEffect(() => { document.title = 'Got Beef? - Find' }, []);
 
     const [betId, setBetId] = useState('0xc4ef39214596f8df51797eac27204ed7f3757deb');
     const [bet, setBet] = useState(undefined);

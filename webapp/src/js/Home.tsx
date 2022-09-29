@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 
 export function Home(props) {
     useEffect(() => {
-        document.title = `got beef?`;
+        document.title = `Got Beef?`;
     }, []);
     return <React.Fragment>
         <div>
-            <i>got beef?</i> is a dApp to create on-chain bets on the <a href='https://sui.io/' className='rainbow' target='_blank'>Sui network</a>.
+            <i>Got Beef?</i> is a dApp to create on-chain bets on the <a href='https://sui.io/' className='rainbow' target='_blank'>Sui network</a>.
             <br/>
             <br/>
             Rules:

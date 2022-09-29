@@ -26,7 +26,7 @@ export function View()
 
     const location = useLocation();
     useEffect(() => {
-        document.title = `got beef? - View: ${betId}`;
+        document.title = `Got Beef? - View: ${betId}`;
         if (location.state && location.state.bet) {
             // Reuse the bet object data that Find.tsx has already fetched
             setBet(location.state.bet);
