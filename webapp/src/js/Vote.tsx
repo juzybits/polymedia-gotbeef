@@ -4,7 +4,7 @@ import { castVote, getErrorName, showConfetti } from './lib/sui_tools';
 
 export function Vote(props) {
 
-    const [error, setError] = useState();
+    const [error, setError] = useState(undefined);
 
     const onClickVote = (e) => {
         const player_addr = e.target.value;

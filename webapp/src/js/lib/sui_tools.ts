@@ -35,15 +35,15 @@ export async function getCoinObjects(type: string): Promise<any[]> {
         return !accounts
         ? []
         : rpc.getObjectsOwnedByAddress(accounts[0])
-            .then(objects_info => {
+            .then(objectsInfo => {
                 const expectedType = `0x2::coin::Coin<${type}>`;
-                let objectIds = objects_info.reduce((selected, obj) => {
+                let objectIds = objectsInfo.reduce((selected, obj) => {
                     if (obj.type == expectedType)
                         selected.push(obj.objectId);
                     return selected;
                 }, []);
                 return rpc.getObjectBatch(objectIds)
-                    .then(objects_data => { return objects_data })
+                    .then(objectsData => { return objectsData })
                     .catch(error => { return [] });
             })
             .catch(error => { return [] });
@@ -82,7 +82,6 @@ export async function getbet(objId: string): Promise<Bet|null> {
 
     return rpc.getObject(objId)
         .then(obj => {
-            window.obj = obj; // DEV_ONLY
             if (obj.status != 'Exists') {
                 console.warn('[getbet] Object does not exist. Status:', obj.status);
                 return null;
@@ -127,7 +126,7 @@ export async function getbet(objId: string): Promise<Bet|null> {
                     votesByPlayer: votesByPlayer,
                     winner: typeof fields.winner === 'object' ? '' : fields.winner,
                 };
-                window.fields = fields; // DEV_ONLY
+                window.bet = bet; // DEV_ONLY
                 return bet;
             }
         })

@@ -4,7 +4,7 @@ import { cancelBet, getErrorName, showConfetti } from './lib/sui_tools';
 
 export function Cancel(props) {
 
-    const [error, setError] = useState();
+    const [error, setError] = useState(undefined);
 
     const onClickCancel = () => {
         cancelBet(props.bet)

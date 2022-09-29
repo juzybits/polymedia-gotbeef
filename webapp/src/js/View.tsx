@@ -156,7 +156,6 @@ const phaseColors = new Map([
     ['canceled', '#e76e55'],
     ['stalemate', '#e76e55'],
 ]);
-
 function phaseColor(phaseName: string): string {
     return phaseColors.get(phaseName);
 }

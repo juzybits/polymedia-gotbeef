@@ -20,8 +20,8 @@ export function New()
     const [quorum, setQuorum] = useState(1);
 
     // Result
-    const [newObjId, setNewObjId] = useState();
-    const [error, setError] = useState();
+    const [newObjId, setNewObjId] = useState(undefined);
+    const [error, setError] = useState(undefined);
 
     // Parse player and judge addresses
     const addr_regex = /(0x[0-9a-fA-F]+)/g;

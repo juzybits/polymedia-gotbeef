@@ -5,7 +5,7 @@ import { fundBet, getCoinObjects, getErrorName, showConfetti } from './lib/sui_t
 export function Fund(props) {
 
     const [payCoin, setPayCoin] = useState(undefined);
-    const [error, setError] = useState();
+    const [error, setError] = useState(undefined);
 
     // Look for a Coin<T> with enough balance to fund the bet
     useEffect(() => {
