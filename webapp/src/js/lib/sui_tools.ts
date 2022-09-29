@@ -3,7 +3,7 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
-const GOTBEEF_PACKAGE = '0xefdb1d7ef187fed777f4ac96787172bc8ddbb5b8';
+const GOTBEEF_PACKAGE = '0x9a9a351505707ca00ff36fc5456fc15b44cc5fe1';
 
 /* Wallet functions */
 
@@ -33,7 +33,7 @@ export async function getAddresses(): Promise<string[]> {
 
 /* RPC functions */
 
-const rpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
+const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {

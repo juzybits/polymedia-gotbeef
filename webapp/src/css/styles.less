@@ -73,7 +73,11 @@ footer {
         color: #6cffff;
     }
 }
+#bet-actions-container, .bet-modal {
+    margin-bottom: 2em;
+}
 #bet-actions {
+    min-height: 44px; // so the section doesn't collapse between buttons renders
     text-align: center;
     .nes-btn {
         margin: 0 1.4em 0 0;
@@ -109,6 +113,12 @@ a.rainbow:hover {
 /* Mobile */
 
 @media (max-width: @page-width) {
+    body {
+        font-size: 0.75em;
+    }
+    textarea {
+        min-height: 80px;
+    }
     #main {
         border-width: 0 0 4px 0;
         margin-top: 0
@@ -116,9 +126,6 @@ a.rainbow:hover {
     footer {
         padding-right: 1em;
     }
-#title {
-    font-size: 2em;
-}
     #bet-actions {
         .nes-btn {
             width: 50%;

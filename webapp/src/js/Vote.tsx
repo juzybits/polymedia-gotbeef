@@ -30,7 +30,7 @@ export function Vote(props) {
         props.setModal('');
     };
 
-    return <React.Fragment>
+    return <section className='bet-modal'>
         <h2>Vote</h2>
         Click the address of the winner.
         <br/>
@@ -50,18 +50,16 @@ export function Vote(props) {
             Back
         </button>
         <br/>
-        {
-            error ?
-            <React.Fragment>
-                <br/>
-                ERROR:
-                <br/>
-                {error}
-                <br/>
-            </React.Fragment>
-            : ''
-        }
+
+        {error &&
+        <React.Fragment>
+            <br/>
+            ERROR:
+            <br/>
+            {error}
+            <br/>
+        </React.Fragment>}
         <br/>
         <hr/>
-    </React.Fragment>;
+    </section>;
 }

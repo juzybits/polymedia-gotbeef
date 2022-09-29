@@ -44,7 +44,7 @@ export function Fund(props) {
         props.setModal('');
     };
 
-    return <React.Fragment>
+    return <section className='bet-modal'>
         <h2>Fund bet</h2>
         <div>
             Bet size is {props.bet.size} <i className="nes-icon coin is-small" /> {props.bet.collatType}
@@ -58,18 +58,16 @@ export function Fund(props) {
                 Back
             </button>
         </div>
-        {
-            error ?
-            <React.Fragment>
-                <br/>
-                ERROR:
-                <br/>
-                {error}
-                <br/>
-            </React.Fragment>
-            : ''
-        }
+
+        {error &&
+        <React.Fragment>
+            <br/>
+            ERROR:
+            <br/>
+            {error}
+            <br/>
+        </React.Fragment>}
         <br/>
         <hr/>
-    </React.Fragment>;
+    </section>;
 }

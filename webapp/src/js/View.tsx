@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
 
-import { getBet, Bet } from './lib/sui_tools';
+import { getBet, Bet, getAddresses } from './lib/sui_tools';
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
@@ -15,6 +15,11 @@ export function View()
     const betId = useParams().uid;
     const [bet, setBet] = useState(undefined);
     const [modal, setModal] = useState(undefined);
+    const [isPlayer, setIsPlayer] = useState(undefined);
+    const [isJudge, setIsJudge] = useState(undefined);
+    const [userCanFund, setUserCanFund] = useState(undefined);
+    const [userCanVote, setUserCanVote] = useState(undefined);
+    const [userCanCancel, setUserCanCancel] = useState(undefined);
 
     /* Load bet object data */
 
@@ -36,6 +41,24 @@ export function View()
         }
     }, []);
 
+    /* Decide which action buttons are visible to the user */
+
+    useEffect(() => {
+        if (!connected || !bet) {
+            return;
+        }
+        getAddresses().then(addresses => {
+            const userAddr = addresses[0];
+            const isJudge = bet.judges.includes(userAddr);
+            const isPlayer = bet.players.includes(userAddr);
+            setIsPlayer(isPlayer);
+            setIsJudge(isJudge);
+            setUserCanFund( isPlayer && bet.phase == 'funding' && !bet.funds.has(userAddr) );
+            setUserCanVote( isJudge && bet.phase == 'voting' && !bet.votesByJudge.has(userAddr) );
+            setUserCanCancel( (isPlayer||isJudge) && bet.phase == 'funding' && bet.funds.size == 0 );
+        });
+    }, [connected, bet]);
+
     /* Render */
 
     if (typeof bet === 'undefined')
@@ -46,35 +69,53 @@ export function View()
 
     return <React.Fragment>
     {
-        modal ? modal :
-        <section className='showcase'>
-            <section className='nes-container with-title'>
+        modal ||
+        // Show action only if we're not inside of a modal (fund/vote/cancel)
+        (
+            // Show actions only if the bet is not already settled/canceled/stalemate
+            (bet.phase=='voting' || bet.phase=='funding') &&
+            <section id='bet-actions-container' className='nes-container with-title'>
                 <h3 className='title'>Actions</h3>
                 <div id='bet-actions'>
                 {
                     !connected
                     ? <ButtonConnect connected={connected} setConnected={setConnected} />
                     : <div id='bet-actions'>
-                        {/* TODO: only show the action buttons that the user address can use */}
+
+                        {userCanFund &&
                         <button type='button' className='nes-btn is-success'
                             onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                             Fund
-                        </button>
+                        </button>}
+
+                        {userCanVote &&
                         <button type='button' className='nes-btn is-success'
                             onClick={() => setModal(<Vote bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                             Vote
-                        </button>
+                        </button>}
+
+                        {userCanCancel &&
                         <button type='button' className='nes-btn is-error'
                             onClick={() => setModal(<Cancel bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                             Cancel
-                        </button>
+                        </button>}
+
+                        {
+                            (isPlayer===false && isJudge===false)
+                            ? <i style={{fontSize: '0.9em'}}>
+                                Your address is not a participant in this bet
+                            </i>
+                            : (userCanFund===false && userCanVote===false && userCanCancel===false) &&
+                            <i style={{fontSize: '0.9em'}}>
+                                No actions available at this time
+                            </i>
+                        }
                     </div>
                 }
                 </div>
             </section>
-        </section>
+        )
     }
-    <br/>
 
     <h2>{bet.title}</h2>
 
@@ -100,7 +141,7 @@ export function View()
         </React.Fragment>
     }
 
-    <table>
+    <table>{/* TODO: responsive */}
         <thead>
             <tr>
                 <th><i className='snes-jp-logo custom-logo' /> Player</th>
@@ -156,6 +197,7 @@ const phaseColors = new Map([
     ['canceled', '#e76e55'],
     ['stalemate', '#e76e55'],
 ]);
+
 function phaseColor(phaseName: string): string {
     return phaseColors.get(phaseName);
 }

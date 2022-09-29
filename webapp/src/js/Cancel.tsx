@@ -29,7 +29,7 @@ export function Cancel(props) {
         props.setModal('');
     };
 
-    return <React.Fragment>
+    return <section className='bet-modal'>
         <h2>Cancel bet</h2>
         The bet can still be canceled because nobody has funded it yet.
         <br/>
@@ -42,18 +42,16 @@ export function Cancel(props) {
             Back
         </button>
         <br/>
-        {
-            error ?
-            <React.Fragment>
-                <br/>
-                ERROR:
-                <br/>
-                {error}
-                <br/>
-            </React.Fragment>
-            : ''
-        }
+
+        {error &&
+        <React.Fragment>
+            <br/>
+            ERROR:
+            <br/>
+            {error}
+            <br/>
+        </React.Fragment>}
         <br/>
         <hr/>
-    </React.Fragment>;
+    </section>;
 }

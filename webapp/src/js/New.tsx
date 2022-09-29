@@ -16,8 +16,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(5000);
-    const [players, setPlayers] = useState('0x2b7838809e55104f4eb93f8e042389cb40b4985f\n0xf703d5e334d20431415bfaf75cc51b0774248b08');
-    const [judges, setJudges] = useState('0xb4537fb53333d986d265042d5c4fae42d0b9c4db');
+    const [players, setPlayers] = useState('0xaa6a2aef59cb467868296418e949d7cca4d24a51\n0xb3b72b98dc693f8e8524cf9118ccb0c03d51618e');
+    const [judges, setJudges] = useState('0x4cc30fff19e8d4fd798a47042c213b38b6fbb80d');
     const [quorum, setQuorum] = useState(1);
 
     // Result
