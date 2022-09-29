@@ -8,8 +8,9 @@ export function App(props)
     const [connected, setConnected] = useState(false);
 
     return <div id='page'>
+    <section id='main'>
 
-        <div id='header'>
+        <header>
 
             <h1 id='title'>GOT BEEF?</h1>
 
@@ -19,11 +20,17 @@ export function App(props)
                 &nbsp;~ <Link to='/find'>FIND</Link>
             </nav>
 
-        </div>
+        </header>
 
-        <div id='content'>
+        <section id='content'>
             <Outlet context={[connected, setConnected]} />
-        </div>
+        </section>
+
+    </section>
+
+    <footer>
+        built with <i className='nes-icon heart is-small'></i> by <a href='https://twitter.com/juzybits' className='rainbow' target='_blank'>@juzybits</a>
+    </footer>
 
     </div>;
 }

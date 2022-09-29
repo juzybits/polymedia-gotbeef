@@ -39,12 +39,15 @@ th, td {
 
 #page {
     max-width: @page-width;
+    margin: 0 auto;
+}
+#main {
     background: @page-background-color;
     border: 4px solid black;
-    margin: 2em auto;
+    margin: 2em 0 0.7em 0;
     padding: 1.2em 1.8em 1.6em;
 }
-#header {
+header {
     text-align: center;
 }
 #title {
@@ -57,8 +60,18 @@ th, td {
 #content {
     padding-top: 1.5em;
 }
-#built-by {
-    font-size: 0.8em;
+footer {
+    color: white;
+    opacity: 0.7;
+    text-align: right;
+    font-size: 0.75em;
+    margin-bottom: 2em;
+    &:hover {
+        opacity: 1;
+    }
+    a {
+        color: #6cffff;
+    }
 }
 #bet-actions {
     text-align: center;
@@ -96,9 +109,12 @@ a.rainbow:hover {
 /* Mobile */
 
 @media (max-width: @page-width) {
-    #page {
+    #main {
         border-width: 0 0 4px 0;
         margin-top: 0
+    }
+    footer {
+        padding-right: 1.4em;
     }
 #title {
     font-size: 2em;
