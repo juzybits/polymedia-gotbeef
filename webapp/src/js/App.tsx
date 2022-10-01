@@ -29,7 +29,7 @@ export function App(props)
     </section>
 
     <footer>
-        built with <i className='nes-icon heart is-small'></i> by <a href='https://twitter.com/juzybits' className='rainbow' target='_blank'>@juzybits</a>
+        <a href='https://twitter.com/juzybits' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>@juzybits</span></a>
     </footer>
 
     </div>;
