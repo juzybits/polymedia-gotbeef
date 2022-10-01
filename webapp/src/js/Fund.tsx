@@ -13,7 +13,7 @@ export function Fund(props) {
         getCoinObjects(props.bet.collatType)
         .then(coins => {
             const coin = coins.find(obj => obj.details.data.fields.balance >= props.bet.size);
-            console.debug("[Fund.useEffect] Found payment coin:", coin ? coin.details.data.fields : 'NONE');
+            console.debug('[Fund.useEffect] Found payment coin:', coin ? coin.details.data.fields : 'NONE');
             setPayCoin(coin||null);
             if (!coin) {
                 setError(`Your wallet doesn't contain a Coin<${props.bet.collatType}> with a balance large enough to fund this bet.`);
@@ -47,7 +47,7 @@ export function Fund(props) {
     return <section className='bet-modal'>
         <h2>Fund bet</h2>
         <div>
-            Bet size is {props.bet.size} <i className="nes-icon coin is-small" /> {props.bet.collatType}
+            Bet size is {props.bet.size} <i className='nes-icon coin is-small' /> {props.bet.collatType}
             <br/>
             <br/>
             <button type='button' className={`nes-btn ${payCoin ? 'is-success' : 'is-disabled'}`} disabled={!payCoin} onClick={onClickFund}>

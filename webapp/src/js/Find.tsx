@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { getBet, Bet } from './lib/sui_tools';
+import { FieldError } from './components/FieldError';
 
 export function Find()
 {
@@ -9,14 +10,26 @@ export function Find()
 
     const [betId, setBetId] = useState('0x7cc3830ea8dc83ebce35b0f166392abf1d0d54ac');
     const [bet, setBet] = useState(undefined);
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
     const onSubmitSearch = (e) => {
         e.preventDefault();
-        getBet(betId).then(
+
+        // Validate input
+        const betIdClean = betId.trim()
+        if ( betIdClean.match(/^0x[0-9a-fA-F]+$/) ) {
+            setError('');
+        } else {
+            setError("that doesn't look like a valid address")
+            return;
+        }
+
+        // Search
+        getBet(betIdClean).then(
         (bet: Bet|null) => {
             setBet(bet);
-            bet && navigate('/bet/' + betId, {
+            bet && navigate('/bet/' + bet.id, {
                 state: { bet: bet }
             });
         });
@@ -42,11 +55,12 @@ export function Find()
 
             <div className='nes-field'>
                 <label htmlFor='uid_field'>Object ID</label>
-                <input type='text' id='uid_field' className='nes-input'
+                <input type='text' id='uid_field' className={`nes-input ${error ? 'is-error' : ''}`}
                     spellCheck='false' autoCorrect='off' autoComplete='off'
                     value={betId} onChange={(e) => setBetId(e.target.value)}
                />
             </div>
+            <FieldError error={error} />
             <br/>
 
             <button type='submit' className='nes-btn is-primary'>Search</button>
