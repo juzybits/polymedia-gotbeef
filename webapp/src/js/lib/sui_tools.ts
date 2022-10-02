@@ -54,7 +54,7 @@ export type Bet = {
 
 /// Fetch and parse a `gotbeef::bet::Bet<T>` Sui object into our custom Bet type
 export async function getBet(objId: string): Promise<Bet|null> {
-    console.debug('[getObject] Looking up:', objId);
+    console.debug('[getBet] Looking up:', objId);
 
     const getPhaseName = (phaseCode: number): string => {
         return ['funding', 'voting', 'settled', 'canceled', 'stalemate'][phaseCode];

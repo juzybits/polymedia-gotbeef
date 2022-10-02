@@ -19,7 +19,6 @@ import steakImage from '../../img/steak.svg';
 const cloudWidth = 145; // px
 const cloudHeight = 108; // px
 
-// TODO remove 3rd steak from background image
 export function reloadClouds()
 {
     let el = null;
