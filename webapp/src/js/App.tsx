@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
+import rockImage from '../img/rock.jpeg';
 
 export function App(props)
 {
@@ -12,7 +13,8 @@ export function App(props)
 
         <header>
 
-            <h1 id='title'>GOT BEEF?</h1>
+            <h1 id='title'>GOT BEEF?<img id='rock' src={rockImage} alt='got beef?' /></h1>
+
 
             <nav id='nav'>
                 <Link to='/'>HOME</Link>

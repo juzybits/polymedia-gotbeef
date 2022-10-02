@@ -31,7 +31,7 @@ export function Cancel(props) {
 
     return <section className='bet-modal'>
         <h2>Cancel bet</h2>
-        The bet can still be canceled because nobody has funded it yet.
+        The bet can be canceled because nobody has funded it yet.
         <br/>
         <br/>
         <button type='button' className='nes-btn is-error' onClick={onClickCancel}>
