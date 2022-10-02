@@ -11,68 +11,79 @@ export function showConfetti(emoji?: string) {
     (new JSConfetti()).addConfetti(config);
 }
 
-/// Dynamic clouds
-
-import cloudImage from '../../img/cloud.png';
-import steakImage from '../../img/steak.svg';
+/// Dynamic clouds // TODO turn in to class in its own file
 
 const cloudWidth = 145; // px
 const cloudHeight = 108; // px
+const cloudSqroot = 125 // px, square root of the area
 
 export function reloadClouds()
 {
-    let el = null;
-    while ( el = document.querySelector('.cloud') ) {
-        el.parentNode.removeChild(el);
-    }
+    removeClouds();
 
+    // Get window dimensions
     const windowWitdth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
-
     const windowHeight = window.innerHeight
     || document.documentElement.clientHeight
     || document.body.clientHeight;
 
-    // if (windowWitdth < 810) {
-    //     console.log('OUT', windowWitdth, windowHeight); // TODO Remove
-    //     return;
-    // }
-
-    const extraClouds = windowWitdth < 810 ? 0 : Math.floor( (windowWitdth-810) / 500 );
-    const cloudCount = 1 + extraClouds;
-    const footerOffsetTop = document.getElementById('footer').offsetTop;
-    console.log('IIIII', windowWitdth, windowHeight, footerOffsetTop, cloudCount); // TODO Remove
-
-    if (footerOffsetTop > windowHeight-cloudHeight) {
+    // Find the area of the gap between the footer and the bottom of the window
+    const canvasTop = document.getElementById('footer').offsetTop + 16;
+    const canvasBottom = windowHeight-cloudHeight/2;
+    const cloudFitsInGap = canvasBottom > canvasTop;
+    if (!cloudFitsInGap) {
+        console.debug('[clouds] No space')
         return;
     }
+    const canvasArea = windowWitdth * (canvasBottom - canvasTop);
+
+    // Add extra clouds based on the area of the gap
+    const canvasSqrt = Math.floor( Math.sqrt(canvasArea) );
+    const extraClouds = canvasSqrt < 600 ? 0 : Math.floor( (canvasSqrt-475) / cloudSqroot );
+    const cloudCount = 1 + extraClouds;
+    console.debug('[clouds]', canvasSqrt, cloudCount);
 
     for (var i = 0; i < cloudCount; i++) {
-        const top = getRandomInt(footerOffsetTop, windowHeight-cloudHeight);
-        const left = getRandomInt(25-cloudWidth, windowWitdth-cloudWidth);
+        const top = getRandomInt(canvasTop, canvasBottom);
+        const left = getRandomInt(-cloudWidth/2, windowWitdth-cloudWidth);
 
-        const el = document.createElement('img');
+        const el = document.createElement('span');
         el.className = 'cloud';
         el.setAttribute(
           'style',
           `top: ${top}px; left: ${left}px`,
         );
-        el.src = cloudImage;
         el.addEventListener('click', (event) => {
-            console.log('Clicked');
-            el.src = steakImage;
+            el.className = el.className=='cloud' ? 'steak' : 'cloud';
         }, false);
         document.body.appendChild(el);
     }
 }
-addEventListener('resize', (event) => { // TODO: delay/buffer
-    // console.log('Reloading clouds'); // TODO Remove
-    reloadClouds();
+let locked = false;
+addEventListener('resize', () => {
+    if (locked) {
+        return;
+    }
+    locked = true;
+    removeClouds();
+    setTimeout(() => {
+        reloadClouds();
+        locked = false;
+    }, 500);
 });
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return min + (max - min + 1)*crypto.getRandomValues(new Uint32Array(1))[0]/2**32 | 0;
+}
+
+// Remove all .cloud elements
+function removeClouds() {
+    let el = null;
+    while ( el = document.querySelector('.cloud,.steak') ) {
+        el.parentNode.removeChild(el);
+    }
 }

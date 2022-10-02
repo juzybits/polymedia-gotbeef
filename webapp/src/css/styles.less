@@ -9,6 +9,7 @@ body {
     background: #5c94fc;
     background-image:  url(../img/clouds.png);
     background-repeat: repeat;
+    background-position: top center;
     overflow-wrap: anywhere;
 }
 ul {
@@ -126,10 +127,20 @@ footer a:hover .rainbow, .rainbow:hover {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-.cloud {
+.cloud, .steak {
     position: absolute;
-    width: 145px;
     z-index: -1;
+    width: 145px;
+    height: 108px;
+    background-repeat: no-repeat;
+}
+.cloud {
+    background-image:  url(../img/cloud.png);
+}
+.steak {
+    background-image:  url(../img/steak.svg);
+    background-size: 140px;
+    background-position: center;
 }
 #bucko {
     width: 100%;
