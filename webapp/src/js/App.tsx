@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import rockImage from '../img/rock.jpeg';
+import { reloadClouds } from './lib/common';
 
 export function App(props)
 {
@@ -13,8 +14,7 @@ export function App(props)
 
         <header>
 
-            <h1 id='title'>GOT BEEF?<img id='rock' src={rockImage} alt='got beef?' /></h1>
-
+            <h1 id='title'>GOT BEEF?<img id='rock' src={rockImage} alt='got beef?' onClick={reloadClouds} /></h1>
 
             <nav id='nav'>
                 <Link to='/'>HOME</Link>
@@ -30,7 +30,7 @@ export function App(props)
 
     </section>
 
-    <footer>
+    <footer id='footer'>
         <a href='https://twitter.com/juzybits' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>@juzybits</span></a>
     </footer>
 

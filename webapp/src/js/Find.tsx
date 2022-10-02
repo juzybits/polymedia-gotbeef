@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getBet, Bet } from './lib/sui_tools';
 import { FieldError } from './components/FieldError';
+import { getBet, Bet } from './lib/sui_tools';
+import { reloadClouds } from './lib/common';
 
 export function Find()
 {
-    useEffect(() => { document.title = 'Got Beef? - Find' }, []);
+    useEffect(() => {
+        document.title = 'Got Beef? - Find';
+        reloadClouds();
+    }, []);
 
     const [betId, setBetId] = useState('0x98f8e2ae659ef177816430c49e160ccd922e523c');
     const [bet, setBet] = useState(undefined);

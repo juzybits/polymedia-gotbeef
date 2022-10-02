@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 
+import { reloadClouds } from './lib/common';
+
 export function Home(props) {
     useEffect(() => {
         document.title = `Got Beef?`;
+        reloadClouds();
     }, []);
     return <React.Fragment>
         <div>

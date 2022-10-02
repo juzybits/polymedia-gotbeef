@@ -61,6 +61,9 @@ header {
     width: 1.05em;
     vertical-align: top;
     margin-left: 11px;
+    &:hover {
+       transform: rotate(-10deg);
+    }
 }
 #nav {
     border-bottom: 4px solid pink;
@@ -88,6 +91,11 @@ footer a:hover .rainbow, .rainbow:hover {
     background-image: linear-gradient(to left, violet, indigo, blue, green, gold, orange, red);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+.cloud {
+    position: absolute;
+    width: 145px;
+    z-index: -1;
 }
 #bet-actions-container, .bet-modal {
     margin-bottom: 2em;
