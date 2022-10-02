@@ -117,31 +117,44 @@ export function View()
         )
     }
 
-    <h2>{bet.title}</h2>
+    <h2 style={{marginBottom: '0.8em'}}>{bet.title}</h2>
 
-    <label className='field-label'>ID:</label><a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{shorten(betId)}</a>
-    <br/>
-    {
-        bet.winner ?
-        <React.Fragment>
-            <label className='field-label'>&nbsp;<i className='nes-icon trophy is-small' />:</label>{shorten(bet.winner)}
-            <br/>
-        </React.Fragment> : ''
-    }
-    <label className='field-label'>Phase:</label><span style={{color: phaseColor(bet.phase)}}>{bet.phase}</span>
-    <br/>
-    <label className='field-label'>Size:</label>{bet.size} <i className='nes-icon coin is-small' /> {bet.collatType}
-    <br/>
-    <label className='field-label'>Quorum:</label>{bet.quorum}/{bet.judges.length}
-    <br/>
-    {
-        !bet.description ? '' : <React.Fragment>
-            <label className='x'>Description:</label>{bet.description}
-            <br/>
-        </React.Fragment>
-    }
+    <table id='bet-summary'>
+        <tbody>
+            <tr>
+                <td>ID:</td>
+                <td><a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
+            </tr>
+            {
+            !bet.winner ? '' :
+            <tr>
+                <td>&nbsp;<i className='nes-icon trophy is-small' />:</td>
+                <td>{shorten(bet.winner)}</td>
+            </tr>
+            }
+            <tr>
+                <td>Phase:</td>
+                <td><span style={{color: phaseColor(bet.phase)}}>{bet.phase}</span></td>
+            </tr>
+            <tr>
+                <td>Size:</td>
+                <td>{bet.size} <i className='nes-icon coin is-small' /> {bet.collatType}</td>
+            </tr>
+            <tr>
+                <td>Quorum:</td>
+                <td>{bet.quorum}/{bet.judges.length}</td>
+            </tr>
+            {
+            !bet.description ? '' :
+            <tr>
+                <td>Details:</td>
+                <td>{bet.description}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
 
-    <table>{/* TODO: responsive */}
+    <table>
         <thead>
             <tr>
                 <th><i className='snes-jp-logo custom-logo' /> Player</th>
@@ -161,7 +174,6 @@ export function View()
         }
         </tbody>
     </table>
-    <br/>
 
     <table>
         <thead>
@@ -181,7 +193,6 @@ export function View()
         }
         </tbody>
     </table>
-    <br/>
 
     </React.Fragment>;
 }
