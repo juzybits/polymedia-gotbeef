@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
-import rockImage from '../img/rock.jpeg';
+import rockImage from '../img/rock.png';
 import { reloadClouds } from './lib/common';
 
 export function App(props)
