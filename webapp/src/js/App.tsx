@@ -3,7 +3,7 @@ import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import rockImage from '../img/rock.png';
-import { reloadClouds } from './lib/common';
+import { reloadClouds } from './lib/clouds';
 
 export function App(props)
 {

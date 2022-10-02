@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { reloadClouds } from './lib/common';
+import { reloadClouds } from './lib/clouds';
 
 export function Home(props) {
     useEffect(() => {

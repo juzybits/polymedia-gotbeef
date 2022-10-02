@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
 import { createBet, getErrorName } from './lib/sui_tools';
-import { reloadClouds, showConfetti } from './lib/common';
+import { reloadClouds } from './lib/clouds';
+import { showConfetti } from './lib/confetti';
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
 

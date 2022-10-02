@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { fundBet, getCoinObjects, getErrorName } from './lib/sui_tools';
-import { showConfetti } from './lib/common';
+import { showConfetti } from './lib/confetti';
 
 export function Fund(props) {
 

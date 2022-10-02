@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
 import { getBet, Bet } from './lib/sui_tools';
-import { reloadClouds } from './lib/common';
+import { reloadClouds } from './lib/clouds';
 
 export function Find()
 {
