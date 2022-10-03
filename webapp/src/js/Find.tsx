@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { getBet, Bet } from './lib/sui_tools';
 import { reloadClouds } from './lib/clouds';
+import { isProd } from './lib/common';
+import { getBet, Bet } from './lib/sui_tools';
 
 export function Find()
 {
@@ -12,7 +13,7 @@ export function Find()
         reloadClouds();
     }, []);
 
-    const [betId, setBetId] = useState('');
+    const [betId, setBetId] = useState(isProd ? '' : '0xcc247c0ddc06f705591371de824fa900056648cc');
     const [bet, setBet] = useState(undefined);
     const [error, setError] = useState('');
 
