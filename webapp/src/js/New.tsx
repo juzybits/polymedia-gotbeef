@@ -18,22 +18,13 @@ export function New()
     const [connected, setConnected] = useOutletContext();
 
     // Inputs
-    /*
-    const [title, setTitle] = useState('GCR vs Kwon');
+    const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
     const [description, setDescription] = useState('');
-    const [currency, setCurrency] = useState('0x2::sui::SUI');
-    const [size, setSize] = useState(5000);
-    const [players, setPlayers] = useState('0xaa6a2aef59cb467868296418e949d7cca4d24a51\n0xb3b72b98dc693f8e8524cf9118ccb0c03d51618e');
-    const [judges, setJudges] = useState('0x4cc30fff19e8d4fd798a47042c213b38b6fbb80d');
-    const [quorum, setQuorum] = useState(1);
-    */
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [currency, setCurrency] = useState('0x2::sui::SUI');
-    const [size, setSize] = useState('');
-    const [players, setPlayers] = useState('');
-    const [judges, setJudges] = useState('');
-    const [quorum, setQuorum] = useState('');
+    const [currency, setCurrency] = useState(isProd ? '' : '0x2::sui::SUI');
+    const [size, setSize] = useState(isProd ? '' : 5000);
+    const [players, setPlayers] = useState(isProd ? '' : '0xaa6a2aef59cb467868296418e949d7cca4d24a51\n0xb3b72b98dc693f8e8524cf9118ccb0c03d51618e');
+    const [judges, setJudges] = useState(isProd ? '' : '0x4cc30fff19e8d4fd798a47042c213b38b6fbb80d');
+    const [quorum, setQuorum] = useState(isProd ? '' : 1);
     // Input errors
     const [titleError, setTitleError] = useState('');
     const [sizeError, setSizeError] = useState('');
@@ -133,8 +124,8 @@ export function New()
             currency,
             title,
             description,
-            quorum,
-            size,
+            Math.floor(quorum),
+            Math.floor(size),
             playersArray,
             judgesArray,
         )
@@ -175,9 +166,13 @@ export function New()
 
         <div className='nes-field'>
             <label htmlFor='size_field'><i className='nes-icon coin is-custom' /> Size and currency</label>
-            <input type='number' id='size_field' className={`nes-input ${sizeError ? 'is-error' : ''}`}
+            <input type='text' id='size_field' className={`nes-input ${sizeError ? 'is-error' : ''}`}
                 spellCheck='false' autoCorrect='off' autoComplete='off'
-                value={size} onChange={(e) => setSize(e.target.value)}
+                inputMode='numeric' pattern="[0-9]*"
+                value={size}
+                onChange={(e) =>
+                    setSize((v) => (e.target.validity.valid ? e.target.value : v))
+                }
             />
         </div>
         <FieldError error={sizeError} />
@@ -212,9 +207,13 @@ export function New()
 
         <div className='nes-field'>
             <label htmlFor='quorum_field'><i className='nes-icon trophy is-custom' /> Quorum (# of votes to win)</label>
-            <input type='number' id='quorum_field' className='nes-input' min={minQuorum} max={maxQuorum}
+            <input type='text' id='quorum_field' className='nes-input'
                 spellCheck='false' autoCorrect='off' autoComplete='off'
-                value={quorum} onChange={(e) => setQuorum(e.target.value)}
+                inputMode='numeric' pattern="[0-9]*"
+                value={quorum}
+                onChange={(e) =>
+                    setQuorum((v) => (e.target.validity.valid ? e.target.value : v))
+                }
             />
         </div>
         <label className='field-note'>(minimum {minQuorum}/{maxQuorum})</label>
