@@ -12,7 +12,7 @@ export function Find()
         reloadClouds();
     }, []);
 
-    const [betId, setBetId] = useState('0x98f8e2ae659ef177816430c49e160ccd922e523c');
+    const [betId, setBetId] = useState('');
     const [bet, setBet] = useState(undefined);
     const [error, setError] = useState('');
 

@@ -20,6 +20,7 @@ export function App(props)
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
+                {/* TODO: History page */}
             </nav>
 
         </header>
@@ -31,8 +32,11 @@ export function App(props)
     </section>
 
     <footer id='footer'>
+        {/* TODO: add version */}
         <a href='https://twitter.com/juzybits' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>@juzybits</span></a>
     </footer>
+
+    <span id='secret'>It's really hard to make something beautiful. And it's really worthwhile.</span>
 
     </div>;
 }

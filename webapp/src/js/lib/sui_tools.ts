@@ -3,7 +3,7 @@
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 
-const GOTBEEF_PACKAGE = '0x9a9a351505707ca00ff36fc5456fc15b44cc5fe1';
+const GOTBEEF_PACKAGE = '0x94a0b9b4e1ae16462f2164f1296f3fe475c45c82';
 
 /* Wallet functions */
 
@@ -111,7 +111,6 @@ export async function getBet(objId: string): Promise<Bet|null> {
                     votesByPlayer: votesByPlayer,
                     winner: typeof fields.winner === 'object' ? '' : fields.winner,
                 };
-                window.bet = bet; // DEV_ONLY
                 return bet;
             }
         })
