@@ -11,8 +11,8 @@ module gotbeef::bet_tests
     use gotbeef::bet::{Self, Bet};
 
     // Default bet settings
-    const TITLE: vector<u8> = b"Frazier vs Ali";
-    const DESC: vector<u8> = b"The Fight of the Century";
+    const TITLE: vector<u8> = b"GCR vs Kwon";
+    const DESC: vector<u8> = b"The Bet of the Century";
     const QUORUM: u64 = 2;
     const BET_SIZE: u64 = 500;
     const CREATOR: address = @0x777;
@@ -377,6 +377,29 @@ module gotbeef::bet_tests
         ts::next_tx(scen, &SOMEONE); {
             let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
             let bet = ts::borrow_mut(&mut bet_wrapper);
+            bet::cancel( bet, ts::ctx(scen) );
+            ts::return_shared(scen, bet_wrapper);
+        };
+    }
+
+    #[test, expected_failure(abort_code = 103)]
+    /// Try to cancel a settled bet
+    fun test_cancel_e_not_in_funding_phase()
+    {
+        let scen = &mut ts::begin(&CREATOR); {
+            create_bet(scen);
+        };
+
+        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
+
+        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, &JUDGE_2); { cast_vote(scen, PLAYER_1); };
+
+        ts::next_tx(scen, &PLAYER_1); {
+            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
+            let bet = ts::borrow_mut(&mut bet_wrapper);
+            assert!( bet::phase(bet) == 2, 0 ); // PHASE_SETTLED
             bet::cancel( bet, ts::ctx(scen) );
             ts::return_shared(scen, bet_wrapper);
         };

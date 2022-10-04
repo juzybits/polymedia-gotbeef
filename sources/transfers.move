@@ -18,7 +18,6 @@ module gotbeef::transfers
         let i = vec_map::size(funds);
         while (i > 0) {
             i = i - 1;
-            // Pending: use remove_entry_by_idx() when available
             let (_, coin) = vec_map::remove_entry_by_idx(funds, i);
             balance::join( &mut total_balance, coin::into_balance(coin) );
         };

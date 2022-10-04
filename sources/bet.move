@@ -80,10 +80,9 @@ module gotbeef::bet
         most_votes: u64, // number of votes received by the leading player (to detect stalemates)
         winner: Option<address>,
 
-        // Maybe:
-        // start_epoch: Option<u64>, // voting starts on this day
-        // end_epoch: Option<u64>, // voting ends on this day
-        // funds: vector<Item>, // prize can be any asset(s)
+        // start_epoch: Option<u64>, // (maybe) voting starts on this day
+        // end_epoch: Option<u64>, // (maybe) voting ends on this day
+        // funds: vector<Item>, // (maybe) prize can be any asset(s)
     }
 
     /* Accessors */
@@ -230,9 +229,9 @@ module gotbeef::bet
 
     /// Some scenarios where we might want to cancel the bet and refund the players:
     /// - (done) If there's no funding, any judge or player may cancel it at any time.
-    /// - (todo) If all players agree on cancelling the bet.
-    /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
+    /// - (maybe) If all players agree on cancelling the bet.
     /// - (maybe) If a quorum of judges agree on cancelling the bet.
+    /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
     public entry fun cancel<T>(bet: &mut Bet<T>, ctx: &mut TxContext) {
         assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
         assert!( vec_map::is_empty(&bet.funds), E_CANCEL_BET_HAS_FUNDS );
