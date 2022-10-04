@@ -13,7 +13,7 @@ export function Find()
         reloadClouds();
     }, []);
 
-    const [betId, setBetId] = useState(isProd ? '' : '0xcc247c0ddc06f705591371de824fa900056648cc');
+    const [betId, setBetId] = useState(isProd ? '' : '0x095a34efbcc75687a96b476e419a02df0b5b9708');
     const [bet, setBet] = useState(undefined);
     const [error, setError] = useState('');
 
@@ -45,7 +45,6 @@ export function Find()
             return '';
         }
         return <section>
-            <br/>
             <br/>
             <h2>Error</h2>
             Bet not found.

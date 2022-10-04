@@ -20,10 +20,10 @@ export function New()
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
     const [description, setDescription] = useState('');
-    const [currency, setCurrency] = useState(isProd ? '' : '0x2::sui::SUI');
+    const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : 5000);
     const [players, setPlayers] = useState(isProd ? '' : '0xaa6a2aef59cb467868296418e949d7cca4d24a51\n0xb3b72b98dc693f8e8524cf9118ccb0c03d51618e');
-    const [judges, setJudges] = useState(isProd ? '' : '0x4cc30fff19e8d4fd798a47042c213b38b6fbb80d');
+    const [judges, setJudges] = useState(isProd ? '' : '0x8295149f034450adba489755407e84bbcc7a74ab');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
     // Input errors
     const [titleError, setTitleError] = useState('');

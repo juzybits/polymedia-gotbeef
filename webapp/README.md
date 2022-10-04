@@ -7,6 +7,6 @@ yarn serve
 ## How to deploy (Firebase)
 ```
 yarn build
-yarn preview-prod
+yarn preview
 yarn deploy-prod
 ```

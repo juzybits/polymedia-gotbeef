@@ -18,7 +18,7 @@ export function reloadClouds()
 
     // Find the area of the gap between the footer and the bottom of the window
     const canvasTop = document.getElementById('footer').offsetTop + 16;
-    const canvasBottom = windowHeight-IMG_HEIGHT/2;
+    const canvasBottom = windowHeight-IMG_HEIGHT;
     const cloudFitsInGap = canvasBottom > canvasTop;
     if (!cloudFitsInGap) {
         // console.debug('[clouds] No space')
@@ -28,7 +28,7 @@ export function reloadClouds()
 
     // Add extra clouds based on the area of the gap
     const canvasSqrt = Math.floor( Math.sqrt(canvasArea) );
-    const extraClouds = canvasSqrt < 600 ? 0 : Math.floor( (canvasSqrt-475) / IMG_SQRT );
+    const extraClouds = canvasSqrt < 500 ? 0 : Math.floor( (canvasSqrt-500) / IMG_SQRT );
     const cloudCount = 1 + extraClouds;
     // console.debug('[clouds]', canvasSqrt, cloudCount);
 

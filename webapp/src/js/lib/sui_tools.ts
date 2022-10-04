@@ -2,8 +2,9 @@
 
 import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
+import { isProd } from './common';
 
-const GOTBEEF_PACKAGE = '0x94a0b9b4e1ae16462f2164f1296f3fe475c45c82';
+const GOTBEEF_PACKAGE = isProd ? '0x86af4afae3ea7575f0b981b3296d068aae2d4fc9' : '0xf03fafe2a27287b4dc9a03f65aa7449275514350';
 
 /* Wallet functions */
 
@@ -65,13 +66,14 @@ export async function getBet(objId: string): Promise<Bet|null> {
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
+    window.betTypeRegex = new RegExp(`^${GOTBEEF_PACKAGE}::bet::Bet<0x.+::.+::.+>$`);
     return rpc.getObject(objId)
         .then(obj => {
             if (obj.status != 'Exists') {
                 console.warn('[getBet] Object does not exist. Status:', obj.status);
                 return null;
             } else
-            if (!obj.details.data.type.match(/^0x.+::bet::Bet<0x.+::.+::.+>$/)) {
+            if (!obj.details.data.type.match(betTypeRegex)) {
                 console.warn('[getBet] Found wrong object type:', obj.details.data.type);
                 return null;
             } else {
