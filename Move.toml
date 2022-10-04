@@ -2,6 +2,7 @@
 name = "GotBeef"
 version = "0.0.1"
 authors = ["juzybits <https://twitter.com/juzybits>"]
+license = "Apache-2.0"
 
 [dependencies]
 Sui = { local = "../sui/crates/sui-framework" }

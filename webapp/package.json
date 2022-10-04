@@ -1,6 +1,7 @@
 {
     "name": "gotbeef-webapp",
     "author": "juzybits <https://twitter.com/juzybits>",
+    "license": "Apache-2.0",
     "private": true,
     "dependencies": {
         "@mysten/sui.js": "latest",
