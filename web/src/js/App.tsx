@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
-import rockImage from '../img/rock.png';
 import { reloadClouds } from './lib/clouds';
+import rockImage from '../img/rock.png';
 
 export function App(props)
 {

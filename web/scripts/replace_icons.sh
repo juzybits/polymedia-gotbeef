@@ -5,9 +5,9 @@
 DOWNLOADS=$HOME/Downloads
 
 folder_name=${PWD##*/}
-if [[ "$folder_name" != 'webapp' ]]; then
+if [[ "$folder_name" != 'web' ]]; then
 	me=`basename "$0"`
-	echo "[$me] Error: call this script only from the 'webapp' folder"
+	echo "[$me] Error: call this script only from the 'web' folder"
 	exit 1
 fi
 
