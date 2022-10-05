@@ -41,7 +41,7 @@ module gotbeef::bet
     // vote()
     const E_NOT_IN_VOTING_PHASE: u64 = 200;
     const E_ONLY_JUDGES_CAN_VOTE: u64 = 201;
-    const E_ALREADY_VOTED: u64 = 202; // maybe: allow judges to update their vote
+    const E_ALREADY_VOTED: u64 = 202; // (maybe: allow judges to update their vote)
     const E_PLAYER_NOT_FOUND: u64 = 203;
 
     // cancel()
