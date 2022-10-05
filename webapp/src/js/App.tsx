@@ -12,7 +12,7 @@ export function App(props)
     return <div id='page'>
     <section id='main'>
 
-        <header>
+        <header id='header'>
 
             <h1 id='title'>GOT BEEF?<img id='rock' src={rockImage} alt='got beef?' onClick={reloadClouds} /></h1>
 
@@ -33,7 +33,15 @@ export function App(props)
 
     <footer id='footer'>
         {/* TODO: add version */}
-        <a href='https://twitter.com/juzybits' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>@juzybits</span></a>
+        <div id='footer-links'>
+            <a href='https://github.com/juzybits/gotbeef' target='_blank' aria-label='GitHub'><i className='icon icon-github'></i></a>
+            <a href='https://twitter.com/juzybits' target='_blank' aria-label='Twitter'><i className='icon icon-twitter'></i></a>
+            <a href='https://discord.gg/BVaq7S9C4A' target='_blank' aria-label='Discord'><i className='icon icon-discord'></i></a>
+        </div>
+
+        <div id='footer-signature'>
+            <a href='https://twitter.com/juzybits' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>@juzybits</span></a>
+        </div>
     </footer>
 
     <span id='secret'>It's really hard to make something beautiful. And it's really worthwhile.</span>

@@ -63,7 +63,7 @@ a:hover {
     margin: 2em 0 0.5em 0;
     padding: 1.2em 1.8em 1.6em;
 }
-header {
+#header {
     text-align: center;
 }
 #title {
@@ -114,10 +114,11 @@ header {
     font-size: 0.85em;
     margin: 0 0 0 4px;
 }
-footer {
-    text-align: right;
+#footer {
     font-size: 0.75em;
-    margin-bottom: 2em;
+    margin-bottom: 5em;
+    padding-left: 0.1em;
+    padding-right: 0.2em;
     a {
         opacity: 0.7;
         color: white;
@@ -128,7 +129,21 @@ footer {
         }
     }
 }
-footer a:hover .rainbow, .rainbow:hover {
+#footer-links {
+    float: left;
+    font-size: 2em;
+    line-height: 0.75em;
+    .icon {
+        margin-right: 0.1em;
+    }
+}
+#footer-signature {
+    float: right;
+    .nes-icon {
+        vertical-align: bottom;
+    }
+}
+#footer a:hover .rainbow, .rainbow:hover {
     text-decoration: none;
     background-image: linear-gradient(to left, violet, indigo, blue, green, gold, orange, red);
     -webkit-background-clip: text;
@@ -176,8 +191,9 @@ footer a:hover .rainbow, .rainbow:hover {
         border-width: 0 0 4px 0;
         margin-top: 0
     }
-    footer {
-        padding-right: 1em;
+    #footer {
+        padding-left: 0.5em;
+        padding-right: 0.6em;
     }
     #bet-actions {
         .nes-btn {
