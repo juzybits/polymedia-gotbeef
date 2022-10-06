@@ -3,7 +3,6 @@ import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { reloadClouds } from './lib/clouds';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 import { createBet, getErrorName } from './lib/sui_tools';
@@ -12,7 +11,6 @@ export function New()
 {
     useEffect(() => {
         document.title = 'Got Beef? - New'
-        reloadClouds();
     }, []);
 
     const [connected, setConnected] = useOutletContext();

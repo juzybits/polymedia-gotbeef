@@ -3,18 +3,25 @@ import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { reloadClouds } from './lib/clouds';
-import rockImage from '../img/rock.png';
+import dudeImage from '../img/dude.png';
 
 export function App(props)
 {
     const [connected, setConnected] = useState(false);
+
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver((entries) => {
+            reloadClouds();
+        });
+        resizeObserver.observe(document.getElementById('app'));
+    }, []);
 
     return <div id='page'>
     <section id='main'>
 
         <header id='header'>
 
-            <h1 id='title'>GOT BEEF?<img id='rock' src={rockImage} alt='got beef?' onClick={reloadClouds} /></h1>
+            <h1 id='title'>GOT BEEF?<img id='dude' src={dudeImage} alt='got beef?' onClick={reloadClouds} /></h1>
 
             <nav id='nav'>
                 <Link to='/'>HOME</Link>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { reloadClouds } from './lib/clouds';
 import { isProd } from './lib/common';
 import { getBet, Bet } from './lib/sui_tools';
 
@@ -10,7 +9,6 @@ export function Find()
 {
     useEffect(() => {
         document.title = 'Got Beef? - Find';
-        reloadClouds();
     }, []);
 
     const [betId, setBetId] = useState(isProd ? '' : '0x095a34efbcc75687a96b476e419a02df0b5b9708');

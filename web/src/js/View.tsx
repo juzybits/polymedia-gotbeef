@@ -5,7 +5,6 @@ import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
 import { Cancel } from './Cancel';
-import { reloadClouds } from './lib/clouds';
 import { getBet, Bet, getAddresses } from './lib/sui_tools';
 
 export function View()
@@ -33,7 +32,6 @@ export function View()
     const location = useLocation();
     useEffect(() => {
         document.title = `Got Beef? - View: ${betId}`;
-        reloadClouds();
         if (location.state && location.state.bet) {
             // Reuse the bet object data that Find.tsx has already fetched
             setBet(location.state.bet);

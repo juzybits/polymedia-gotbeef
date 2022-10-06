@@ -6,7 +6,11 @@ const IMG_SQRT = 125 // px, square root of the area
 
 export function reloadClouds()
 {
-    removeClouds();
+    // Remove all clouds
+    let el = null;
+    while ( el = document.querySelector('.cloud, .steak') ) {
+        el.parentNode.removeChild(el);
+    }
 
     // Get window dimensions
     const windowWitdth = window.innerWidth
@@ -17,7 +21,7 @@ export function reloadClouds()
     || document.body.clientHeight;
 
     // Find the area of the gap between the footer and the bottom of the window
-    const canvasTop = document.getElementById('footer').offsetTop + 16;
+    const canvasTop = document.getElementById('footer').offsetTop + 20;
     const canvasBottom = windowHeight-IMG_HEIGHT;
     const cloudFitsInGap = canvasBottom > canvasTop;
     if (!cloudFitsInGap) {
@@ -46,14 +50,6 @@ export function reloadClouds()
             el.className = 'steak';
         });
         document.body.appendChild(el);
-    }
-}
-addEventListener('resize', removeClouds);
-
-function removeClouds() {
-    let el = null;
-    while ( el = document.querySelector('.cloud, .steak') ) {
-        el.parentNode.removeChild(el);
     }
 }
 
