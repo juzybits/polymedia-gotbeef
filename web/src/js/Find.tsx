@@ -11,7 +11,7 @@ export function Find()
         document.title = 'Got Beef? - Find';
     }, []);
 
-    const [betId, setBetId] = useState(isProd ? '' : '0x095a34efbcc75687a96b476e419a02df0b5b9708');
+    const [betId, setBetId] = useState(isProd ? '' : '0x9c26f68fceea2048c7d878d511bdd5ea60661803');
     const [bet, setBet] = useState(undefined);
     const [error, setError] = useState('');
 

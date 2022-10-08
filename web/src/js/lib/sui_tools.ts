@@ -4,7 +4,7 @@ import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
-const GOTBEEF_PACKAGE = isProd ? '0x86af4afae3ea7575f0b981b3296d068aae2d4fc9' : '0xf03fafe2a27287b4dc9a03f65aa7449275514350';
+const GOTBEEF_PACKAGE = isProd ? '0xa2f218af3d2213baea47a0b1b2ed70445c8876b7' : '0x57d8b132dec38aee120fe80cfa214d94c2173798';
 
 /* Wallet functions */
 
