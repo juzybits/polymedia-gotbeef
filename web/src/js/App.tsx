@@ -3,7 +3,7 @@ import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { reloadClouds } from './lib/clouds';
-import dudeImage from '../img/dude.png';
+import cowImage from '../img/cow256.png';
 
 export function App(props)
 {
@@ -21,7 +21,7 @@ export function App(props)
 
         <header id='header'>
 
-            <h1 id='title'>GOT BEEF?<img id='dude' src={dudeImage} alt='got beef?' onClick={reloadClouds} /></h1>
+            <h1 id='title'>GOT BEEF?<img id='cow' src={cowImage} alt='got beef?' onClick={reloadClouds} /></h1>
 
             <nav id='nav'>
                 <Link to='/'>HOME</Link>
