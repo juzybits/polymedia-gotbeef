@@ -4,7 +4,7 @@ import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
-const GOTBEEF_PACKAGE = isProd ? '0xa2f218af3d2213baea47a0b1b2ed70445c8876b7' : '0x57d8b132dec38aee120fe80cfa214d94c2173798';
+const GOTBEEF_PACKAGE = isProd ? '0xab658e8d463c16a18755cdb178f745ce0b5f21b0' : '0xba9af139c0350a70244ba5cc0ba71c28adfc882f';
 
 /* Wallet functions */
 
@@ -74,6 +74,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
                 return null;
             } else
             if (!obj.details.data.type.match(betTypeRegex)) {
+                // TODO: '0x0ab' is returned as '0xab' by the RPC
                 console.warn('[getBet] Found wrong object type:', obj.details.data.type);
                 return null;
             } else {
@@ -192,7 +193,7 @@ export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionRes
 
 export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransactionResponse>
 {
-    console.debug(`[fundBet] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
+    console.debug(`[castVote] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -209,7 +210,7 @@ export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransa
 
 export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
 {
-    console.debug(`[fundBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
+    console.debug(`[cancelBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',

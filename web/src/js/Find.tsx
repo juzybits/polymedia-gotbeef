@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { isProd } from './lib/common';
 import { getBet, Bet } from './lib/sui_tools';
 
 export function Find()
@@ -11,7 +10,7 @@ export function Find()
         document.title = 'Got Beef? - Find';
     }, []);
 
-    const [betId, setBetId] = useState(isProd ? '' : '0x9c26f68fceea2048c7d878d511bdd5ea60661803');
+    const [betId, setBetId] = useState('');
     const [bet, setBet] = useState(undefined);
     const [error, setError] = useState('');
 
