@@ -10,12 +10,12 @@ const GOTBEEF_PACKAGE = isProd ? '0xab658e8d463c16a18755cdb178f745ce0b5f21b0' : 
 
 const wallet = new SuiWalletAdapter();
 
-export async function connect(): void {
-    await wallet.connect();
+export async function connect(): Promise<void> {
+    return wallet.connect();
 }
 
-export function disconnect(): void {
-    wallet.disconnect();
+export async function disconnect(): Promise<void> {
+    return wallet.disconnect();
 }
 
 export function isConnected(): bool {
@@ -30,6 +30,14 @@ export async function getAddresses(): Promise<string[]> {
         }
         return accounts;
     });
+}
+
+const gatewayRpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
+/// Synchronize client state with validators.
+/// Used to mitigate this issue: https://discord.com/channels/916379725201563759/1006322742620069898/1029927908380250172
+export async function syncAccountState(): Promise<any> {
+    const addresses = await getAddresses();
+    return gatewayRpc.syncAccountState(addresses[0]);
 }
 
 /* RPC functions */
@@ -126,28 +134,25 @@ export async function getBet(objId: string): Promise<Bet|null> {
 /// Get all `Coin<T>` objects owned by the current address
 export async function getCoinObjects(type: string): Promise<any[]> {
     console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
-    return getAddresses()
-    .then(addresses => {
-        return rpc.getObjectsOwnedByAddress(addresses[0])
-            .then(objectsInfo => {
-                const expectedType = `0x2::coin::Coin<${type}>`;
-                let objectIds = objectsInfo.reduce((selected, obj) => {
-                    if (obj.type == expectedType)
-                        selected.push(obj.objectId);
-                    return selected;
-                }, []);
-                return rpc.getObjectBatch(objectIds)
-                    .then(objectsData => { return objectsData })
-                    .catch(error => []);
-            })
-            .catch(error => []);
-    })
-    .catch(error => [] );
+    const addresses = await getAddresses();
+    return rpc.getObjectsOwnedByAddress(addresses[0])
+        .then(objectsInfo => {
+            const expectedType = `0x2::coin::Coin<${type}>`;
+            let objectIds = objectsInfo.reduce((selected, obj) => {
+                if (obj.type == expectedType)
+                    selected.push(obj.objectId);
+                return selected;
+            }, []);
+            return rpc.getObjectBatch(objectIds)
+                .then(objectsData => { return objectsData })
+                .catch(error => []);
+        })
+        .catch(error => []);
 }
 
 /* Functions to call the `public entry` functions in the `gotbeef::bet` Sui package */
 
-export function createBet(
+export async function createBet(
     currency: string, // e.g. '0x2::sui::SUI'
     title: string,
     description: string,
@@ -158,6 +163,7 @@ export function createBet(
 ): Promise<SuiTransactionResponse>
 {
     console.debug(`[createBet] Calling bet::create on package: ${GOTBEEF_PACKAGE}`);
+    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -178,6 +184,7 @@ export function createBet(
 export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionResponse>
 {
     console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
+    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -194,6 +201,7 @@ export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionRes
 export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransactionResponse>
 {
     console.debug(`[castVote] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
+    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -211,6 +219,7 @@ export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransa
 export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
 {
     console.debug(`[cancelBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
+    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
