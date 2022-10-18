@@ -67,6 +67,7 @@ export function View()
     if (bet === null)
         return <React.Fragment>Bet not found.</React.Fragment>;
 
+    // TODO: show date of last update
     return <React.Fragment>
     {
         modal ||

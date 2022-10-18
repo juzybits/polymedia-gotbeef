@@ -70,5 +70,7 @@ export function Find()
 
         </form>
 
+        {/* TODO: Show recent transactions with rpc.getTransactionsForObject() */}
+
     </React.Fragment>;
 }
