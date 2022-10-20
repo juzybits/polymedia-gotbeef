@@ -4,11 +4,12 @@ import { JsonRpcProvider } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
-const GOTBEEF_PACKAGE = isProd ? '0xab658e8d463c16a18755cdb178f745ce0b5f21b0' : '0xba9af139c0350a70244ba5cc0ba71c28adfc882f';
+const GOTBEEF_PACKAGE = isProd ? '0xba934d0fcdc164d2bd3a26ac6c21b119926b9e53' : '0x34bf43798814a94b5c59c583924fe9ae92f75a82';
+const GAS_BUDGET = 2000;
+const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
+const wallet = new SuiWalletAdapter();
 
 /* Wallet functions */
-
-const wallet = new SuiWalletAdapter();
 
 export async function connect(): Promise<void> {
     return wallet.connect();
@@ -32,17 +33,7 @@ export async function getAddresses(): Promise<string[]> {
     });
 }
 
-const gatewayRpc = new JsonRpcProvider('https://gateway.devnet.sui.io:443');
-/// Synchronize client state with validators.
-/// Used to mitigate this issue: https://discord.com/channels/916379725201563759/1006322742620069898/1029927908380250172
-export async function syncAccountState(): Promise<any> {
-    const addresses = await getAddresses();
-    return gatewayRpc.syncAccountState(addresses[0]);
-}
-
 /* RPC functions */
-
-const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
@@ -74,7 +65,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
-    window.betTypeRegex = new RegExp(`^${GOTBEEF_PACKAGE}::bet::Bet<0x.+::.+::.+>$`);
+    const betTypeRegex = new RegExp(`^${GOTBEEF_PACKAGE}::bet::Bet<0x.+::.+::.+>$`);
     return rpc.getObject(objId)
         .then(obj => {
             if (obj.status != 'Exists') {
@@ -163,7 +154,6 @@ export async function createBet(
 ): Promise<SuiTransactionResponse>
 {
     console.debug(`[createBet] Calling bet::create on package: ${GOTBEEF_PACKAGE}`);
-    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -177,14 +167,13 @@ export async function createBet(
             players,
             judges,
         ],
-        gasBudget: 10000,
+        gasBudget: GAS_BUDGET,
     });
 }
 
 export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionResponse>
 {
     console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
-    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -194,14 +183,13 @@ export async function fundBet(bet: Bet, coin: string): Promise<SuiTransactionRes
             bet.id,
             coin,
         ],
-        gasBudget: 10000,
+        gasBudget: GAS_BUDGET,
     });
 }
 
 export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransactionResponse>
 {
     console.debug(`[castVote] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
-    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -211,7 +199,7 @@ export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransa
             bet.id,
             player_addr,
         ],
-        gasBudget: 10000,
+        gasBudget: GAS_BUDGET,
     });
 }
 
@@ -219,7 +207,6 @@ export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransa
 export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
 {
     console.debug(`[cancelBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
-    await syncAccountState();
     return wallet.executeMoveCall({
         packageObjectId: GOTBEEF_PACKAGE,
         module: 'bet',
@@ -228,7 +215,7 @@ export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
         arguments: [
             bet.id,
         ],
-        gasBudget: 10000,
+        gasBudget: GAS_BUDGET,
     });
 }
 

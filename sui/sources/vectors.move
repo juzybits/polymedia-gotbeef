@@ -46,13 +46,13 @@ module gotbeef::vectors
 #[test_only]
 module gotbeef::vectors_tests
 {
-    use sui::test_scenario;
+    use sui::test_scenario as ts;
     use gotbeef::vectors as v;
 
     #[test]
     fun test_has_duplicates()
     {
-        test_scenario::begin(&@0x1); {
+        let scen_val = ts::begin(@0x1); {
             assert!(!v::has_duplicates(&vector[@0x100, @0x222, @0x333, @0x444]), 0);
             assert!(!v::has_duplicates(&vector[@0x100]), 0);
             assert!(!v::has_duplicates(&vector<address>[]), 0);
@@ -60,12 +60,13 @@ module gotbeef::vectors_tests
             assert!(v::has_duplicates(&vector[@0x222, @0x333, @0x100, @0x444, @0x100]), 0);
             assert!(v::has_duplicates(&vector[@0x100, @0x100]), 0);
         };
+        ts::end(scen_val);
     }
 
     #[test]
     fun test_intersect()
     {
-        test_scenario::begin(&@0x1); {
+        let scen_val = ts::begin(@0x1); {
             assert!(!v::intersect(
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x11, @0x22, @0x33],
@@ -90,6 +91,7 @@ module gotbeef::vectors_tests
                 &vector[@0x1,  @0x2,  @0x3],
                 &vector[@0x2],
             ), 0);
-        }
+        };
+        ts::end(scen_val);
     }
 }

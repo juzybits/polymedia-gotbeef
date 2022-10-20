@@ -2,7 +2,10 @@
 
 ## Dev setup
 1. [Install Sui](https://docs.sui.io/build/install#binaries)
-2. Connect to devnet: `sui client switch --rpc https://fullnode.devnet.sui.io:443`
+2. Connect to devnet:
+```
+sui client switch --rpc https://fullnode.devnet.sui.io:443
+```
 
 ## How to run the unit tests
 ```

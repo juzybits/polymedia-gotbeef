@@ -29,13 +29,13 @@ module gotbeef::bet_tests
     #[test]
     fun test_accessors()
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
-        ts::next_tx(scen, &SOMEONE);
-        {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+        ts::next_tx(scen, SOMEONE); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
 
             assert!( bet::phase(bet) == 0, 0 );
             assert!( bet::title(bet) == &string::utf8(TITLE), 0 );
@@ -49,8 +49,9 @@ module gotbeef::bet_tests
             assert!( bet::most_votes(bet) == 0, 0 );
             assert!( bet::winner(bet) == &option::none<address>(), 0 );
 
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
+        ts::end(scen_val);
     }
 
     /* create() tests */
@@ -58,76 +59,92 @@ module gotbeef::bet_tests
     #[test]
     fun test_create_success()
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
-        ts::next_tx(scen, &CREATOR); {
+        ts::next_tx(scen, CREATOR); {
             let bet = ts::take_shared<Bet<SUI>>(scen);
-            ts::return_shared(scen, bet);
+            ts::return_shared(bet);
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 0)]
     fun test_create_e_judges_cant_be_players()
     {
         let players = vector[PLAYER_1, PLAYER_2, JUDGE_1];
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 2)]
     fun test_create_e_invalid_number_of_players()
     {
         let players = vector[PLAYER_1];
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 3)]
     fun test_create_e_invalid_number_of_judges()
     {
         let judges = vector[];
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 4)]
     fun test_create_e_duplicate_players()
     {
         let players = vector[@0xCAFE, @0x123, @0xCAFE];
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, players, JUDGES, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 5)]
     fun test_create_e_duplicate_judges()
     {
         let judges = vector[@0xAAA, @0xBBB, @0xAAA];
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, BET_SIZE, PLAYERS, judges, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 6)]
     fun test_create_e_invalid_quorum()
     {
         let quorum = 1;
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, quorum, BET_SIZE, PLAYERS, JUDGES, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 7)]
     fun test_create_e_invalid_bet_size()
     {
         let size = 0;
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, QUORUM, size, PLAYERS, JUDGES, ts::ctx(scen) );
         };
+        ts::end(scen_val);
     }
 
     /* fund() tests */
@@ -137,48 +154,49 @@ module gotbeef::bet_tests
     }
 
     fun fund_bet(scen: &mut Scenario, amount: u64) {
-        let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-        let bet = ts::borrow_mut(&mut bet_wrapper);
+        let bet_val = ts::take_shared<Bet<SUI>>(scen);
+        let bet = &mut bet_val;
         let ctx = ts::ctx(scen);
         let funds = coin::mint_for_testing<SUI>(amount, ctx);
         bet::fund<SUI>(bet, funds, ctx);
-        ts::return_shared(scen, bet_wrapper);
+        ts::return_shared(bet_val);
     }
 
     fun cast_vote(scen: &mut Scenario, player_addr: address) {
-        let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-        let bet = ts::borrow_mut(&mut bet_wrapper);
+        let bet_val = ts::take_shared<Bet<SUI>>(scen);
+        let bet = &mut bet_val;
         bet::vote(bet, player_addr, ts::ctx(scen));
-        ts::return_shared(scen, bet_wrapper);
+        ts::return_shared(bet_val);
     }
 
     #[test]
     fun test_fund_success()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
 
         // Verify bet initialization
-        ts::next_tx(scen, &SOMEONE);
+        ts::next_tx(scen, SOMEONE);
         {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             let funds = bet::funds<SUI>(bet);
             // nobody has funded the bet yet
             assert!( vec_map::is_empty(funds), 0 );
             // the bet phase is set to PHASE_FUND
             assert!( bet::phase(bet) == 0, 0 );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
 
         // Player 1 funds the bet (sends too much, expects change back)
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE+100); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE+100); };
 
         // Player 1 checks changes
-        ts::next_tx(scen, &PLAYER_1);
+        ts::next_tx(scen, PLAYER_1);
         {
             // Bet was partially funded
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             let funds = bet::funds<SUI>(bet);
             // only 1 player funded the bet so far
             assert!( vec_map::size(funds) == 1, 0 );
@@ -186,74 +204,83 @@ module gotbeef::bet_tests
             assert!( vec_map::contains(funds, &PLAYER_1), 0 );
             // the bet remains in the funding phase
             assert!( bet::phase(bet) == 0, 0 );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
 
             // Player 1 got their change
-            let change_coin = ts::take_owned<Coin<SUI>>(scen);
+            let change_coin = ts::take_from_sender<Coin<SUI>>(scen);
             assert!( coin::value(&change_coin) == 100, 0 );
-            ts::return_owned(scen, change_coin);
+            ts::return_to_sender(scen, change_coin);
         };
 
         // Player 2 funds the bet (send exact amount, expect no change)
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
 
         // Player 2 checks changes
-        ts::next_tx(scen, &PLAYER_2);
+        ts::next_tx(scen, PLAYER_2);
         {
             // Bet was completely funded
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             let funds = bet::funds<SUI>(bet);
             assert!( vec_map::size(funds) == vector::length(&PLAYERS), 0 );
             // both players have funded the bet
             assert!( vec_map::contains(funds, &PLAYER_2), 0 );
             // the bet is now in the voting phase
             assert!( bet::phase(bet) == 1, 0 );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
 
             // Player 2 didn't get any change
-            assert!( !ts::can_take_owned<Coin<SUI>>(scen), 0 );
+            assert!( !ts::has_most_recent_for_sender<Coin<SUI>>(scen), 0 );
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 100)]
     /// Non-player tries to funds the bet
     fun test_fund_e_only_players_can_fund()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &SOMEONE); { fund_bet(scen, BET_SIZE); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, SOMEONE); { fund_bet(scen, BET_SIZE); };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 101)]
     /// Player tries to fund the bet for the second time
     fun test_fund_e_already_funded()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 102)]
     /// Player tries to fund the bet with not enough coins
     fun test_fund_e_funds_below_bet_size()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE/2); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE/2); };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 103)]
     /// Player tries to fund a closed bet
     fun test_fund_e_not_in_funding_phase()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
 
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
 
-        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
-        ts::next_tx(scen, &JUDGE_2); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_2); { cast_vote(scen, PLAYER_1); };
 
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::end(scen_val);
     }
 
     /* vote() tests */
@@ -261,19 +288,21 @@ module gotbeef::bet_tests
     #[test]
     fun test_vote_success()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
 
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
 
-        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
-        ts::next_tx(scen, &JUDGE_2); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_2); { cast_vote(scen, PLAYER_1); };
 
         // Anybody can verify the outcome
-        ts::next_tx(scen, &SOMEONE); {
+        ts::next_tx(scen, SOMEONE);
+        {
             // Bet funds have been distributed
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             let funds = bet::funds<SUI>(bet);
             assert!( vec_map::size(funds) == 0, 0 );
             // The bet is now in the settled phase
@@ -281,57 +310,67 @@ module gotbeef::bet_tests
             // The bet winner is player 1
             let winner_opt = bet::winner(bet);
             assert!( option::contains(winner_opt, &PLAYER_1), 0 );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
 
         // The winner received the funds
-        ts::next_tx(scen, &PLAYER_1); {
-            let player_coin = ts::take_owned<Coin<SUI>>(scen);
+        ts::next_tx(scen, PLAYER_1);
+        {
+            let player_coin = ts::take_from_sender<Coin<SUI>>(scen);
             let actual_val = coin::value(&player_coin);
             let expect_val = BET_SIZE * vector::length(&PLAYERS);
             assert!( actual_val == expect_val, 0 );
-            ts::return_owned(scen, player_coin);
+            ts::return_to_sender(scen, player_coin);
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 200)]
     /// Judge tries to vote before all players have sent their funds
     fun test_e_vote_not_in_voting_phase()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_1); { cast_vote(scen, PLAYER_1); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_1); { cast_vote(scen, PLAYER_1); };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 201)]
     /// Non-judge tries to vote
     fun test_e_vote_only_judges_can_vote()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &SOMEONE); { cast_vote(scen, PLAYER_1); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, SOMEONE); { cast_vote(scen, PLAYER_1); };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 202)]
     /// Judge tries to vote twice
     fun test_e_vote_already_voted()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
-        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 203)]
     /// Judge tries to vote for a non-player
     fun test_e_vote_player_not_found()
     {
-        let scen = &mut ts::begin(&CREATOR); { create_bet(scen); };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, SOMEONE); };
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; { create_bet(scen); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, JUDGE_1); { cast_vote(scen, SOMEONE); };
+        ts::end(scen_val);
     }
 
     /* cancel() tests */
@@ -339,70 +378,78 @@ module gotbeef::bet_tests
     #[test]
     fun cancel_success()
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             create_bet(scen);
         };
-        ts::next_tx(scen, &PLAYER_2); {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+        ts::next_tx(scen, PLAYER_2); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             bet::cancel( bet, ts::ctx(scen) );
             assert!( bet::phase(bet) == 3, 0 );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 300)]
     /// Try to cancel a bet with funds
     fun test_cancel_e_bet_has_funds()
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             create_bet(scen);
         };
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             bet::cancel( bet, ts::ctx(scen) );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 301)]
     /// A non-participant tries to cancel a bet
     fun test_cancel_e_not_authorized()
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             create_bet(scen);
         };
-        ts::next_tx(scen, &SOMEONE); {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+        ts::next_tx(scen, SOMEONE); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             bet::cancel( bet, ts::ctx(scen) );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
+        ts::end(scen_val);
     }
 
     #[test, expected_failure(abort_code = 103)]
     /// Try to cancel a settled bet
     fun test_cancel_e_not_in_funding_phase()
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             create_bet(scen);
         };
 
-        ts::next_tx(scen, &PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, &PLAYER_2); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
 
-        ts::next_tx(scen, &JUDGE_1); { cast_vote(scen, PLAYER_1); };
-        ts::next_tx(scen, &JUDGE_2); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_1); { cast_vote(scen, PLAYER_1); };
+        ts::next_tx(scen, JUDGE_2); { cast_vote(scen, PLAYER_1); };
 
-        ts::next_tx(scen, &PLAYER_1); {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+        ts::next_tx(scen, PLAYER_1); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             assert!( bet::phase(bet) == 2, 0 ); // PHASE_SETTLED
             bet::cancel( bet, ts::ctx(scen) );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
+        ts::end(scen_val);
     }
 
     /* is_stalemate() tests */
@@ -415,7 +462,8 @@ module gotbeef::bet_tests
         expect_phase: u8,
         expect_winner: Option<address>)
     {
-        let scen = &mut ts::begin(&CREATOR); {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
             bet::create<SUI>( TITLE, DESC, quorum, BET_SIZE, players, judges, ts::ctx(scen) );
         };
 
@@ -424,7 +472,7 @@ module gotbeef::bet_tests
         let i = 0;
         while (i < players_len) {
             let player_addr = vector::borrow(&players, i);
-            ts::next_tx(scen, player_addr); {
+            ts::next_tx(scen, *player_addr); {
                 fund_bet(scen, BET_SIZE);
             };
             i = i + 1;
@@ -436,20 +484,21 @@ module gotbeef::bet_tests
         while (i < votes_len) {
             let judge_addr = vector::borrow(&judges, i);
             let player_addr = vector::borrow(&votes, i);
-            ts::next_tx(scen, judge_addr); {
+            ts::next_tx(scen, *judge_addr); {
                 cast_vote(scen, *player_addr);
             };
             i = i + 1;
         };
 
         // Verify that the bet in the correct phase
-        ts::next_tx(scen, &SOMEONE); {
-            let bet_wrapper = ts::take_shared<Bet<SUI>>(scen);
-            let bet = ts::borrow_mut(&mut bet_wrapper);
+        ts::next_tx(scen, SOMEONE); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
             assert!( bet::phase(bet) == expect_phase, 0 );
             assert!( bet::winner(bet) == &expect_winner, 0 );
-            ts::return_shared(scen, bet_wrapper);
+            ts::return_shared(bet_val);
         };
+        ts::end(scen_val);
     }
 
     #[test]

@@ -20,9 +20,10 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : 5000);
-    const [players, setPlayers] = useState(isProd ? '' : '0x20ebc4242fe7c879b6266973ba1d06c79bde891a\n0x51c7972abed05fc2b0c0f070d3a14b18bc593f78');
+    const [players, setPlayers] = useState(isProd ? '' : '0xdc82a911f9bbfc904ffffcf3c7e4cb2b7401bf22\n0x51c7972abed05fc2b0c0f070d3a14b18bc593f78');
     const [judges, setJudges] = useState(isProd ? '' : '0x40608a72adb19ab080879e44be7f8aafdc2a6162');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
+
     // Input errors
     const [titleError, setTitleError] = useState('');
     const [sizeError, setSizeError] = useState('');

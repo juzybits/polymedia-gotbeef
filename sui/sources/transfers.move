@@ -58,30 +58,31 @@ module gotbeef::transfers_tests
     #[test]
     fun test_send_all()
     {
-        let scen = &mut ts::begin(&SOMEONE);
-        {
-            let funds: VecMap<address, Coin<SUI>> = vec_map::empty();
+        let scen_val = ts::begin(SOMEONE);
+        let scen = &mut scen_val;
+        let funds: VecMap<address, Coin<SUI>> = vec_map::empty();
 
-            let ctx = ts::ctx(scen);
-            vec_map::insert(&mut funds, ADDR_1, coin::mint_for_testing<SUI>(AMOUNT, ctx));
-            vec_map::insert(&mut funds, ADDR_2, coin::mint_for_testing<SUI>(AMOUNT, ctx));
-            vec_map::insert(&mut funds, ADDR_3, coin::mint_for_testing<SUI>(AMOUNT, ctx));
+        let ctx = ts::ctx(scen);
+        vec_map::insert(&mut funds, ADDR_1, coin::mint_for_testing<SUI>(AMOUNT, ctx));
+        vec_map::insert(&mut funds, ADDR_2, coin::mint_for_testing<SUI>(AMOUNT, ctx));
+        vec_map::insert(&mut funds, ADDR_3, coin::mint_for_testing<SUI>(AMOUNT, ctx));
 
-            transfers::send_all(&mut funds, ADDR_3, ctx);
+        transfers::send_all(&mut funds, ADDR_3, ctx);
 
-            vec_map::destroy_empty(funds);
-        };
-        ts::next_tx(scen, &ADDR_3); {
-            let coin = ts::take_owned<Coin<SUI>>(scen);
+        vec_map::destroy_empty(funds);
+        ts::next_tx(scen, ADDR_3); {
+            let coin = ts::take_from_sender<Coin<SUI>>(scen);
             assert!( coin::value(&coin) == AMOUNT * 3 , 0 );
-            ts::return_owned(scen, coin);
+            ts::return_to_sender(scen, coin);
         };
+        ts::end(scen_val);
     }
 
     #[test]
     fun test_refund_all()
     {
-        let scen = &mut ts::begin(&SOMEONE);
+        let scen_val = ts::begin(SOMEONE);
+        let scen = &mut scen_val;
         {
             let funds: VecMap<address, Coin<SUI>> = vec_map::empty();
 
@@ -94,20 +95,21 @@ module gotbeef::transfers_tests
 
             vec_map::destroy_empty(funds);
         };
-        ts::next_tx(scen, &ADDR_1); {
-            let coin = ts::take_owned<Coin<SUI>>(scen);
+        ts::next_tx(scen, ADDR_1); {
+            let coin = ts::take_from_sender<Coin<SUI>>(scen);
             assert!( coin::value(&coin) == AMOUNT , 0 );
-            ts::return_owned(scen, coin);
+            ts::return_to_sender(scen, coin);
         };
-        ts::next_tx(scen, &ADDR_2); {
-            let coin = ts::take_owned<Coin<SUI>>(scen);
+        ts::next_tx(scen, ADDR_2); {
+            let coin = ts::take_from_sender<Coin<SUI>>(scen);
             assert!( coin::value(&coin) == AMOUNT , 0 );
-            ts::return_owned(scen, coin);
+            ts::return_to_sender(scen, coin);
         };
-        ts::next_tx(scen, &ADDR_3); {
-            let coin = ts::take_owned<Coin<SUI>>(scen);
+        ts::next_tx(scen, ADDR_3); {
+            let coin = ts::take_from_sender<Coin<SUI>>(scen);
             assert!( coin::value(&coin) == AMOUNT , 0 );
-            ts::return_owned(scen, coin);
+            ts::return_to_sender(scen, coin);
         };
+        ts::end(scen_val);
     }
 }

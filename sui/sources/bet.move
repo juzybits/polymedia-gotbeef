@@ -178,7 +178,10 @@ module gotbeef::bet
         // Return change to sender
         let change = coin_value - bet.size;
         if ( change > 0 ) {
-            coin::split(&mut player_coin, change, ctx);
+            transfer::transfer(
+                coin::split(&mut player_coin, change, ctx),
+                tx_context::sender(ctx)
+            );
         };
 
         // Fund the bet
