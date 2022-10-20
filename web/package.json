@@ -20,10 +20,6 @@
     },
     "scripts": {
         "serve": "rm -rf .parcel-cache/ && parcel src/index.html",
-        "build": "rm -rf dist/ && parcel build --no-source-maps src/index.html && cp src/static/* dist/",
-        "preview": "firebase serve --only hosting:prod",
-        "deploy-both": "firebase deploy",
-        "deploy-dev": "firebase deploy --only hosting:dev",
-        "deploy-prod": "firebase deploy --only hosting:prod"
+        "build": "rm -rf dist/ && parcel build --no-source-maps src/index.html && cp src/static/* dist/"
     }
 }
