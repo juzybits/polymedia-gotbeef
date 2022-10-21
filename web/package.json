@@ -14,6 +14,8 @@
     },
     "devDependencies": {
         "@parcel/transformer-less": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
         "parcel": "latest",
         "process": "latest",
         "react-devtools": "latest"
