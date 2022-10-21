@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { fundBet, getCoinObjects, getErrorName } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
-export function Fund(props) {
+export function Fund(props: any) {
 
     const [payCoin, setPayCoin] = useState(undefined);
     const [error, setError] = useState(undefined);

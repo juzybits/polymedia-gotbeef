@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
-import { connect, disconnect, isConnected } from '../lib/sui_tools';
+import { connect, disconnect, isConnected, isInstalled } from '../lib/sui_tools';
 
-export function ButtonConnect(props)
+export function ButtonConnect(props: any)
 {
-    const [error, setError] = useState('');
+    const [error, setError] = useState(undefined);
 
     const onClickConnect = async () => {
         // Is the Sui Wallet browser extension installed?
-        if (!window.suiWallet) {
+        if (!isInstalled) {
             const href = 'https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil';
             setError(<span>Install the <a href={href} className='rainbow' target='_blank'>Sui wallet</a> to continue</span>);
             return;

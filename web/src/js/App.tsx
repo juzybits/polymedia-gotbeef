@@ -3,17 +3,19 @@ import { Outlet, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { reloadClouds } from './lib/clouds';
+import { isConnected } from './lib/sui_tools';
 import cowImage from '../img/cow256.png';
 
-export function App(props)
+export function App(props: any)
 {
-    const [connected, setConnected] = useState(false);
+    const [connected, setConnected] = useState(undefined);
 
     useEffect(() => {
+        setConnected( isConnected() );
         const resizeObserver = new ResizeObserver((entries) => {
             reloadClouds();
         });
-        resizeObserver.observe(document.getElementById('app'));
+        resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
     return <div id='page'>

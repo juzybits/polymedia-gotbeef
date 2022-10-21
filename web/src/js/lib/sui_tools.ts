@@ -1,6 +1,6 @@
 /// Helpers to interact with the Sui network and with the Sui browser wallet
 
-import { JsonRpcProvider } from '@mysten/sui.js';
+import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
@@ -19,8 +19,12 @@ export async function disconnect(): Promise<void> {
     return wallet.disconnect();
 }
 
-export function isConnected(): bool {
+export function isConnected(): boolean {
     return wallet.connected;
+}
+
+export function isInstalled(): boolean {
+    return window.hasOwnProperty('suiWallet');
 }
 
 /// Get the addresses from the current wallet
@@ -67,19 +71,21 @@ export async function getBet(objId: string): Promise<Bet|null> {
 
     const betTypeRegex = new RegExp(`^${GOTBEEF_PACKAGE}::bet::Bet<0x.+::.+::.+>$`);
     return rpc.getObject(objId)
-        .then(obj => {
+        .then((obj: GetObjectDataResponse) => {
             if (obj.status != 'Exists') {
                 console.warn('[getBet] Object does not exist. Status:', obj.status);
                 return null;
-            } else
-            if (!obj.details.data.type.match(betTypeRegex)) {
+            }
+
+            const details = obj.details as any;
+            if (!details.data.type.match(betTypeRegex)) {
                 // TODO: '0x0ab' is returned as '0xab' by the RPC
-                console.warn('[getBet] Found wrong object type:', obj.details.data.type);
+                console.warn('[getBet] Found wrong object type:', details.data.type);
                 return null;
             } else {
                 console.debug('[getBet] Found bet object:', obj);
 
-                const fields = obj.details.data.fields;
+                const fields = details.data.fields;
 
                 // Parse `Bet.funds: VecMap<address, Coin<T>>`
                 let funds = fields.funds.fields.contents || [];
@@ -100,7 +106,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
 
                 const bet: Bet = {
                     id: fields.id.id,
-                    collatType: getCollateralType(obj.details.data.type),
+                    collatType: getCollateralType(details.data.type),
                     title: fields.title,
                     description: fields.description,
                     quorum: fields.quorum,

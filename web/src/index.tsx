@@ -16,7 +16,7 @@ import { Find } from './js/Find';
 import { View } from './js/View';
 
 ReactDOM
-    .createRoot( document.getElementById('app') )
+    .createRoot( document.getElementById('app') as Element )
     .render(
         <BrowserRouter>
         <Routes>

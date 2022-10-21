@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
@@ -12,10 +12,10 @@ export function Find()
 
     const [betId, setBetId] = useState('');
     const [bet, setBet] = useState(undefined);
-    const [error, setError] = useState('');
+    const [error, setError] = useState(undefined);
 
     const navigate = useNavigate();
-    const onSubmitSearch = (e) => {
+    const onSubmitSearch = (e: SyntheticEvent) => {
         e.preventDefault();
 
         // Validate input
@@ -39,7 +39,7 @@ export function Find()
 
     const ErrorSection = () => {
         if (bet !== null) {
-            return '';
+            return <></>;
         }
         return <section>
             <br/>

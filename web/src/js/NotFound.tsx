@@ -2,7 +2,7 @@ import React from 'react';
 
 import bucko from '../img/bucko.png';
 
-export function NotFound(props) {
+export function NotFound(props: any) {
     return <React.Fragment>
         <h2>404</h2>
         <div>

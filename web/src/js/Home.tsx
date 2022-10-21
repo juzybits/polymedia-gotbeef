@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-export function Home(props) {
+export function Home(props: any) {
     useEffect(() => {
         document.title = `Got Beef?`;
     }, []);

@@ -11,7 +11,7 @@ export function View()
 {
     /* Data */
 
-    const [connected, setConnected] = useOutletContext();
+    const [connected, setConnected]: any[] = useOutletContext();
     const betId = useParams().uid;
     const [bet, setBet] = useState(undefined);
     const [modal, setModal] = useState(undefined);

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { cancelBet, getErrorName } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
-export function Cancel(props) {
+export function Cancel(props: any) {
 
     const [error, setError] = useState(undefined);
 

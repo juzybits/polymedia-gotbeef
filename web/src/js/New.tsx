@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 
 import { ButtonConnect } from './components/ButtonConnect';
@@ -13,7 +13,7 @@ export function New()
         document.title = 'Got Beef? - New'
     }, []);
 
-    const [connected, setConnected] = useOutletContext();
+    const [connected, setConnected]: any[] = useOutletContext();
 
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
@@ -25,12 +25,12 @@ export function New()
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
-    const [titleError, setTitleError] = useState('');
-    const [sizeError, setSizeError] = useState('');
-    const [currencyError, setCurrencyError] = useState('');
-    const [playersError, setPlayersError] = useState('');
-    const [judgesError, setJudgesError] = useState('');
-    const [quorumError, setQuorumError] = useState('');
+    const [titleError, setTitleError] = useState(undefined);
+    const [sizeError, setSizeError] = useState(undefined);
+    const [currencyError, setCurrencyError] = useState(undefined);
+    const [playersError, setPlayersError] = useState(undefined);
+    const [judgesError, setJudgesError] = useState(undefined);
+    const [quorumError, setQuorumError] = useState(undefined);
 
     // Result
     const [newObjId, setNewObjId] = useState(undefined);
@@ -51,7 +51,7 @@ export function New()
         setQuorum(maxQuorum);
     }
 
-    const validateForm = (): bool => {
+    const validateForm = (): boolean => {
         let valid = true;
 
         if (title) {
@@ -112,7 +112,7 @@ export function New()
         return valid;
     };
     const navigate = useNavigate();
-    const onSubmitCreate = (e) => {
+    const onSubmitCreate = (e: SyntheticEvent) => {
         e.preventDefault();
        setError('');
         if (!validateForm()) {
@@ -123,8 +123,8 @@ export function New()
             currency,
             title,
             description,
-            Math.floor(quorum),
-            Math.floor(size),
+            Math.floor(+quorum),
+            Math.floor(+size),
             playersArray,
             judgesArray,
         )
@@ -151,7 +151,7 @@ export function New()
             <label htmlFor='title_field'>Title</label>
             <input type='text' id='title_field' className={`nes-input ${titleError ? 'is-error' : ''}`}
                 spellCheck='false' autoCorrect='off' autoComplete='off'
-                value={title} onChange={(e) => setTitle(e.target.value)}
+                value={title} onChange={e => setTitle(e.target.value)}
             />
         </div>
         <FieldError error={titleError} />
@@ -159,7 +159,7 @@ export function New()
         <div className='nes-field'>
             <label htmlFor='description_field'>Description (optional)</label>
             <textarea id='description_field' className='nes-textarea'
-                value={description} onChange={(e) => setDescription(e.target.value)}
+                value={description} onChange={e => setDescription(e.target.value)}
             ></textarea>
         </div>
 
@@ -169,8 +169,8 @@ export function New()
                 spellCheck='false' autoCorrect='off' autoComplete='off'
                 inputMode='numeric' pattern="[0-9]*"
                 value={size}
-                onChange={(e) =>
-                    setSize((v) => (e.target.validity.valid ? e.target.value : v))
+                onChange={e =>
+                    setSize(v => (e.target.validity.valid ? Number(e.target.value) : v))
                 }
             />
         </div>
@@ -178,7 +178,7 @@ export function New()
 
         <div className={`nes-select ${currencyError ? 'is-error' : ''}`} style={{marginTop: '1em'}}>
             <select id='currency_select'
-                value={currency} onChange={(e) => setCurrency(e.target.value)}
+                value={currency} onChange={e => setCurrency(e.target.value)}
             >
                 <option disabled value=''>- select -</option>
                 <option value='0x2::sui::SUI'>SUI</option>
@@ -189,7 +189,7 @@ export function New()
         <div className='nes-field'>
             <label htmlFor='players_field'> <i className='snes-jp-logo custom-logo' /> Player addresses (2—256)</label>
             <textarea id='players_field' className={`nes-textarea ${playersError ? 'is-error' : ''}`}
-                value={players} onChange={(e) => setPlayers(e.target.value)}
+                value={players} onChange={e => setPlayers(e.target.value)}
             ></textarea>
         </div>
         <FieldError error={playersError} />
@@ -198,7 +198,7 @@ export function New()
         <div className='nes-field'>
         <label htmlFor='judges_field'><i className='nes-logo custom-logo' /> Judge addresses (1—32)</label>
             <textarea id='judges_field' className={`nes-textarea ${judgesError ? 'is-error' : ''}`}
-                value={judges} onChange={(e) => setJudges(e.target.value)}
+                value={judges} onChange={e => setJudges(e.target.value)}
             ></textarea>
         </div>
         <FieldError error={judgesError} />
@@ -210,8 +210,8 @@ export function New()
                 spellCheck='false' autoCorrect='off' autoComplete='off'
                 inputMode='numeric' pattern="[0-9]*"
                 value={quorum}
-                onChange={(e) =>
-                    setQuorum((v) => (e.target.validity.valid ? e.target.value : v))
+                onChange={e =>
+                    setQuorum(v => (e.target.validity.valid ? Number(e.target.value) : v))
                 }
             />
         </div>
@@ -222,7 +222,7 @@ export function New()
 
         {
             connected
-            ? <button type='input' className='nes-btn is-primary'>CREATE</button>
+            ? <button type='submit' className='nes-btn is-primary'>CREATE</button>
             : <ButtonConnect connected={connected} setConnected={setConnected} />
         }
     </form>
