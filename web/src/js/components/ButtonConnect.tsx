@@ -5,11 +5,11 @@ import { connect, disconnect, isConnected, isInstalled } from '../lib/sui_tools'
 
 export function ButtonConnect(props: any)
 {
-    const [error, setError] = useState(undefined);
+    const [error, setError]: any[] = useState(null);
 
     const onClickConnect = async () => {
         // Is the Sui Wallet browser extension installed?
-        if (!isInstalled) {
+        if (!isInstalled()) {
             const href = 'https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil';
             setError(<span>Install the <a href={href} className='rainbow' target='_blank'>Sui wallet</a> to continue</span>);
             return;

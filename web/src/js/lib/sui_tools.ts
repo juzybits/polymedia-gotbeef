@@ -1,11 +1,11 @@
 /// Helpers to interact with the Sui network and with the Sui browser wallet
 
-import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse } from '@mysten/sui.js';
+import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo } from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
 const GOTBEEF_PACKAGE = isProd ? '0xba934d0fcdc164d2bd3a26ac6c21b119926b9e53' : '0x34bf43798814a94b5c59c583924fe9ae92f75a82';
-const GAS_BUDGET = 2000;
+const GAS_BUDGET = 10000;
 const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();
 
@@ -89,7 +89,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
 
                 // Parse `Bet.funds: VecMap<address, Coin<T>>`
                 let funds = fields.funds.fields.contents || [];
-                let fundsByPlayer = new Map(funds.map(obj =>
+                let fundsByPlayer = new Map(funds.map((obj: any) =>
                     [obj.fields.key, obj.fields.value.fields.balance]
                 ));
 
@@ -97,7 +97,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
                 let votes = fields.votes.fields.contents || [];
                 let votesByJudge = new Map();
                 let votesByPlayer = new Map();
-                votes.forEach(obj => {
+                votes.forEach((obj: any) => {
                     let judgeAddr = obj.fields.key;
                     let playerAddr = obj.fields.value;
                     votesByJudge.set(judgeAddr, playerAddr);
@@ -133,9 +133,9 @@ export async function getCoinObjects(type: string): Promise<any[]> {
     console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
     const addresses = await getAddresses();
     return rpc.getObjectsOwnedByAddress(addresses[0])
-        .then(objectsInfo => {
+        .then((objectsInfo: SuiObjectInfo[]) => {
             const expectedType = `0x2::coin::Coin<${type}>`;
-            let objectIds = objectsInfo.reduce((selected, obj) => {
+            let objectIds = objectsInfo.reduce((selected: string[], obj: SuiObjectInfo) => {
                 if (obj.type == expectedType)
                     selected.push(obj.objectId);
                 return selected;
@@ -227,33 +227,35 @@ export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
 
 /* Other helpers */
 
-export function getErrorName(error: string): string {
-    const ERROR_NAMES = { // from bet.move
-        // create()
-        '0': 'E_JUDGES_CANT_BE_PLAYERS',
-        '2': 'E_INVALID_NUMBER_OF_PLAYERS',
-        '3': 'E_INVALID_NUMBER_OF_JUDGES',
-        '4': 'E_DUPLICATE_PLAYERS',
-        '5': 'E_DUPLICATE_JUDGES',
-        '6': 'E_INVALID_QUORUM',
-        '7': 'E_INVALID_BET_SIZE',
-        // fund()
-        '100': 'E_ONLY_PLAYERS_CAN_FUND',
-        '101': 'E_ALREADY_FUNDED',
-        '102': 'E_FUNDS_BELOW_BET_SIZE',
-        '103': 'E_NOT_IN_FUNDING_PHASE',
-        // vote()
-        '200': 'E_NOT_IN_VOTING_PHASE',
-        '201': 'E_ONLY_JUDGES_CAN_VOTE',
-        '202': 'E_ALREADY_VOTED',
-        '203': 'E_PLAYER_NOT_FOUND',
-        // cancel()
-        '300': 'E_CANCEL_BET_HAS_FUNDS',
-        '301': 'E_CANCEL_NOT_AUTHORIZED',
-    };
-
+const ERROR_NAMES: Record<string, string> = { // from bet.move
+    // create()
+    '0': 'E_JUDGES_CANT_BE_PLAYERS',
+    '2': 'E_INVALID_NUMBER_OF_PLAYERS',
+    '3': 'E_INVALID_NUMBER_OF_JUDGES',
+    '4': 'E_DUPLICATE_PLAYERS',
+    '5': 'E_DUPLICATE_JUDGES',
+    '6': 'E_INVALID_QUORUM',
+    '7': 'E_INVALID_BET_SIZE',
+    // fund()
+    '100': 'E_ONLY_PLAYERS_CAN_FUND',
+    '101': 'E_ALREADY_FUNDED',
+    '102': 'E_FUNDS_BELOW_BET_SIZE',
+    '103': 'E_NOT_IN_FUNDING_PHASE',
+    // vote()
+    '200': 'E_NOT_IN_VOTING_PHASE',
+    '201': 'E_ONLY_JUDGES_CAN_VOTE',
+    '202': 'E_ALREADY_VOTED',
+    '203': 'E_PLAYER_NOT_FOUND',
+    // cancel()
+    '300': 'E_CANCEL_BET_HAS_FUNDS',
+    '301': 'E_CANCEL_NOT_AUTHORIZED',
+};
+export function getErrorName(error?: string): string {
+    if (!error) {
+        return 'unknown error';
+    }
     const match = error.match(/^MoveAbort.+, (\d+)\)$/)
-    if (!error.match(/^MoveAbort/)) {
+    if (!match) {
         return error;
     }
     const errCode = match[1];

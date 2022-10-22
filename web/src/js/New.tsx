@@ -25,16 +25,15 @@ export function New()
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
-    const [titleError, setTitleError] = useState(undefined);
-    const [sizeError, setSizeError] = useState(undefined);
-    const [currencyError, setCurrencyError] = useState(undefined);
-    const [playersError, setPlayersError] = useState(undefined);
-    const [judgesError, setJudgesError] = useState(undefined);
-    const [quorumError, setQuorumError] = useState(undefined);
+    const [titleError, setTitleError] = useState('');
+    const [sizeError, setSizeError] = useState('');
+    const [currencyError, setCurrencyError] = useState('');
+    const [playersError, setPlayersError] = useState('');
+    const [judgesError, setJudgesError] = useState('');
+    const [quorumError, setQuorumError] = useState('');
 
     // Result
-    const [newObjId, setNewObjId] = useState(undefined);
-    const [error, setError] = useState(undefined);
+    const [error, setError] = useState('');
 
     // Parse player and judge addresses
     const addrRegex = /(0x[0-9a-fA-F]+)/g;
@@ -103,7 +102,7 @@ export function New()
             setJudgesError('enter at least 1 judge');
             valid = false;
         } else if (judgesArray.length > 32) {
-            setJudgesError('too many players (maximum is 32)');
+            setJudgesError('too many judges (maximum is 32)');
             valid = false;
         } else {
             setJudgesError('');
@@ -114,7 +113,7 @@ export function New()
     const navigate = useNavigate();
     const onSubmitCreate = (e: SyntheticEvent) => {
         e.preventDefault();
-       setError('');
+        setError('');
         if (!validateForm()) {
            setError('Form has errors');
            return;
@@ -128,7 +127,7 @@ export function New()
             playersArray,
             judgesArray,
         )
-        .then(resp => {
+        .then((resp: any) => {
             if (resp.effects.status.status == 'success') {
                 showConfetti('🥩');
                 const newObjId = resp.effects.created[0].reference.objectId;

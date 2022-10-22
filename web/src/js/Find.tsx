@@ -11,8 +11,8 @@ export function Find()
     }, []);
 
     const [betId, setBetId] = useState('');
-    const [bet, setBet] = useState(undefined);
-    const [error, setError] = useState(undefined);
+    const [bet, setBet]: any[] = useState(undefined);
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
     const onSubmitSearch = (e: SyntheticEvent) => {
@@ -23,6 +23,7 @@ export function Find()
         if ( betIdClean.match(/^0x[0-9a-fA-F]+$/) ) {
             setError('');
         } else {
+            setBet(undefined);
             setError("that doesn't look like a valid address")
             return;
         }

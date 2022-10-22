@@ -5,8 +5,8 @@ import { showConfetti } from './lib/confetti';
 
 export function Fund(props: any) {
 
-    const [payCoin, setPayCoin] = useState(undefined);
-    const [error, setError] = useState(undefined);
+    const [payCoin, setPayCoin]: any[] = useState(undefined);
+    const [error, setError] = useState('');
 
     // Look for a Coin<T> with enough balance to fund the bet
     useEffect(() => {
@@ -23,11 +23,11 @@ export function Fund(props: any) {
     }, []);
 
     const onClickFund = () => {
-        fundBet(props.bet, payCoin.details.reference.objectId)
+        fundBet(props.bet, payCoin?.details.reference.objectId)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 showConfetti('💸');
-                setError(undefined);
+                setError('');
                 props.reloadBet();
                 props.setModal('');
                 console.debug('[onClickFund] Success:', resp);

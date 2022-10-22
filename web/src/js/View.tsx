@@ -12,9 +12,9 @@ export function View()
     /* Data */
 
     const [connected, setConnected]: any[] = useOutletContext();
-    const betId = useParams().uid;
-    const [bet, setBet] = useState(undefined);
-    const [modal, setModal] = useState(undefined);
+    const betId = useParams().uid || '';
+    const [bet, setBet]: any[] = useState(undefined);
+    const [modal, setModal]: any[] = useState(null);
     const [isPlayer, setIsPlayer] = useState(undefined);
     const [isJudge, setIsJudge] = useState(undefined);
     const [userCanFund, setUserCanFund] = useState(undefined);
@@ -165,7 +165,7 @@ export function View()
         </thead>
         <tbody>
         {
-            bet.players.map(player_addr => <React.Fragment key={player_addr}>
+            bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
                 <tr>
                     <td>{shorten(player_addr)}</td>
                     <td>{bet.funds.get(player_addr) || '0'}</td>
@@ -185,7 +185,7 @@ export function View()
         </thead>
         <tbody>
         {
-            bet.judges.map(judge_addr => <React.Fragment key={judge_addr}>
+            bet.judges.map((judge_addr: string) => <React.Fragment key={judge_addr}>
             <tr>
                 <td>{shorten(judge_addr)}</td>
                 <td>{shorten(bet.votesByJudge.get(judge_addr)) || '-'}</td>
@@ -211,5 +211,5 @@ const phaseColors = new Map([
 ]);
 
 function phaseColor(phaseName: string): string {
-    return phaseColors.get(phaseName);
+    return phaseColors.get(phaseName) || 'black';
 }

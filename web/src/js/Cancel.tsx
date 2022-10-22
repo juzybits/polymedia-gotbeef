@@ -5,14 +5,14 @@ import { showConfetti } from './lib/confetti';
 
 export function Cancel(props: any) {
 
-    const [error, setError] = useState(undefined);
+    const [error, setError] = useState('');
 
     const onClickCancel = () => {
         cancelBet(props.bet)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 showConfetti('🧨');
-                setError(undefined);
+                setError('');
                 props.reloadBet();
                 props.setModal('');
                 console.debug('[onClickCancel] Success:', resp);

@@ -4,12 +4,12 @@ const IMG_WIDTH = 145; // px
 const IMG_HEIGHT = 108; // px
 const IMG_SQRT = 125 // px, square root of the area
 
-export function reloadClouds()
+export function reloadClouds(): void
 {
     // Remove all clouds
     let el = null;
     while ( el = document.querySelector('.cloud, .steak') ) {
-        el.parentNode.removeChild(el);
+        el.parentNode?.removeChild(el);
     }
 
     // Get window dimensions
@@ -21,7 +21,7 @@ export function reloadClouds()
     || document.body.clientHeight;
 
     // Find the area of the gap between the footer and the bottom of the window
-    const canvasTop = document.getElementById('footer').offsetTop + 20;
+    const canvasTop = (document.getElementById('footer')?.offsetTop || 0) + 20;
     const canvasBottom = windowHeight-IMG_HEIGHT;
     const cloudFitsInGap = canvasBottom > canvasTop;
     if (!cloudFitsInGap) {
@@ -53,7 +53,7 @@ export function reloadClouds()
     }
 }
 
-function getRandomInt(min, max) {
+function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
   return min + (max - min + 1)*crypto.getRandomValues(new Uint32Array(1))[0]/2**32 | 0;

@@ -8,7 +8,7 @@ import cowImage from '../img/cow256.png';
 
 export function App(props: any)
 {
-    const [connected, setConnected] = useState(undefined);
+    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
         setConnected( isConnected() );
