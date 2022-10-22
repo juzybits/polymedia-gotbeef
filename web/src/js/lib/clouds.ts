@@ -20,31 +20,56 @@ export function reloadClouds(): void
     || document.documentElement.clientHeight
     || document.body.clientHeight;
 
-    // Find the area of the gap between the footer and the bottom of the window
-    const canvasTop = (document.getElementById('footer')?.offsetTop || 0) + 20;
-    const canvasBottom = windowHeight-IMG_HEIGHT;
-    const cloudFitsInGap = canvasBottom > canvasTop;
-    if (!cloudFitsInGap) {
-        // console.debug('[clouds] No space')
+    // Get the elements that enclose the clouds
+    const footer = document.getElementById('footer');
+    const page = document.getElementById('page');
+    if (!footer || !page) return;
+
+    // Paint clouds between the footer and the bottom of the browser window
+    paintClouds(
+        footer.offsetTop + 20,
+        windowWitdth - IMG_WIDTH,
+        windowHeight - IMG_HEIGHT,
+        0
+    );
+    // Paint clouds between the left edge of the browser window and the left edge of the page content
+    const sideCloudsBottom = footer.offsetTop - IMG_HEIGHT + 20;
+    paintClouds(
+        0,
+        page.offsetLeft - IMG_WIDTH,
+        sideCloudsBottom,
+        0
+    );
+    // Paint clouds between the right edge of the page content and the right edge of the browser window
+    paintClouds(
+        0,
+        windowWitdth - IMG_WIDTH,
+        sideCloudsBottom,
+        page.offsetLeft + page.offsetWidth
+    );
+}
+
+function paintClouds(top: number, right: number, bottom: number, left: number): void {
+    const cloudFitsInArea = (right > left) && (bottom > top);
+    if (!cloudFitsInArea) {
         return;
     }
-    const canvasArea = windowWitdth * (canvasBottom - canvasTop);
+    const canvasArea = (right-left) * (bottom-top);
 
-    // Add extra clouds based on the area of the gap
+    // Add extra clouds based on the area available
     const canvasSqrt = Math.floor( Math.sqrt(canvasArea) );
     const extraClouds = canvasSqrt < 500 ? 0 : Math.floor( (canvasSqrt-500) / IMG_SQRT );
-    const cloudCount = 1 + extraClouds;
-    // console.debug('[clouds]', canvasSqrt, cloudCount);
+    const cloudCount = getRandomInt(1, 2) + extraClouds;
 
     for (var i = 0; i < cloudCount; i++) {
-        const top = getRandomInt(canvasTop, canvasBottom);
-        const left = getRandomInt(-IMG_WIDTH/2, windowWitdth-IMG_WIDTH);
+        const imgTop = getRandomInt(top, bottom);
+        const imgLeft = getRandomInt(left, right);
 
         const el = document.createElement('span');
         el.className = 'cloud';
         el.setAttribute(
           'style',
-          `top: ${top}px; left: ${left}px`,
+          `top: ${imgTop}px; left: ${imgLeft}px`,
         );
         el.addEventListener('click', (event) => {
             el.className = 'steak';

@@ -209,7 +209,6 @@ export async function castVote(bet: Bet, player_addr: string): Promise<SuiTransa
     });
 }
 
-
 export async function cancelBet(bet: Bet): Promise<SuiTransactionResponse>
 {
     console.debug(`[cancelBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
