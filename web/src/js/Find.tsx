@@ -1,18 +1,43 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { getBet, Bet } from './lib/sui_tools';
+import { Bet, getBet, getRecentTxns } from './lib/sui_tools';
+import { shorten, timeAgo } from './lib/common';
 
 export function Find()
 {
     useEffect(() => {
         document.title = 'Got Beef? - Find';
+
+        getRecentTxns(18)
+        .then(txnData => {
+            const txns = txnData.reduce((selected: object[], txn: any) => {
+                const cert = txn.certificate;
+                const call = cert.data.transactions[0].Call;
+                const effects = txn.effects;
+                if (call.function == 'create' && effects.status.status == 'success') {
+                    selected.push({
+                        time: txn.timestamp_ms,
+                        betId: effects.created[0].reference.objectId,
+                        name: cert.data.transactions[0].Call.arguments[0],
+                        // amount: cert.data.transactions[0].Call.arguments[3],
+                        // txnId: cert.transactionDigest,
+                        // func: call.function,
+                        // status: effects.status.status,
+                    });
+                }
+                return selected;
+            }, []);
+            setRecentBets(txns);
+        });
+
     }, []);
 
     const [betId, setBetId] = useState('');
     const [bet, setBet]: any[] = useState(undefined);
     const [error, setError] = useState('');
+    const [recentBets, setRecentBets]: any[] = useState([]);
 
     const navigate = useNavigate();
     const onSubmitSearch = (e: SyntheticEvent) => {
@@ -71,7 +96,23 @@ export function Find()
 
         </form>
 
-        {/* TODO: Show recent transactions with rpc.getTransactionsForObject() */}
+        <br/>
+        <br/>
+        <h3 style={{marginBottom: '1em'}}>RECENT BETS</h3>
+        {
+            recentBets.slice(0, 9).map((txn: any) => <div key={txn.betId}>
+                <span style={{minWidth: '6.5em', display: 'inline-block', textAlign: 'right'}}>
+                    {timeAgo(txn.time)}
+                </span>
+                &nbsp;
+                <Link to={`/bet/${txn.betId}`}>{txn.name}</Link>
+                {/*{txn.amount} |&nbsp;*/}
+                {/*{shorten(txn.txnId, 3, 4)} |&nbsp;*/}
+                {/*{txn.func} |&nbsp;*/}
+                {/*{txn.status}*/}
+                <hr/>
+            </div>)
+        }
 
     </React.Fragment>;
 }

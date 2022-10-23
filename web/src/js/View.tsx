@@ -6,6 +6,7 @@ import { Fund } from './Fund';
 import { Vote } from './Vote';
 import { Cancel } from './Cancel';
 import { getBet, Bet, getAddresses } from './lib/sui_tools';
+import { shorten } from './lib/common';
 
 export function View()
 {
@@ -196,10 +197,6 @@ export function View()
     </table>
 
     </React.Fragment>;
-}
-
-function shorten(addr: string): string {
-    return !addr ? '' : addr.slice(0, 6) + '...' + addr.slice(-4);
 }
 
 const phaseColors = new Map([

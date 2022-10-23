@@ -19,9 +19,7 @@ sui/sources/bet.move:        // funds: vector<Item>, // (maybe) prize can be any
 sui/sources/bet.move:    /// - (maybe) If all players agree on cancelling the bet.
 sui/sources/bet.move:    /// - (maybe) If a quorum of judges agree on cancelling the bet.
 sui/sources/bet.move:    /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
-web/src/js/App.tsx:                {/* TODO: History page */}
 web/src/js/App.tsx:        {/* TODO: add version */}
-web/src/js/Find.tsx:        {/* TODO: Show recent transactions with rpc.getTransactionsForObject() */}
 web/src/js/View.tsx:    // TODO: show date of last update
 web/src/js/lib/sui_tools.ts:                // TODO: '0x0ab' is returned as '0xab' by the RPC
 ```

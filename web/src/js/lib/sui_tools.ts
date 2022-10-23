@@ -1,6 +1,6 @@
 /// Helpers to interact with the Sui network and with the Sui browser wallet
 
-import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo } from '@mysten/sui.js';
+import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
@@ -145,6 +145,24 @@ export async function getCoinObjects(type: string): Promise<any[]> {
                 .catch(error => []);
         })
         .catch(error => []);
+}
+
+/// Get recent bet transactions
+export async function getRecentTxns(limit: number): Promise<SuiTransactionResponse[]> {
+    const errorCatcher = (error: any) => {
+        console.warn('[getRecentTxns] RPC error:', error.message);
+        return [];
+    };
+
+    // @ts-ignore
+    const transactions = await rpc.client.batchRequest([{
+        method: 'sui_getTransactions',
+        args: [{ InputObject: GOTBEEF_PACKAGE }, null, limit, 'Descending'],
+    }])
+    .then(response => response[0].result.data)
+    .catch(errorCatcher);
+
+    return rpc.getTransactionWithEffectsBatch(transactions).catch(errorCatcher);
 }
 
 /* Functions to call the `public entry` functions in the `gotbeef::bet` Sui package */
