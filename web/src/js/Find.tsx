@@ -20,7 +20,7 @@ export function Find()
 
         // Validate input
         const betIdClean = betId.trim()
-        if ( betIdClean.match(/^0x[0-9a-fA-F]+$/) ) {
+        if ( betIdClean.match(/^0x[0-9a-fA-F]{40}$/) ) {
             setError('');
         } else {
             setBet(undefined);

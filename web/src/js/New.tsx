@@ -36,7 +36,7 @@ export function New()
     const [error, setError] = useState('');
 
     // Parse player and judge addresses
-    const addrRegex = /(0x[0-9a-fA-F]+)/g;
+    const addrRegex = /(0x[0-9a-fA-F]{40})/g;
     const playersArray = players.match(addrRegex) || [];
     const judgesArray = judges.match(addrRegex) || [];
 
