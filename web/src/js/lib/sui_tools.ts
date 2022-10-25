@@ -4,7 +4,7 @@ import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObje
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
-const GOTBEEF_PACKAGE = isProd ? '0xc932147c8977e842141fc8ab285502ab2f9fc49b' : '0x36f2dd73ff34bdbaad48a3cd2c7fdcda7ab1b70e';
+const GOTBEEF_PACKAGE = isProd ? '0xd9c1974318063f6ad7ba558f56da5e4ed266c8b6' : '0x36f2dd73ff34bdbaad48a3cd2c7fdcda7ab1b70e';
 const GAS_BUDGET = 10000;
 const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();
@@ -184,8 +184,8 @@ export async function createBet(
         function: 'create',
         typeArguments: [ currency ],
         arguments: [
-            title,
-            description,
+            Array.from( (new TextEncoder()).encode(title) ),
+            Array.from( (new TextEncoder()).encode(description) ),
             quorum,
             size,
             players,
