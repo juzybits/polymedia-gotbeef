@@ -4,7 +4,7 @@ import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObje
 import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { isProd } from './common';
 
-const GOTBEEF_PACKAGE = isProd ? '0xba934d0fcdc164d2bd3a26ac6c21b119926b9e53' : '0x34bf43798814a94b5c59c583924fe9ae92f75a82';
+const GOTBEEF_PACKAGE = isProd ? '0xc932147c8977e842141fc8ab285502ab2f9fc49b' : '0x36f2dd73ff34bdbaad48a3cd2c7fdcda7ab1b70e';
 const GAS_BUDGET = 10000;
 const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 const wallet = new SuiWalletAdapter();

@@ -72,7 +72,7 @@ module gotbeef::bet
         title: String,
         description: String,
         quorum: u64,
-        size: u64, // Amount of Coin<T> that each participant will bet
+        size: u64, // Amount of Coin<T> that each player will bet
         players: vector<address>,
         judges: vector<address>,
         votes: VecMap<address, address>, // <judge_addr,  player_addr>
@@ -215,7 +215,7 @@ module gotbeef::bet
         };
 
         // If the player that just received a vote is the winner, settle the bet
-        if ( player_vote_count >= bet.quorum ) {
+        if ( player_vote_count == bet.quorum ) {
             transfers::send_all(&mut bet.funds, player_addr, ctx);
             bet.winner = option::some(player_addr);
             bet.phase = PHASE_SETTLED;
