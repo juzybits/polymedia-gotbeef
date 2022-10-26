@@ -1,11 +1,12 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
+import { useWallet } from "@mysten/wallet-adapter-react";
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
+import { GOTBEEF_PACKAGE, GAS_BUDGET, getErrorName } from './lib/sui_tools';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
-import { createBet, getErrorName } from './lib/sui_tools';
 
 export function New()
 {
@@ -13,15 +14,13 @@ export function New()
         document.title = 'Got Beef? - New'
     }, []);
 
-    const [connected, setConnected]: any[] = useOutletContext();
-
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : 5000);
-    const [players, setPlayers] = useState(isProd ? '' : '0xdc82a911f9bbfc904ffffcf3c7e4cb2b7401bf22\n0x51c7972abed05fc2b0c0f070d3a14b18bc593f78');
-    const [judges, setJudges] = useState(isProd ? '' : '0x40608a72adb19ab080879e44be7f8aafdc2a6162');
+    const [players, setPlayers] = useState(isProd ? '' : '0x188697360bf5807456322c4eab775613ee5a89db\n0xbf649b108ca5ce32c8b7fa023aa8b39e5bf92715');
+    const [judges, setJudges] = useState(isProd ? '' : '0xdc82a911f9bbfc904ffffcf3c7e4cb2b7401bf22');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
@@ -110,6 +109,39 @@ export function New()
 
         return valid;
     };
+
+    const { signAndExecuteTransaction } = useWallet();
+    const createBet = async (
+        currency: string, // e.g. '0x2::sui::SUI'
+        title: string,
+        description: string,
+        quorum: number,
+        size: number,
+        players: string[],
+        judges: string[],
+    ): Promise<SuiTransactionResponse> =>
+    {
+        console.debug(`[createBet] Calling bet::create on package: ${GOTBEEF_PACKAGE}`);
+        return signAndExecuteTransaction({
+            kind: 'moveCall',
+            data: {
+                packageObjectId: GOTBEEF_PACKAGE,
+                module: 'bet',
+                function: 'create',
+                typeArguments: [ currency ],
+                arguments: [
+                    Array.from( (new TextEncoder()).encode(title) ),
+                    Array.from( (new TextEncoder()).encode(description) ),
+                    quorum,
+                    size,
+                    players,
+                    judges,
+                ],
+                gasBudget: GAS_BUDGET,
+            }
+        });
+    }
+
     const navigate = useNavigate();
     const onSubmitCreate = (e: SyntheticEvent) => {
         e.preventDefault();
@@ -141,6 +173,7 @@ export function New()
         });
     };
 
+    const { connected } = useWallet();
     return <React.Fragment>
 
     <h2>NEW BET</h2>
@@ -219,11 +252,12 @@ export function New()
         <br/>
         <br/>
 
-        {
-            connected
-            ? <button type='submit' className='nes-btn is-primary'>CREATE</button>
-            : <ButtonConnect connected={connected} setConnected={setConnected} />
-        }
+        {connected &&
+        <button type='submit' className='nes-btn is-primary' style={{marginRight: '1em'}}>
+            CREATE
+        </button>}
+
+        <ButtonConnect />
     </form>
 
     {

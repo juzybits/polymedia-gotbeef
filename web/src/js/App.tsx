@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
-import { ButtonConnect } from './components/ButtonConnect';
+import { WalletProvider } from "@mysten/wallet-adapter-react";
+import { WalletStandardAdapterProvider } from "@mysten/wallet-adapter-all-wallets";
+
 import { reloadClouds } from './lib/clouds';
-import { isConnected } from './lib/sui_tools';
 import cowImage from '../img/cow256.png';
 
 export function App(props: any)
 {
-    const [connected, setConnected] = useState(false);
-
     useEffect(() => {
-        setConnected( isConnected() );
         const resizeObserver = new ResizeObserver((entries) => {
             reloadClouds();
         });
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
+
+    const walletAdapters = useMemo(() => [new WalletStandardAdapterProvider()], []);
 
     return <div id='page'>
     <section id='main'>
@@ -34,7 +34,9 @@ export function App(props: any)
         </header>
 
         <section id='content'>
-            <Outlet context={[connected, setConnected]} />
+        <WalletProvider adapters={walletAdapters}>
+            <Outlet context={[]} />
+        </WalletProvider>
         </section>
 
     </section>

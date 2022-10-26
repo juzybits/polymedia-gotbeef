@@ -89,15 +89,22 @@ a:hover {
 #bet-actions-container, .bet-modal {
     margin-bottom: 2em;
 }
-#bet-actions {
-    min-height: 44px; // so the section doesn't collapse between buttons renders
-    text-align: center;
+#bet-actions, #wallet-selection {
     .nes-btn {
-        margin: 0 1.4em 0 0;
+        margin: 0.5em;
         &:last-child {
             margin-right: 0;
         }
-    };
+    }
+}
+#bet-actions {
+    text-align: center;
+    .error {
+        font-style: italic;
+        font-size: 0.9em;
+        display: block;
+        margin-bottom: 1.5em;
+    }
 }
 #bet-summary {
     width: auto;
@@ -192,12 +199,12 @@ a:hover {
         padding-left: 0.5em;
         padding-right: 0.6em;
     }
-    #bet-actions {
+    #bet-actions, #wallet-selection {
         .nes-btn {
             width: 50%;
             min-width: 9em;
             display: block;
-            margin: 0 auto 1em auto;
+            margin: 1em auto;
             &:last-child {
                 margin: 0 auto 0 auto;
             }

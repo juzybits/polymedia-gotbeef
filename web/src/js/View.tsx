@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
+import { useWallet } from "@mysten/wallet-adapter-react";
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
 import { Cancel } from './Cancel';
-import { getBet, Bet, getAddresses } from './lib/sui_tools';
+import { getBet, Bet } from './lib/sui_tools';
 import { shorten } from './lib/common';
 
 export function View()
 {
     /* Data */
 
-    const [connected, setConnected]: any[] = useOutletContext();
     const betId = useParams().uid || '';
     const [bet, setBet]: any[] = useState(undefined);
     const [modal, setModal]: any[] = useState(null);
@@ -44,11 +44,12 @@ export function View()
 
     /* Decide which action buttons are visible to the user */
 
+    const { connected, getAccounts } = useWallet();
     useEffect(() => {
         if (!connected || !bet) {
             return;
         }
-        getAddresses().then(addresses => {
+        getAccounts().then(addresses => {
             const userAddr = addresses[0];
             const isJudge = bet.judges.includes(userAddr);
             const isPlayer = bet.players.includes(userAddr);
@@ -79,41 +80,37 @@ export function View()
             <section id='bet-actions-container' className='nes-container with-title'>
                 <h3 className='title'>Actions</h3>
                 <div id='bet-actions'>
-                {
-                    !connected
-                    ? <ButtonConnect connected={connected} setConnected={setConnected} />
-                    : <div id='bet-actions'>
+                {connected && <>
+                    {userCanFund &&
+                    <button type='button' className='nes-btn is-success'
+                        onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
+                        FUND
+                    </button>}
 
-                        {userCanFund &&
-                        <button type='button' className='nes-btn is-success'
-                            onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
-                            Fund
-                        </button>}
+                    {userCanVote &&
+                    <button type='button' className='nes-btn is-success'
+                        onClick={() => setModal(<Vote bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
+                        VOTE
+                    </button>}
 
-                        {userCanVote &&
-                        <button type='button' className='nes-btn is-success'
-                            onClick={() => setModal(<Vote bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
-                            Vote
-                        </button>}
+                    {userCanCancel &&
+                    <button type='button' className='nes-btn is-error'
+                        onClick={() => setModal(<Cancel bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
+                        CANCEL
+                    </button>}
 
-                        {userCanCancel &&
-                        <button type='button' className='nes-btn is-error'
-                            onClick={() => setModal(<Cancel bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
-                            Cancel
-                        </button>}
-
-                        {
-                            (isPlayer===false && isJudge===false)
-                            ? <i style={{fontSize: '0.9em'}}>
-                                Your address is not a participant in this bet
-                            </i>
-                            : (userCanFund===false && userCanVote===false && userCanCancel===false) &&
-                            <i style={{fontSize: '0.9em'}}>
-                                No actions available at this time
-                            </i>
-                        }
-                    </div>
-                }
+                    {
+                        (isPlayer===false && isJudge===false)
+                        ? <span className='error'>
+                            Your address is not a participant in this bet
+                        </span>
+                        : (userCanFund===false && userCanVote===false && userCanCancel===false) &&
+                        <span className='error'>
+                            No actions available at this time
+                        </span>
+                    }
+                </>}
+                    <ButtonConnect />
                 </div>
             </section>
         )

@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
+import { useWallet } from "@mysten/wallet-adapter-react";
 
-import { cancelBet, getErrorName } from './lib/sui_tools';
+import { GOTBEEF_PACKAGE, GAS_BUDGET, getErrorName } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
 export function Cancel(props: any) {
 
     const [error, setError] = useState('');
+
+    const { signAndExecuteTransaction } = useWallet();
+    const cancelBet = (bet: Bet): Promise<SuiTransactionResponse> => {
+        console.debug(`[cancelBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
+        return signAndExecuteTransaction({
+            kind: 'moveCall',
+            data: {
+                packageObjectId: GOTBEEF_PACKAGE,
+                module: 'bet',
+                function: 'cancel',
+                typeArguments: [ bet.collatType ],
+                arguments: [
+                    bet.id,
+                ],
+                gasBudget: GAS_BUDGET,
+            }
+        });
+    };
 
     const onClickCancel = () => {
         cancelBet(props.bet)
@@ -35,11 +54,11 @@ export function Cancel(props: any) {
         <br/>
         <br/>
         <button type='button' className='nes-btn is-error' onClick={onClickCancel}>
-            Cancel
+            CANCEL
         </button>
         &nbsp;
         <button type='button' className='nes-btn' onClick={onClickBack}>
-            Back
+            BACK
         </button>
         <br/>
 
