@@ -90,7 +90,7 @@ export function Find()
             <FieldError error={error} />
             <br/>
 
-            <button type='submit' className='nes-btn is-primary'>Search</button>
+            <button type='submit' className='nes-btn is-primary'>SEARCH</button>
 
             <ErrorSection />
 

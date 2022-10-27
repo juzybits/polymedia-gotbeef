@@ -79,7 +79,7 @@ export function View()
             (bet.phase=='voting' || bet.phase=='funding') &&
             <section id='bet-actions-container' className='nes-container with-title'>
                 <h3 className='title'>Actions</h3>
-                <div id='bet-actions'>
+                <div id='bet-actions' className='button-container'>
                 {connected && <>
                     {userCanFund &&
                     <button type='button' className='nes-btn is-success'

@@ -46,7 +46,7 @@ export function App(props: any)
         <div id='footer-links'>
             <a href='https://github.com/juzybits/gotbeef' target='_blank' aria-label='GitHub'><i className='icon icon-github'></i></a>
             <a href='https://twitter.com/juzybits' target='_blank' aria-label='Twitter'><i className='icon icon-twitter'></i></a>
-            <a href='https://discord.gg/BVaq7S9C4A' target='_blank' aria-label='Discord'><i className='icon icon-discord'></i></a>
+            <a href='https://discord.gg/3ZaE69Eq78' target='_blank' aria-label='Discord'><i className='icon icon-discord'></i></a>
         </div>
 
         <div id='footer-signature'>

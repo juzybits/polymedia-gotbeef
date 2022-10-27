@@ -4,7 +4,7 @@ import { useWallet } from "@mysten/wallet-adapter-react";
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { GOTBEEF_PACKAGE, GAS_BUDGET, getErrorName } from './lib/sui_tools';
+import { GOTBEEF_PACKAGE, getErrorName } from './lib/sui_tools';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 
@@ -19,7 +19,7 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : 5000);
-    const [players, setPlayers] = useState(isProd ? '' : '0x188697360bf5807456322c4eab775613ee5a89db\n0xbf649b108ca5ce32c8b7fa023aa8b39e5bf92715');
+    const [players, setPlayers] = useState(isProd ? '' : '0xcbc064ed4606eef1470dbefda7d322e5bf58b827\n0xbf649b108ca5ce32c8b7fa023aa8b39e5bf92715');
     const [judges, setJudges] = useState(isProd ? '' : '0xdc82a911f9bbfc904ffffcf3c7e4cb2b7401bf22');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
@@ -137,7 +137,7 @@ export function New()
                     players,
                     judges,
                 ],
-                gasBudget: GAS_BUDGET,
+                gasBudget: 10000,
             }
         });
     }
@@ -252,12 +252,14 @@ export function New()
         <br/>
         <br/>
 
-        {connected &&
-        <button type='submit' className='nes-btn is-primary' style={{marginRight: '1em'}}>
-            CREATE
-        </button>}
+        <div className='button-container' style={{margin: '0.8em 0'}}>
+            {connected &&
+            <button type='submit' className='nes-btn is-primary'>
+                CREATE BET
+            </button>}
 
-        <ButtonConnect />
+            <ButtonConnect />
+        </div>
     </form>
 
     {

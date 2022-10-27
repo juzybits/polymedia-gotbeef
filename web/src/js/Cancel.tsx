@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
-import { GOTBEEF_PACKAGE, GAS_BUDGET, getErrorName } from './lib/sui_tools';
+import { GOTBEEF_PACKAGE, getErrorName } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
 export function Cancel(props: any) {
@@ -21,7 +21,7 @@ export function Cancel(props: any) {
                 arguments: [
                     bet.id,
                 ],
-                gasBudget: GAS_BUDGET,
+                gasBudget: 10000,
             }
         });
     };

@@ -1,7 +1,7 @@
 import React, { useState, SyntheticEvent } from 'react';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
-import { GOTBEEF_PACKAGE, GAS_BUDGET, getErrorName } from './lib/sui_tools';
+import { GOTBEEF_PACKAGE, getErrorName } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
 export function Vote(props: any) {
@@ -23,7 +23,7 @@ export function Vote(props: any) {
                     bet.id,
                     player_addr,
                 ],
-                gasBudget: GAS_BUDGET,
+                gasBudget: 10000,
             }
         });
     };

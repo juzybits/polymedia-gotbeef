@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
-import { GOTBEEF_PACKAGE, GAS_BUDGET, getErrorName, getCoinObjects } from './lib/sui_tools';
+import { GOTBEEF_PACKAGE, getErrorName, getCoinObjects } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
 export function Fund(props: any) {
@@ -42,7 +42,7 @@ export function Fund(props: any) {
                     bet.id,
                     coin,
                 ],
-                gasBudget: GAS_BUDGET,
+                gasBudget: 10000,
             }
         });
     };
