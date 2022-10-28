@@ -20,6 +20,8 @@ export function ButtonConnect(props: any)
 
     const handleConnect = (walletName: string) => {
         select(walletName);
+        console.debug('[ButtonConnect] Connecting to', walletName);
+        setShowWallets(false);
     };
 
     const handleDisconnect = () => {

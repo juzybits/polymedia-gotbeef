@@ -138,6 +138,12 @@ export function getErrorName(error?: string): string {
     if (!error) {
         return 'unknown error';
     }
+
+    const noBalanceTxt = 'Unable to select a gas object with balance greater than or equal to';
+    if (error.includes(noBalanceTxt)) {
+        return 'Your wallet doesn\'t have enough balance to pay for the transaction';
+    }
+
     const match = error.match(/^MoveAbort.+, (\d+)\)$/)
     if (!match) {
         return error;

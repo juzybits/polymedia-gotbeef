@@ -170,7 +170,7 @@ export function New()
             }
         })
         .catch(error => {
-            setError(error.message);
+            setError( getErrorName(error.message) );
         });
     };
 

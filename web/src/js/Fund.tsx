@@ -63,7 +63,7 @@ export function Fund(props: any) {
             }
         })
         .catch(error => {
-            setError(error.message);
+            setError( getErrorName(error.message) );
         });
     };
 
