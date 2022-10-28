@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { SuiTransactionResponse } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
-import { GOTBEEF_PACKAGE, getErrorName, getCoinObjects } from './lib/sui_tools';
+import { GOTBEEF_PACKAGE, Bet, getErrorName, getCoinObjects } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
 export function Fund(props: any) {

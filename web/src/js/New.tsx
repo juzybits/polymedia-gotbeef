@@ -1,6 +1,7 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
 import { useWallet } from "@mysten/wallet-adapter-react";
+import { SuiTransactionResponse } from '@mysten/sui.js';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
@@ -59,7 +60,7 @@ export function New()
             valid = false;
         }
 
-        if (size >= 0) {
+        if (+size >= 0) {
             setSizeError('');
         } else {
             setSizeError('your size is not size');
@@ -155,7 +156,7 @@ export function New()
             title,
             description,
             Math.floor(+quorum),
-            Math.floor(size*1_000_000_000),
+            Math.floor(+size*1_000_000_000),
             playersArray,
             judgesArray,
         )

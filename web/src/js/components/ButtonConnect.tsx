@@ -19,15 +19,7 @@ export function ButtonConnect(props: any)
     };
 
     const handleConnect = (walletName: string) => {
-        select(walletName)
-        .then(result => {
-            console.debug('[ButtonConnect] Connected to', walletName);
-            setShowWallets(false);
-        })
-        .catch(error => {
-            console.warn('[ButtonConnect] Connection failure: ', error.message);
-            setError(<span>Connection failure</span>);
-        });
+        select(walletName);
     };
 
     const handleDisconnect = () => {
@@ -36,15 +28,16 @@ export function ButtonConnect(props: any)
     };
 
     const WalletSelection = () => {
-        return wallets.map(wallet =>
-        <button type='button' className='nes-btn' key={wallet.name} onClick={() => handleConnect(wallet.name)}>
-            <img src={wallet.name=='Sui Wallet' ? 'https://sui.io/favicon.png' : wallet.icon} style={{
-                width: '1.5em',
-                verticalAlign: 'top',
-                marginRight: '0.5em',
-            }} />
-            {wallet.name}
-        </button>);
+        return <> { wallets.map(wallet =>
+            <button type='button' className='nes-btn' key={wallet.name} onClick={() => handleConnect(wallet.name)}>
+                <img src={wallet.name=='Sui Wallet' ? 'https://sui.io/favicon.png' : wallet.icon} style={{
+                    width: '1.5em',
+                    verticalAlign: 'top',
+                    marginRight: '0.5em',
+                }} />
+                {wallet.name}
+            </button>)
+        } </>;
     }
 
     const ButtonDisconnect = () => {
