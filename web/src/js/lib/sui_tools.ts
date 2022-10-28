@@ -5,7 +5,7 @@ import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { useWallet } from "@mysten/wallet-adapter-react";
 import { isProd } from './common';
 
-export const GOTBEEF_PACKAGE = isProd ? '0xc4f1d115dad8dbe11dd511b0c9ff8fc418f9fcf1' : '0xf4c34a1c3e78c3ce73f28e12a988a6b482c92123';
+export const GOTBEEF_PACKAGE = isProd ? '0xf095ea4fa3d3d1de244ef01cc5c7a135fbfb9d5a' : '0x024d8ab0266ebc8a95e88c82cc19c00ae7b480fc';
 export const GAS_BUDGET = 10000;
 const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
@@ -39,7 +39,9 @@ export async function getBet(objId: string): Promise<Bet|null> {
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
-    const betTypeRegex = new RegExp(`^${GOTBEEF_PACKAGE}::bet::Bet<0x.+::.+::.+>$`);
+    // Handle leading zeros ('0x00ab::bet::Bet' is returned as '0xab::bet::Bet' by the RPC)
+    const packageName = GOTBEEF_PACKAGE.replace(/0x0+/, '0x0*'); // handle leading zeros
+    const betTypeRegex = new RegExp(`^${packageName}::bet::Bet<0x.+::.+::.+>$`);
     return rpc.getObject(objId)
         .then((obj: GetObjectDataResponse) => {
             if (obj.status != 'Exists') {
@@ -49,7 +51,6 @@ export async function getBet(objId: string): Promise<Bet|null> {
 
             const details = obj.details as any;
             if (!details.data.type.match(betTypeRegex)) {
-                // TODO: '0x0ab' is returned as '0xab' by the RPC
                 console.warn('[getBet] Found wrong object type:', details.data.type);
                 return null;
             } else {

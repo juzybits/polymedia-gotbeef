@@ -21,5 +21,4 @@ sui/sources/bet.move:    /// - (maybe) If a quorum of judges agree on cancelling
 sui/sources/bet.move:    /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
 web/src/js/App.tsx:        {/* TODO: add version */}
 web/src/js/View.tsx:    // TODO: show date of last update
-web/src/js/lib/sui_tools.ts:                // TODO: '0x0ab' is returned as '0xab' by the RPC
 ```
