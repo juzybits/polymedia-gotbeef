@@ -18,7 +18,7 @@ export function New()
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
-    const [size, setSize] = useState(isProd ? '' : 5000);
+    const [size, setSize] = useState(isProd ? '' : '0.0001');
     const [players, setPlayers] = useState(isProd ? '' : '0xcbc064ed4606eef1470dbefda7d322e5bf58b827\n0xbf649b108ca5ce32c8b7fa023aa8b39e5bf92715');
     const [judges, setJudges] = useState(isProd ? '' : '0xdc82a911f9bbfc904ffffcf3c7e4cb2b7401bf22');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
@@ -59,7 +59,7 @@ export function New()
             valid = false;
         }
 
-        if (size >= 1) {
+        if (size >= 0) {
             setSizeError('');
         } else {
             setSizeError('your size is not size');
@@ -155,7 +155,7 @@ export function New()
             title,
             description,
             Math.floor(+quorum),
-            Math.floor(+size),
+            Math.floor(size*1_000_000_000),
             playersArray,
             judgesArray,
         )
@@ -199,10 +199,10 @@ export function New()
             <label htmlFor='size_field'><i className='nes-icon coin is-custom' /> Size and currency</label>
             <input type='text' id='size_field' className={`nes-input ${sizeError ? 'is-error' : ''}`}
                 spellCheck='false' autoCorrect='off' autoComplete='off'
-                inputMode='numeric' pattern="[0-9]*"
+                inputMode='numeric' pattern="^[0-9]*\.?[0-9]{0,9}$"
                 value={size}
                 onChange={e =>
-                    setSize(v => (e.target.validity.valid ? Number(e.target.value) : v))
+                    setSize(v => (e.target.validity.valid ? e.target.value : v))
                 }
             />
         </div>

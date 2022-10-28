@@ -137,7 +137,7 @@ export function View()
             </tr>
             <tr>
                 <td>Size:</td>
-                <td>{bet.size} <i className='nes-icon coin is-small' /> {bet.collatType}</td>
+                <td>{bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {bet.collatType}</td>
             </tr>
             <tr>
                 <td>Quorum:</td>

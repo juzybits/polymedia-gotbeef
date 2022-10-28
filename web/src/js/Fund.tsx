@@ -73,7 +73,7 @@ export function Fund(props: any) {
     return <section className='bet-modal'>
         <h2>Fund bet</h2>
         <div>
-            Bet size is {props.bet.size} <i className='nes-icon coin is-small' /> {props.bet.collatType}
+            Bet size is {props.bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {props.bet.collatType}
             <br/>
             <br/>
             <button type='button' className={`nes-btn ${payCoin ? 'is-success' : 'is-disabled'}`} disabled={!payCoin} onClick={onClickFund}>
