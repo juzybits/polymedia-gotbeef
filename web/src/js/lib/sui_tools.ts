@@ -5,7 +5,7 @@ import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
 import { useWallet } from "@mysten/wallet-adapter-react";
 import { isProd } from './common';
 
-export const GOTBEEF_PACKAGE = isProd ? '0xf095ea4fa3d3d1de244ef01cc5c7a135fbfb9d5a' : '0x024d8ab0266ebc8a95e88c82cc19c00ae7b480fc';
+export const GOTBEEF_PACKAGE = '0xdbbfe72cc376ee25a96ffd9b2845a431452855ec';
 const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
