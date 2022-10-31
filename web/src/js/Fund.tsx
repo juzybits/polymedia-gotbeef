@@ -7,8 +7,9 @@ import { showConfetti } from './lib/confetti';
 
 export function Fund(props: any) {
 
-    const [payCoin, setPayCoin]: any[] = useState(undefined);
+    const [payCoins, setPayCoins]: any[] = useState(undefined);
     const [error, setError] = useState('');
+    const GAS_BUDGET = 10000;
 
     // Look for a Coin<T> with enough balance to fund the bet
     const { getAccounts } = useWallet();
@@ -17,11 +18,37 @@ export function Fund(props: any) {
         getAccounts().then(addresses => {
             getCoinObjects(addresses[0], props.bet.collatType)
             .then(coins => {
-                const coin = coins.reverse().find(obj => obj.details.data.fields.balance >= props.bet.size);
-                console.debug('[Fund.useEffect] Found payment coin:', coin ? coin.details.data.fields : 'NONE');
-                setPayCoin(coin||null);
-                if (!coin) {
-                    setError(`Your wallet doesn't contain a Coin<${props.bet.collatType}> with a balance large enough to fund this bet.`);
+                let smallestCoin = null; // to pay for gas
+                let payCoins = []; // to fund the bet
+                let payCoinsVal = 0; // sum of `payCoins` balances
+
+                for ( const coin of coins ) {
+                    if (smallestCoin === null) {
+                        smallestCoin = coin;
+                        continue;
+                    }
+                    let coinVal = coin.details.data.fields.balance;
+                    let smallestVal = smallestCoin.details.data.fields.balance;
+                    if (coinVal < smallestVal && coinVal >= GAS_BUDGET) {
+                        payCoins.push(smallestCoin);
+                        payCoinsVal += smallestVal;
+                        smallestCoin = coin;
+                        continue;
+                    }
+                    payCoins.push(coin);
+                    payCoinsVal += coinVal;
+                    if (payCoinsVal >= props.bet.size) {
+                        break;
+                    }
+                }
+
+                if (payCoinsVal >= props.bet.size) {
+                    console.debug(`[Fund.useEffect] Found coins to fund bet. Aggregate balance = ${payCoinsVal}. Coins:`, payCoins);
+                    setPayCoins(payCoins);
+                } else {
+                    console.error(`[Fund.useEffect] Not enough balance to fund bet. Aggregate balance = ${payCoinsVal}. Coins:`, payCoins);
+                    setPayCoins(null);
+                    setError(`Your wallet doesn't have enough balance to fund the bet`);
                 }
             })
             .catch(error => setError(error.message) );
@@ -41,16 +68,16 @@ export function Fund(props: any) {
                 typeArguments: [ bet.collatType ],
                 arguments: [
                     bet.id,
-                    coin,
+                    payCoins.map((coin: any) => coin.details.reference.objectId),
                 ],
-                gasBudget: 10000,
+                gasBudget: GAS_BUDGET,
             }
         });
     };
 
     const onClickFund = () =>
     {
-        fundBet(props.bet, payCoin?.details.reference.objectId)
+        fundBet(props.bet, payCoins)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 showConfetti('💸');
@@ -77,7 +104,7 @@ export function Fund(props: any) {
             Bet size is {props.bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {props.bet.collatType}
             <br/>
             <br/>
-            <button type='button' className={`nes-btn ${payCoin ? 'is-success' : 'is-disabled'}`} disabled={!payCoin} onClick={onClickFund}>
+            <button type='button' className={`nes-btn ${payCoins ? 'is-success' : 'is-disabled'}`} disabled={!payCoins} onClick={onClickFund}>
                 FUND
             </button>
             &nbsp;

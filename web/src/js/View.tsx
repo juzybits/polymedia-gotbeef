@@ -166,7 +166,7 @@ export function View()
             bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
                 <tr>
                     <td>{shorten(player_addr)}</td>
-                    <td>{bet.funds.get(player_addr) || '0'}</td>
+                    <td>{bet.funds.get(player_addr)/1_000_000_000 || '0'}</td>
                     <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>
                 </tr>
             </React.Fragment>)

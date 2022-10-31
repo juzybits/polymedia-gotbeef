@@ -2,7 +2,7 @@ import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { Bet, getBet, getRecentTxns } from './lib/sui_tools';
+import { Bet, getBet, getRecentTxns, getErrorName } from './lib/sui_tools';
 import { shorten, timeAgo } from './lib/common';
 
 export function Find()
@@ -27,6 +27,17 @@ export function Find()
                         // status: effects.status.status,
                     });
                 }
+                /*
+                else {
+                    const betUrl = 'https://explorer.devnet.sui.io/objects/' + encodeURIComponent(cert.data.transactions[0].Call.arguments[0]);
+                    const txnUrl = 'https://explorer.devnet.sui.io/transactions/' + encodeURIComponent(cert.transactionDigest);
+                    const status = effects.status.status;
+                    const error = effects.status.error ? (getErrorName(effects.status.error)+' | '+effects.status.error) : '';
+
+                    // console.log(txn);
+                    console.log(timeAgo(txn.timestamp_ms), call.function, status, betUrl, txnUrl, '\n'+(error||''));
+                }
+                */
                 return selected;
             }, []);
             setRecentBets(txns);

@@ -164,28 +164,36 @@ module gotbeef::bet
     /// Player locks funds for the bet
     public entry fun fund<T>(
         bet: &mut Bet<T>,
-        player_coin: Coin<T>,
+        player_coins: vector<Coin<T>>,
         ctx: &mut TxContext)
     {
         let player_addr = tx_context::sender(ctx);
-        let coin_value = coin::value(&player_coin);
 
         assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
         assert!( vector::contains(&bet.players, &player_addr), E_ONLY_PLAYERS_CAN_FUND );
         assert!( !vec_map::contains(&bet.funds, &player_addr), E_ALREADY_FUNDED );
-        assert!( coin_value >= bet.size, E_FUNDS_BELOW_BET_SIZE );
+
+        let total_coin = coin::zero<T>(ctx);
+        while ( vector::length(&player_coins) > 0 ) {
+            let player_coin = vector::pop_back(&mut player_coins);
+            coin::join(&mut total_coin, player_coin);
+        };
+
+        let total_balance = coin::value(&total_coin);
+        assert!( total_balance >= bet.size, E_FUNDS_BELOW_BET_SIZE );
+        vector::destroy_empty(player_coins);
 
         // Return change to sender
-        let change = coin_value - bet.size;
+        let change = total_balance - bet.size;
         if ( change > 0 ) {
             transfer::transfer(
-                coin::split(&mut player_coin, change, ctx),
+                coin::split(&mut total_coin, change, ctx),
                 tx_context::sender(ctx)
             );
         };
 
         // Fund the bet
-        vec_map::insert(&mut bet.funds, player_addr, player_coin);
+        vec_map::insert(&mut bet.funds, player_addr, total_coin);
 
         // If all players have funded the Bet, advance to the voting phase
         if ( vec_map::size(&bet.funds) == vector::length(&bet.players) ) {
@@ -232,8 +240,9 @@ module gotbeef::bet
 
     /// Some scenarios where we might want to cancel the bet and refund the players:
     /// - (done) If there's no funding, any judge or player may cancel it at any time.
-    /// - (maybe) If all players agree on cancelling the bet.
-    /// - (maybe) If a quorum of judges agree on cancelling the bet.
+    /// - (maybe) If more than half of the participants agree to cancel the bet.
+    /// - (maybe) If all players agree to cancel the bet.
+    /// - (maybe) If a quorum of judges agrees to cancel the bet.
     /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
     public entry fun cancel<T>(bet: &mut Bet<T>, ctx: &mut TxContext) {
         assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );

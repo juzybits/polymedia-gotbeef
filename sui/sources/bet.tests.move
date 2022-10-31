@@ -157,7 +157,8 @@ module gotbeef::bet_tests
         let bet_val = ts::take_shared<Bet<SUI>>(scen);
         let bet = &mut bet_val;
         let ctx = ts::ctx(scen);
-        let funds = coin::mint_for_testing<SUI>(amount, ctx);
+        let funds = vector::empty<Coin<SUI>>();
+        vector::push_back( &mut funds, coin::mint_for_testing<SUI>(amount, ctx) );
         bet::fund<SUI>(bet, funds, ctx);
         ts::return_shared(bet_val);
     }
