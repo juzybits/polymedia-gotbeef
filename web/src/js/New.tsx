@@ -1,6 +1,6 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext, Link } from 'react-router-dom';
-import { useWallet } from "@mysten/wallet-adapter-react";
+import { useWallet } from '@mysten/wallet-adapter-react';
 import { SuiTransactionResponse } from '@mysten/sui.js';
 
 import { ButtonConnect } from './components/ButtonConnect';

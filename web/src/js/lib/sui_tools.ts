@@ -1,9 +1,6 @@
 /// Helpers to interact with the Sui network
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
-import { SuiWalletAdapter } from '@mysten/wallet-adapter-sui-wallet';
-import { useWallet } from "@mysten/wallet-adapter-react";
-import { isProd } from './common';
 
 export const GOTBEEF_PACKAGE = '0x6485c18e6dff63a0d1f44ba3c20c817b2618eb1a';
 const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');

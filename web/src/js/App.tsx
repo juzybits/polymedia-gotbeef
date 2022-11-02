@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
-import { WalletProvider } from "@mysten/wallet-adapter-react";
-import { WalletStandardAdapterProvider } from "@mysten/wallet-adapter-all-wallets";
+import { WalletProvider } from '@mysten/wallet-adapter-react';
+import { WalletStandardAdapterProvider } from '@mysten/wallet-adapter-all-wallets';
 
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
