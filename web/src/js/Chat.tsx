@@ -6,15 +6,14 @@ import { rpc } from './lib/sui_tools';
 
 export function Chat(props: any)
 {
-    const POLYMEDIA_PACKAGE = '0x361124fc4279aa6e4dd2663c41d02dd17dbb9416';
-    const CHAT_ID = '0x761841fd553a9326d9b4369638d0fd8393f49734';
-    const MAX_MESSAGE_COUNT = 100;
-    const MAX_MESSAGE_LENGTH = 512;
+    const POLYMEDIA_PACKAGE = '0xfda22e52dab1b9a569cb14bb2ff075ccffecb570';
+    const CHAT_ID = '0x3935fbee8fe1aa0816242f9ace1515a95dbd3f60';
     const GAS_BUDGET = 10000;
 
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [waiting, setWaiting] = useState(false);
 
     const { connected, signAndExecuteTransaction } = useWallet();
 
@@ -23,13 +22,8 @@ export function Chat(props: any)
     useEffect(() => {
         document.title = 'Got Beef? - Chat';
         reloadChat();
-
-        const interval = setInterval(() => {{
-            reloadChat();
-        }}, 15000);
-        return () => {
-            clearInterval(interval);
-        }
+        const interval = setInterval(() => { reloadChat(); }, 15000);
+        return () => { clearInterval(interval); }
     }, []);
 
     useEffect(() => {
@@ -38,8 +32,7 @@ export function Chat(props: any)
 
     /* Helpers */
 
-    const reloadChat = async () =>
-    {
+    const reloadChat = async () => {
         console.debug('[reloadChat] Fetching object:', CHAT_ID);
         rpc.getObject(CHAT_ID)
         .then((obj: any) => {
@@ -69,8 +62,9 @@ export function Chat(props: any)
 
     const onSubmitAddMessage = (e: SyntheticEvent) => {
         e.preventDefault();
-        setError('');
         console.debug(`[onSubmitAddMessage] Calling chat::add_message on package: ${POLYMEDIA_PACKAGE}`);
+        setError('');
+        setWaiting(true);
         signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
@@ -95,6 +89,9 @@ export function Chat(props: any)
         })
         .catch(error => {
             setError(error.message);
+        })
+        .finally(() => {
+            setWaiting(false);
         });
     };
 
@@ -109,8 +106,8 @@ export function Chat(props: any)
                 function: 'create',
                 typeArguments: [],
                 arguments: [
-                    MAX_MESSAGE_COUNT,
-                    MAX_MESSAGE_LENGTH,
+                    100, // max message count
+                    512, // max message length
                 ],
                 gasBudget: GAS_BUDGET,
             }
@@ -140,6 +137,7 @@ export function Chat(props: any)
         border: '4px solid black',
         borderRadius: '1em',
         maxHeight: '35em',
+        marginBottom: '1em',
         overflowY: 'scroll',
     };
     const cssMessage = {
@@ -210,14 +208,16 @@ export function Chat(props: any)
             </div>
         )}
         </div>
-        <br/>
 
         <form onSubmit={onSubmitAddMessage} className='button-container'>
             {connected && <>
-                <input type='text' className='nes-input' required maxLength={512}
+                <input type='text' required maxLength={512}
+                    className={`nes-input ${waiting ? 'is-disabled' : ''}`} disabled={waiting}
                     spellCheck='false' autoCorrect='off' autoComplete='off'
                     value={message} onChange={e => setMessage(e.target.value)} />
-                <button type='submit' className='nes-btn is-primary'>SEND MESSAGE</button>
+                <button type='submit' className={`nes-btn ${waiting ? 'is-disabled' : 'is-primary'}`} disabled={waiting}>
+                    {waiting ? 'SENDING' : 'SEND MESSAGE'}
+                </button>
             </>}
             <ButtonConnect />
         </form>
