@@ -137,7 +137,7 @@ export function Chat(props: any)
         border: '4px solid black',
         borderRadius: '1em',
         maxHeight: '35em',
-        marginBottom: '1em',
+        marginBottom: '2em',
         overflowY: 'scroll',
     };
     const cssMessage = {

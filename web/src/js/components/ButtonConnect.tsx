@@ -11,8 +11,17 @@ export function ButtonConnect(props: any)
 
     const handleShowWallets = () => {
         if (wallets.length==0) {
-            const href = 'https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil';
-            setError(<span>Install the <a href={href} className='rainbow' target='_blank'>Sui wallet</a> to continue</span>);
+            const linkSui = 'https://chrome.google.com/webstore/detail/sui-wallet/opcgpfmipidbgpenhmajoajpbobppdil';
+            const linkEthos = 'https://chrome.google.com/webstore/detail/ethos-sui-wallet/mcbigmjiafegjnnogedioegffbooigli';
+            const linkSuiet = 'https://chrome.google.com/webstore/detail/suiet-sui-wallet/khpkpbbcccdmmclmpigdgddabeilkdpd';
+            setError(<div style={{textAlign: 'left', fontSize: '0.9em', fontStyle: 'italic'}}>
+                <p>Please install a wallet to continue:</p>
+                <ul style={{margin: '0'}}>
+                <li><a href={linkSui} className='rainbow' target='_blank'>Sui Wallet</a> (official)</li>
+                <li><a href={linkEthos} className='rainbow' target='_blank'>Ethos Wallet</a></li>
+                <li><a href={linkSuiet} className='rainbow' target='_blank'>Suiet Wallet</a></li>
+                </ul>
+            </div>);
         } else {
             setShowWallets(true);
         }
@@ -57,5 +66,5 @@ export function ButtonConnect(props: any)
             return <button type='button' className='nes-btn is-warning' onClick={handleShowWallets}>CONNECT</button>;
     };
 
-    return error ? <i style={{fontSize: '0.9em'}}>{error}</i> : <ButtonConnect />;
+    return error ? <>{error}</> : <ButtonConnect />;
 }
