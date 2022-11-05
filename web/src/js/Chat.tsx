@@ -163,6 +163,7 @@ export function Chat(props: any)
         };
         const onClick = (e: SyntheticEvent) => {
             e.preventDefault();
+            document.getElementById('chat-input')?.focus();
             navigator.clipboard
                 .writeText(props.address)
                 .then( () => tooltip('Copied!') )
@@ -211,7 +212,7 @@ export function Chat(props: any)
 
         <form onSubmit={onSubmitAddMessage} className='button-container'>
             {connected && <>
-                <input type='text' required maxLength={512}
+                <input id='chat-input' type='text' required maxLength={512}
                     className={`nes-input ${waiting ? 'is-disabled' : ''}`} disabled={waiting}
                     spellCheck='false' autoCorrect='off' autoComplete='off'
                     value={message} onChange={e => setMessage(e.target.value)} />
