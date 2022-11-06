@@ -11,6 +11,7 @@ export function Chat(props: any)
     const GAS_BUDGET = 10000;
 
     const [error, setError] = useState('');
+    const [chatError, setChatError] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [waiting, setWaiting] = useState(false);
@@ -58,13 +59,20 @@ export function Chat(props: any)
         }
     };
 
-    /* Handlers */
+    /* Event handlers */
 
     const onSubmitAddMessage = (e: SyntheticEvent) => {
         e.preventDefault();
-        console.debug(`[onSubmitAddMessage] Calling chat::add_message on package: ${POLYMEDIA_PACKAGE}`);
         setError('');
+        // Message validation
+        const forbiddenWords = ['hello', 'hallo', 'hey', 'hello guys'];
+        if (message.length < 3 || forbiddenWords.includes(message.toLowerCase()) ) {
+            setChatError(`I'm sure you can come up with something more creative ;)`);
+            return;
+        }
+        // Send transaction
         setWaiting(true);
+        console.debug(`[onSubmitAddMessage] Calling chat::add_message on package: ${POLYMEDIA_PACKAGE}`);
         signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
@@ -216,6 +224,9 @@ export function Chat(props: any)
                     className={`nes-input ${waiting ? 'is-disabled' : ''}`} disabled={waiting}
                     spellCheck='false' autoCorrect='off' autoComplete='off'
                     value={message} onChange={e => setMessage(e.target.value)} />
+                    {chatError &&
+                        <i className='nes-text is-error' style={{fontSize: '0.8em'}}>{chatError}</i>
+                    }
                 <button type='submit' className={`nes-btn ${waiting ? 'is-disabled' : 'is-primary'}`} disabled={waiting}>
                     {waiting ? 'SENDING' : 'SEND MESSAGE'}
                 </button>
