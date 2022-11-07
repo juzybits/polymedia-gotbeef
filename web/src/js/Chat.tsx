@@ -65,8 +65,8 @@ export function Chat(props: any)
         e.preventDefault();
         setError('');
         // Message validation
-        const forbiddenWords = ['hello', 'hallo', 'hey', 'hello guys'];
-        if (message.length < 3 || forbiddenWords.includes(message.toLowerCase()) ) {
+        const forbiddenWords = ['hello', 'hallo', 'hello guys'];
+        if (message.length < 4 || forbiddenWords.includes(message.toLowerCase()) ) {
             setChatError(`I'm sure you can come up with something more creative ;)`);
             return;
         }
@@ -165,6 +165,7 @@ export function Chat(props: any)
         };
     };
 
+    /// Shorten a 0x address, style it, and make it clickable
     const MagicAddress = (props: any) => {
         const tooltip = (message: string) => {
             console.debug('[MagicAddress] ' + message);
@@ -184,6 +185,7 @@ export function Chat(props: any)
         </>;
     };
 
+    /// Parse plaintext and format the 0x addresses in it
     const MagicText = (props: any) => {
         const addressRegex = new RegExp(/0x[a-fA-F0-9]+/g);
         const addresses = props.plainText.match(addressRegex) || [];
@@ -208,7 +210,9 @@ export function Chat(props: any)
         <p>
             A message board to find other players.
             <br/>
-            Pro tip: click an address to copy it.
+            <span style={{fontSize: '0.8em', color: '#333'}}>Pro tip #1: click an address to copy it.</span>
+            <br/>
+            <span style={{fontSize: '0.8em', color: '#333'}}>Pro tip #2: paste an address to link it.</span>
         </p>
 
         <div id='messageList' style={cssMessageList}>{messages.map((msg: any, idx) =>
