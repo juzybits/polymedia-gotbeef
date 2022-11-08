@@ -2,7 +2,7 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x76c36cb17db70eb3bcd8b6ddcb2d9e32d95a6aac';
+export const GOTBEEF_PACKAGE = '0x4148d619a2c3efd6866ec84d944c3772e6684e87';
 export const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
@@ -123,7 +123,7 @@ export async function getRecentTxns(limit: number): Promise<SuiTransactionRespon
     // @ts-ignore
     const transactions = await rpc.client.batchRequest([{
         method: 'sui_getTransactions',
-        args: [{ InputObject: GOTBEEF_PACKAGE }, null, limit, 'Descending'],
+        args: [{ InputObject: GOTBEEF_PACKAGE }, null, limit, true],
     }])
     .then(response => response[0].result.data)
     .catch(errorCatcher);

@@ -7,7 +7,7 @@ cargo install --locked --git https://github.com/MystenLabs/sui.git --branch devn
 ```
 2. Connect to devnet:
 ```
-sui client switch --rpc https://fullnode.devnet.sui.io:443
+sui client switch --env devnet
 ```
 
 ## How to run the unit tests
