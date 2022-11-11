@@ -24,7 +24,7 @@
     "scripts": {
         "serve": "rm -rf .parcel-cache/ && parcel src/index.html",
         "build": "rm -rf dist/ && parcel build --no-source-maps src/index.html && cp src/static/* dist/",
-        "deploy-dev":  "yarn build && wrangler pages publish dist/ --project-name gotbeef --branch dev",
+        "deploy-dev": "yarn build && wrangler pages publish dist/ --project-name gotbeef --branch dev",
         "deploy-prod": "yarn build && wrangler pages publish dist/ --project-name gotbeef --branch main"
     }
 }

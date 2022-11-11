@@ -6,8 +6,8 @@ import { rpc } from './lib/sui_tools';
 
 export function Chat(props: any)
 {
-    const POLYMEDIA_PACKAGE = '0xca031bad0b9ca8a0b4ae5f70720a96f6389ff894';
-    const CHAT_ID = '0xaffa2e0c7e0c70f6bca644da8c2a48db6adeb0b1';
+    const POLYMEDIA_PACKAGE = '0x5277fc5bb90ebf82fe680a80cdfb95e8b147d224';
+    const CHAT_ID = '0x32895711429b47e92a67e12c70cc900230477500';
     const GAS_BUDGET = 10000;
 
     const [error, setError] = useState('');
@@ -102,39 +102,6 @@ export function Chat(props: any)
             setWaiting(false);
         });
     };
-
-    /* DEV_ONLY
-    const onClickCreateChat = () => {
-        console.debug(`[onClickCreateChat] Calling item::create on package: ${POLYMEDIA_PACKAGE}`);
-        signAndExecuteTransaction({
-            kind: 'moveCall',
-            data: {
-                packageObjectId: POLYMEDIA_PACKAGE,
-                module: 'chat',
-                function: 'create',
-                typeArguments: [],
-                arguments: [
-                    100, // max message count
-                    512, // max message length
-                ],
-                gasBudget: GAS_BUDGET,
-            }
-        })
-        .then((resp: any) => {
-            if (resp.effects.status.status == 'success') {
-                console.debug('[onClickCreateChat] Success:', resp);
-                const newObjId = resp.effects.created[0].reference.objectId;
-                console.log(`https://explorer.devnet.sui.io/objects/${newObjId}`);
-                console.log(newObjId);
-            } else {
-                setError(resp.effects.status.error);
-            }
-        })
-        .catch(error => {
-            setError(error.message);
-        });
-    };
-    */
 
     /* Render */
 
@@ -239,12 +206,6 @@ export function Chat(props: any)
         </form>
 
         { error && <><br/>ERROR:<br/>{error}</> }
-
-        {/* DEV_ONLY
-        <br/> <br/> <hr/> <br/>
-        <button onClick={onClickCreateChat}>CREATE NEW CHAT</button>
-        <br/> <br/>
-        */}
 
     </div>;
 }
