@@ -6,8 +6,8 @@ import { rpc } from './lib/sui_tools';
 
 export function Chat(props: any)
 {
-    const POLYMEDIA_PACKAGE = '0x5277fc5bb90ebf82fe680a80cdfb95e8b147d224';
-    const CHAT_ID = '0x32895711429b47e92a67e12c70cc900230477500';
+    const POLYMEDIA_PACKAGE = '0xc8a3192c95e6daa5f37c170dd8d3bc0843344ada';
+    const CHAT_ID = '0x502916e2e58004a686fae5de1308d487c0d9fa4a';
     const GAS_BUDGET = 10000;
 
     const [error, setError] = useState('');
