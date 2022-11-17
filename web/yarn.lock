@@ -172,10 +172,10 @@
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.5.0.tgz#d2570971e3d9121b83091ced38db13e907ab4198"
   integrity sha512-FjGnXZfR4dY01Q1l3xjgaU+ruIlVomXZk8vzgsQXPFOv7O4pNiOOpJyMEMUnWcyUiktk4R9MxoJJrygOtdxaUw==
 
-"@mysten/sui.js@0.16.0", "@mysten/sui.js@latest":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.16.0.tgz#fc78009af8d91e53553777a1b9d152569ad42a72"
-  integrity sha512-/ekVTNfkIkez0152nsu+uZID8TiSucjy9QGIWL4yIev6yn5Touyze3qlloEIj2W0GUnPuP/QUfzUsO8mu1Dt/g==
+"@mysten/sui.js@0.17.0", "@mysten/sui.js@latest":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.17.0.tgz#a864a63bf9d85462fbe2569891b386a063e28c24"
+  integrity sha512-fDGWiEPoEy2+XtN1PZfrUfMfOglFWXJF8cXo3v0m6NCuqK/uq5Yfr1B0FycGN6TJb7NnY0jiEuE2Cbd2UAkc5w==
   dependencies:
     "@mysten/bcs" "0.5.0"
     "@noble/hashes" "^1.1.2"
@@ -190,51 +190,51 @@
     tweetnacl "^1.0.3"
 
 "@mysten/wallet-adapter-all-wallets@latest":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-all-wallets/-/wallet-adapter-all-wallets-0.3.1.tgz#8eb0a1f48ff7137cf69d90814c12390ea69c38b9"
-  integrity sha512-v2w4BrcUCiEYuMQCL8SCiZuUJPO4sYr07UmRHXion5ji93OXGz/vi3aB9gLwfWZhPco78hqk3z3xYuI8Ab1PqQ==
-  dependencies:
-    "@mysten/wallet-adapter-unsafe-burner" "0.2.1"
-    "@mysten/wallet-adapter-wallet-standard" "0.3.1"
-
-"@mysten/wallet-adapter-base@0.3.2":
   version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-base/-/wallet-adapter-base-0.3.2.tgz#104076f0c5a26bf73688472ff514d74552946171"
-  integrity sha512-6HjuVYRVOyJVJcJ7e/m/e/eGiUP9HWfBjFX5A4lK9QdJ1c/qU9DYm7s3G7FIpgYH1C7YAYdRaOzfzrQmIoUG3w==
+  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-all-wallets/-/wallet-adapter-all-wallets-0.3.2.tgz#aa565133d215dc898ad751902a697ae0fbd952ac"
+  integrity sha512-cVRgn/LlBRv7IVOaZZ18WOiFKrw/DSCypG41A0j0ifgHmCyXqjnE89raQH97rhevXdm96vpNyyT/Ms56yLmjmw==
   dependencies:
-    "@mysten/sui.js" "0.16.0"
+    "@mysten/wallet-adapter-unsafe-burner" "0.2.2"
+    "@mysten/wallet-adapter-wallet-standard" "0.3.2"
+
+"@mysten/wallet-adapter-base@0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-base/-/wallet-adapter-base-0.3.3.tgz#61fff1805ddde771492425e5dcf80ee418015930"
+  integrity sha512-tp5gDVM4OQcQ+Hz1VkBPgb6oeJK9H0/yUzfoS03Fk4GHSfgR1JYvR24a/XrLp2Pc1H/hFpkqdbOj3S1BhxgR+Q==
+  dependencies:
+    "@mysten/sui.js" "0.17.0"
 
 "@mysten/wallet-adapter-react@latest":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-react/-/wallet-adapter-react-7.0.0.tgz#ad18a3ae64529bcbdccf308513ac4b3baa1f6f14"
-  integrity sha512-EG5rtUCt/bcfGBYNa/6WNP6G+zdXE2k2Q7kErUS3/1Oc1YY2snMcixWtbBTfU4A7CiDWhEzdEfU/Oac/OFAt2w==
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-react/-/wallet-adapter-react-8.0.0.tgz#d87b8f7c42710446b46a2c028d5582e28f68d7c2"
+  integrity sha512-N9B682JMyvN/L2nASU2K7/EO0AlHPLdJFYqeEyUCkVMhF/rDf4hVNTpKqJQe1GDEvkDYj67YG/a72zS0aQSNKw==
   dependencies:
-    "@mysten/wallet-adapter-base" "0.3.2"
+    "@mysten/wallet-adapter-base" "0.3.3"
 
-"@mysten/wallet-adapter-unsafe-burner@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-unsafe-burner/-/wallet-adapter-unsafe-burner-0.2.1.tgz#034eb3c5c8a09d2f9046aafd514b1b2ab5fd27d9"
-  integrity sha512-OivO7s/bNTSq2joG4EFQ3bQTyZApyL4Sg+twBVrRnNOvu0a/BTXcM+flGWLFM0kDGeb4TE8VzRBgLSsqyw6NQA==
+"@mysten/wallet-adapter-unsafe-burner@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-unsafe-burner/-/wallet-adapter-unsafe-burner-0.2.2.tgz#0de2b251e2ca4d91c018f7223b8742e275e48a73"
+  integrity sha512-Xn9HHLXgFM1cyHW7HYAbsCVnMegWMgdI22fcZy0MBWjSYzXnIO7dZbNHpcvlr8J8OnQN15q5Xo7ChSFOxwLTRQ==
   dependencies:
-    "@mysten/sui.js" "0.16.0"
-    "@mysten/wallet-adapter-base" "0.3.2"
+    "@mysten/sui.js" "0.17.0"
+    "@mysten/wallet-adapter-base" "0.3.3"
 
-"@mysten/wallet-adapter-wallet-standard@0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-wallet-standard/-/wallet-adapter-wallet-standard-0.3.1.tgz#98a6b9261fdf12f919c3864274175f9ebe769376"
-  integrity sha512-I1KWxQeRT80DqI6SOjIAeOc1Sx774DRtYdWiNwiIJLVhT809C1GW+l/uj94tGKE7f38UDykz3dGBx/76msEYZQ==
+"@mysten/wallet-adapter-wallet-standard@0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@mysten/wallet-adapter-wallet-standard/-/wallet-adapter-wallet-standard-0.3.2.tgz#67e280a8dabb3ceed308a8342c8454e64e0db32f"
+  integrity sha512-bybquPM7MX6Wgsn/1SMu8mi/qCWBKPtWNLkHIyP1cWf9aed1yYLCa8NnsYDZ8tkTeqPziooURX8uCgojaLkZlQ==
   dependencies:
-    "@mysten/sui.js" "0.16.0"
-    "@mysten/wallet-adapter-base" "0.3.2"
-    "@mysten/wallet-standard" "0.2.1"
+    "@mysten/sui.js" "0.17.0"
+    "@mysten/wallet-adapter-base" "0.3.3"
+    "@mysten/wallet-standard" "0.2.2"
     mitt "^3.0.0"
 
-"@mysten/wallet-standard@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@mysten/wallet-standard/-/wallet-standard-0.2.1.tgz#382425ef8e0d54834974ff5e70378af5bef1cde9"
-  integrity sha512-69VzhvkbnwUy80q98JTR6kBV3w9Vilk67BltXLPZh6s+EgjE66BCpeEsvNMN8cYKnjO22YfJ2p7kckU4xN78mw==
+"@mysten/wallet-standard@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@mysten/wallet-standard/-/wallet-standard-0.2.2.tgz#71da37978c890d659bc11b041111b36b75ff9eb8"
+  integrity sha512-6OnMmHQBxXHGvU5ITHxslxoscf/zc8Z4Of2yOxEaTyfh4j7Q/j2dDIQH5SU94zjKNKn/FWtNev8oJRybKEts5A==
   dependencies:
-    "@mysten/sui.js" "0.16.0"
+    "@mysten/sui.js" "0.17.0"
     "@wallet-standard/core" "1.0.0"
 
 "@noble/hashes@^1.1.2", "@noble/hashes@~1.1.1", "@noble/hashes@~1.1.3":
@@ -849,9 +849,9 @@
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
 "@swc/helpers@^0.4.12":
-  version "0.4.12"
-  resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.4.12.tgz#203243e78cff3c87c081c97ae548ab33e2503573"
-  integrity sha512-R6RmwS9Dld5lNvwKlPn62+piU+WDG1sMfsnfJioXCciyko/gZ0DQ4Mqglhq1iGU1nQ/RcGkAwfMH+elMSkJH3Q==
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.4.13.tgz#321376f6ee5f63f69828656ab93dfeb826e1f95a"
+  integrity sha512-WOoZMSqpmUgL72xOeaWcU9IG7C6t5Wh1e8NGpSyBvmN5BSCXleK4/PLS6Oko1i/Lvn/yGYOv62bxlfsDvmRurg==
   dependencies:
     tslib "^2.4.0"
 
@@ -1617,9 +1617,9 @@ global-tunnel-ng@^2.7.1:
     tunnel "^0.0.6"
 
 globals@^13.2.0:
-  version "13.17.0"
-  resolved "https://registry.yarnpkg.com/globals/-/globals-13.17.0.tgz#902eb1e680a41da93945adbdcb5a9f361ba69bd4"
-  integrity sha512-1C+6nQRb1GwGMKm2dH/E7enFAMxGTmGI7/dEdhy/DNelv85w9B72t3uc5frtMNXIbzrarJJ/lTCjcaZwbLJmyw==
+  version "13.18.0"
+  resolved "https://registry.yarnpkg.com/globals/-/globals-13.18.0.tgz#fb224daeeb2bb7d254cd2c640f003528b8d0c1dc"
+  integrity sha512-/mR4KI8Ps2spmoc0Ulu9L7agOF0du1CZNQ3dke8yItYlyKNmGrkONemBbd6V8UTc1Wgcqn21t3WYB7dbRmh6/A==
   dependencies:
     type-fest "^0.20.2"
 
@@ -2163,9 +2163,9 @@ msgpackr@^1.5.4:
     msgpackr-extract "^2.2.0"
 
 needle@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/needle/-/needle-3.1.0.tgz#3bf5cd090c28eb15644181ab6699e027bd6c53c9"
-  integrity sha512-gCE9weDhjVGCRqS8dwDR/D3GTAeyXLXuqp7I8EzH6DllZGXSUyxuqqLh+YX9rMAWaaTFyVAg6rHGL25dqvczKw==
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/needle/-/needle-3.2.0.tgz#07d240ebcabfd65c76c03afae7f6defe6469df44"
+  integrity sha512-oUvzXnyLiVyVGoianLijF9O/RecZUf7TkBfimjGrLM4eQhXyeJwM6GeAWccwfQ9aa4gMCZKqhAOuLaMIcQxajQ==
   dependencies:
     debug "^3.2.6"
     iconv-lite "^0.6.3"
@@ -2520,9 +2520,9 @@ readable-stream@^2.2.2:
     util-deprecate "~1.0.1"
 
 regenerator-runtime@^0.13.10, regenerator-runtime@^0.13.7:
-  version "0.13.10"
-  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.10.tgz#ed07b19616bcbec5da6274ebc75ae95634bfc2ee"
-  integrity sha512-KepLsg4dU12hryUO7bp/axHAKvwGOCV0sGloQtpagJ12ai+ojVDqkeGSiRX1zlq+kjIMZ1t7gpze+26QqtdGqw==
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 registry-auth-token@^3.0.1:
   version "3.4.0"

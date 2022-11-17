@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation, useOutletContext, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
 import { ButtonConnect } from './components/ButtonConnect';

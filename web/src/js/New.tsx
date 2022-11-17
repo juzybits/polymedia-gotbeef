@@ -1,5 +1,5 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-import { useNavigate, useOutletContext, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useWallet } from '@mysten/wallet-adapter-react';
 import { SuiTransactionResponse } from '@mysten/sui.js';
 
