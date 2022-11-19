@@ -37,12 +37,17 @@ table {
 }
 th {
     vertical-align: bottom;
+    white-space: nowrap;
 }
 th, td {
+    overflow-wrap: break-word;
     padding-top: 0.5em;
     padding-left: 0;
     padding-bottom: 0.5em;
     padding-right: 2.5em;
+}
+td {
+    vertical-align: top;
 }
 a:hover {
     color: #00baff;
@@ -183,6 +188,15 @@ a:hover {
 }
 #secret {
     display: none;
+}
+.player-box {
+    border: 4px solid black;
+    margin: 1em 0;
+    padding: 1em;
+    .player-box-answer {
+        display: block;
+        margin-top: 1em;
+    }
 }
 
 /* Mobile */

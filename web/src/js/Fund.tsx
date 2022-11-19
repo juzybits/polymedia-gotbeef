@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { SuiTransactionResponse } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
@@ -8,6 +8,7 @@ import { showConfetti } from './lib/confetti';
 export function Fund(props: any) {
 
     const [payCoins, setPayCoins]: any[] = useState(undefined);
+    const [answer, setAnswer] = useState('');
     const [error, setError] = useState('');
     const GAS_BUDGET = 10000;
 
@@ -56,7 +57,7 @@ export function Fund(props: any) {
     }, []);
 
     const { signAndExecuteTransaction } = useWallet();
-    const fundBet = (bet: Bet, coin: string): Promise<SuiTransactionResponse> =>
+    const fundBet = (bet: Bet, answer: string, coin: string): Promise<SuiTransactionResponse> =>
     {
         console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
         return signAndExecuteTransaction({
@@ -68,6 +69,7 @@ export function Fund(props: any) {
                 typeArguments: [ bet.collatType ],
                 arguments: [
                     bet.id,
+                    answer,
                     payCoins.map((coin: any) => coin.details.reference.objectId),
                 ],
                 gasBudget: GAS_BUDGET,
@@ -75,9 +77,10 @@ export function Fund(props: any) {
         });
     };
 
-    const onClickFund = () =>
+    const onClickFund = (e: SyntheticEvent) =>
     {
-        fundBet(props.bet, payCoins)
+        e.preventDefault();
+        fundBet(props.bet, answer, payCoins)
         .then(resp => {
             if (resp.effects.status.status == 'success') {
                 showConfetti('💸');
@@ -103,8 +106,16 @@ export function Fund(props: any) {
         <div>
             Bet size is {props.bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {props.bet.collatType}
             <br/>
+            <form onSubmit={onClickFund} className='nes-field'>
+                <label htmlFor='answer_field'>Answer (optional)</label>
+                <input type='text' id='answer_field' className='nes-input' maxLength={500}
+                    spellCheck='false' autoCorrect='off' autoComplete='off'
+                    value={answer} onChange={e => setAnswer(e.target.value)}
+                />
+            </form>
             <br/>
-            <button type='button' className={`nes-btn ${payCoins ? 'is-success' : 'is-disabled'}`} disabled={!payCoins} onClick={onClickFund}>
+            <button type='button' className={`nes-btn ${payCoins ? 'is-success' : 'is-disabled'}`}
+                    disabled={!payCoins} onClick={onClickFund}>
                 FUND
             </button>
             &nbsp;

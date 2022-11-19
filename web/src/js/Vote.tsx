@@ -54,17 +54,18 @@ export function Vote(props: any) {
 
     return <section className='bet-modal'>
         <h2>Vote</h2>
-        Click the address of the winner.
+        Click the address of the winner:
         <br/>
         {
             props.bet.players.map((player: string) =>
-                <React.Fragment key={player}>
-                    <br/>
-                    <button type='button' className='nes-btn is-primary'
+                <div key={player} className='player-box'>
+                    <button type='button' className='nes-btn is-primary' style={{overflowWrap: 'anywhere'}}
                         value={player} onClick={onClickVote}>{player}
                     </button>
-                    <br/>
-                </React.Fragment>
+                    <span className='player-box-answer'>
+                        <b>ANSWER:</b> {props.bet.answers.get(player) || '-'}
+                    </span>
+                </div>
             )
         }
         <br/>

@@ -70,6 +70,7 @@ export function View()
         return <React.Fragment>Bet not found.</React.Fragment>;
 
     // TODO: show date of last update
+    const showFunded = ['funding'].includes(bet.phase);
     return <React.Fragment>
     {
         modal ||
@@ -157,8 +158,8 @@ export function View()
         <thead>
             <tr>
                 <th><i className='snes-jp-logo custom-logo' /> Player</th>
-                <th>Funds</th>
-                <th>Votes</th>
+                {!showFunded && <th>Votes</th>}
+                {showFunded && <th>Funded</th>}
             </tr>
         </thead>
         <tbody>
@@ -166,8 +167,8 @@ export function View()
             bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
                 <tr>
                     <td>{shorten(player_addr)}</td>
-                    <td>{bet.funds.get(player_addr)/1_000_000_000 || '0'}</td>
-                    <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>
+                    {!showFunded && <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>}
+                    {showFunded && <td>{bet.funds.get(player_addr) ? 'Yes' : 'No'}</td>}
                 </tr>
             </React.Fragment>)
         }
@@ -188,6 +189,28 @@ export function View()
                 <td>{shorten(judge_addr)}</td>
                 <td>{shorten(bet.votesByJudge.get(judge_addr)) || '-'}</td>
             </tr>
+            </React.Fragment>)
+        }
+        </tbody>
+    </table>
+
+    <br/>
+    <h3>PLAYER ANSWERS</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th><i className='snes-jp-logo custom-logo' /> Player</th>
+                <th>Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+        {
+            bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
+                <tr>
+                    <td>{shorten(player_addr)}</td>
+                    <td>{bet.answers.get(player_addr) || '-'}</td>
+                </tr>
             </React.Fragment>)
         }
         </tbody>

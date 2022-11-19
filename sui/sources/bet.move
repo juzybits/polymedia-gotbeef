@@ -77,6 +77,7 @@ module gotbeef::bet
         judges: vector<address>,
         votes: VecMap<address, address>, // <judge_addr,  player_addr>
         funds: VecMap<address, Coin<T>>, // <player_addr, player_funds>
+        answers: VecMap<address, String>, // <player_addr, player_answer>
         most_votes: u64, // number of votes received by the leading player (to detect stalemates)
         winner: Option<address>,
 
@@ -155,6 +156,7 @@ module gotbeef::bet
             judges: judges,
             votes: vec_map::empty(),
             funds: vec_map::empty(),
+            answers: vec_map::empty(),
             most_votes: 0,
             winner: option::none(),
         };
@@ -164,6 +166,7 @@ module gotbeef::bet
     /// Player locks funds for the bet
     public entry fun fund<T>(
         bet: &mut Bet<T>,
+        answer: vector<u8>,
         player_coins: vector<Coin<T>>,
         ctx: &mut TxContext)
     {
@@ -194,6 +197,9 @@ module gotbeef::bet
 
         // Fund the bet
         vec_map::insert(&mut bet.funds, player_addr, total_coin);
+
+        // Save the player's answer
+        vec_map::insert(&mut bet.answers, player_addr, string::utf8(answer));
 
         // If all players have funded the Bet, advance to the voting phase
         if ( vec_map::size(&bet.funds) == vector::length(&bet.players) ) {

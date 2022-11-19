@@ -2,7 +2,7 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x656d2fe97d313ab39dbc8201dd61e582d4820df7';
+export const GOTBEEF_PACKAGE = '0xed88d374950508bcd12f9c8980accb7a8816d09e';
 export const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
@@ -17,6 +17,7 @@ export type Bet = {
     judges: string[],
     phase: string,
     funds: object,
+    answers: object,
     votesByJudge: object,
     votesByPlayer: object,
     winner?: string,
@@ -60,6 +61,12 @@ export async function getBet(objId: string): Promise<Bet|null> {
                     [obj.fields.key, obj.fields.value.fields.balance]
                 ));
 
+                // Parse `Bet.answers: VecMap<address, String>`
+                let answers = fields.answers.fields.contents || [];
+                let answersByPlayer = new Map(answers.map((obj: any) =>
+                    [obj.fields.key, obj.fields.value]
+                ));
+
                 // Parse `Bet.votes: VecMap<address, address>`
                 let votes = fields.votes.fields.contents || [];
                 let votesByJudge = new Map();
@@ -82,6 +89,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
                     judges: fields.judges,
                     phase: getPhaseName(fields.phase),
                     funds: fundsByPlayer,
+                    answers: answersByPlayer,
                     votesByJudge: votesByJudge,
                     votesByPlayer: votesByPlayer,
                     winner: typeof fields.winner === 'object' ? '' : fields.winner,

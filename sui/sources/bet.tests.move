@@ -159,7 +159,7 @@ module gotbeef::bet_tests
         let ctx = ts::ctx(scen);
         let funds = vector::empty<Coin<SUI>>();
         vector::push_back( &mut funds, coin::mint_for_testing<SUI>(amount, ctx) );
-        bet::fund<SUI>(bet, funds, ctx);
+        bet::fund<SUI>(bet, b"answer", funds, ctx);
         ts::return_shared(bet_val);
     }
 
