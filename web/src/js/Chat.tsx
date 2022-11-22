@@ -6,8 +6,8 @@ import { rpc } from './lib/sui_tools';
 
 export function Chat(props: any)
 {
-    const POLYMEDIA_PACKAGE = '0x9358adf89e99417c397e274a30fca2ee6d54214c';
-    const CHAT_ID = '0x8a7af9555088ac197b195c10866305ba56e52bcd';
+    const POLYMEDIA_PACKAGE = '0x7e65241d33f2524cc6610bd41a1ae0466aa3068b';
+    const CHAT_ID = '0x564d45ee3fc2e4b0a98cd5087e2c6480e2057f17';
     const GAS_BUDGET = 10000;
 
     const [error, setError] = useState('');
@@ -82,6 +82,7 @@ export function Chat(props: any)
                 typeArguments: [],
                 arguments: [
                     CHAT_ID,
+                    Date.now(),
                     Array.from( (new TextEncoder()).encode(message) ),
                 ],
                 gasBudget: GAS_BUDGET,

@@ -21,7 +21,7 @@ export function New()
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.0001');
     const [players, setPlayers] = useState(isProd ? '' : '0x0611b818746af985b9f62caa20712e5ace095e50\n0xf2c658eadb26278f44616bd0ab3052af45c385f6');
-    const [judges, setJudges] = useState(isProd ? '' : '0xdc82a911f9bbfc904ffffcf3c7e4cb2b7401bf22');
+    const [judges, setJudges] = useState(isProd ? '' : '0xa4c6712ff811279d71866bfd8af05b165184a347');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
