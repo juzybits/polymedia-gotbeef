@@ -6,8 +6,8 @@ import { rpc } from './lib/sui_tools';
 
 export function Chat(props: any)
 {
-    const POLYMEDIA_PACKAGE = '0x7e65241d33f2524cc6610bd41a1ae0466aa3068b';
-    const CHAT_ID = '0x564d45ee3fc2e4b0a98cd5087e2c6480e2057f17';
+    const POLYMEDIA_PACKAGE = '0x05ca31973fd8f5aeca8f1f38c6ef331c62cfc298';
+    const CHAT_ID = '0x679d70cd33f3209500fb4a801ff003684ee4b3f2';
     const GAS_BUDGET = 10000;
 
     const [error, setError] = useState('');
@@ -43,7 +43,9 @@ export function Chat(props: any)
                 setError('');
                 const messages = obj.details.data.fields.messages;
                 if (messages) {
-                    setMessages( messages.map((msg: any) => msg.fields) );
+                    const idx = obj.details.data.fields.last_index;
+                    const messagesInOrder = [ ...messages.slice(idx+1), ...messages.slice(0, idx+1) ];
+                    setMessages( messagesInOrder.map((msg: any) => msg.fields) );
                 }
             }
         })
