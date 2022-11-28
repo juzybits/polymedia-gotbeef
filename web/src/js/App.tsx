@@ -29,7 +29,7 @@ export function App(props: any)
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
-                &nbsp;~ <Link to='/chat'>CHAT<sup style={{color: 'deeppink', fontSize: '0.6em', top: '-1em'}}>NEW!</sup></Link>
+                &nbsp;~ <a href='https://polymedia.app/chat/0x0b05ff9891763c022ed502c740f55cf39e600a64'>CHAT<sup style={{color: 'deeppink', fontSize: '0.6em', top: '-1em'}}>NEW!</sup></a>
             </nav>
 
         </header>

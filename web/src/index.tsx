@@ -9,7 +9,6 @@
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { App } from './js/App';
-import { Chat } from './js/Chat';
 import { Find } from './js/Find';
 import { Home } from './js/Home';
 import { New } from './js/New';
@@ -25,7 +24,6 @@ ReactDOM
                 <Route index element={<Home />} />
                 <Route path='new' element={<New />} />
                 <Route path='find' element={<Find />} />
-                <Route path='chat' element={<Chat />} />
                 <Route path='bet/:uid' element={<View />} />
                 <Route path='*' element={<NotFound />} />
             </Route>
