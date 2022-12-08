@@ -70,7 +70,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 0)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_JUDGES_CANT_BE_PLAYERS)]
     fun test_create_e_judges_cant_be_players()
     {
         let players = vector[PLAYER_1, PLAYER_2, JUDGE_1];
@@ -81,7 +81,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 2)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_INVALID_NUMBER_OF_PLAYERS)]
     fun test_create_e_invalid_number_of_players()
     {
         let players = vector[PLAYER_1];
@@ -92,7 +92,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 3)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_INVALID_NUMBER_OF_JUDGES)]
     fun test_create_e_invalid_number_of_judges()
     {
         let judges = vector[];
@@ -103,7 +103,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 4)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_DUPLICATE_PLAYERS)]
     fun test_create_e_duplicate_players()
     {
         let players = vector[@0xCAFE, @0x123, @0xCAFE];
@@ -114,7 +114,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 5)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_DUPLICATE_JUDGES)]
     fun test_create_e_duplicate_judges()
     {
         let judges = vector[@0xAAA, @0xBBB, @0xAAA];
@@ -125,7 +125,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 6)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_INVALID_QUORUM)]
     fun test_create_e_invalid_quorum()
     {
         let quorum = 1;
@@ -136,7 +136,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 7)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_INVALID_BET_SIZE)]
     fun test_create_e_invalid_bet_size()
     {
         let size = 0;
@@ -236,7 +236,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 100)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_ONLY_PLAYERS_CAN_FUND)]
     /// Non-player tries to funds the bet
     fun test_fund_e_only_players_can_fund()
     {
@@ -246,7 +246,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 101)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_ALREADY_FUNDED)]
     /// Player tries to fund the bet for the second time
     fun test_fund_e_already_funded()
     {
@@ -257,7 +257,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 102)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_FUNDS_BELOW_BET_SIZE)]
     /// Player tries to fund the bet with not enough coins
     fun test_fund_e_funds_below_bet_size()
     {
@@ -267,7 +267,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 103)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_NOT_IN_FUNDING_PHASE)]
     /// Player tries to fund a closed bet
     fun test_fund_e_not_in_funding_phase()
     {
@@ -326,7 +326,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 200)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_NOT_IN_VOTING_PHASE)]
     /// Judge tries to vote before all players have sent their funds
     fun test_e_vote_not_in_voting_phase()
     {
@@ -337,7 +337,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 201)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_ONLY_JUDGES_CAN_VOTE)]
     /// Non-judge tries to vote
     fun test_e_vote_only_judges_can_vote()
     {
@@ -349,7 +349,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 202)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_ALREADY_VOTED)]
     /// Judge tries to vote twice
     fun test_e_vote_already_voted()
     {
@@ -362,7 +362,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 203)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_PLAYER_NOT_FOUND)]
     /// Judge tries to vote for a non-player
     fun test_e_vote_player_not_found()
     {
@@ -393,7 +393,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 300)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_BET_HAS_FUNDS)]
     /// Try to cancel a bet with funds
     fun test_cancel_e_bet_has_funds()
     {
@@ -411,7 +411,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 301)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_NOT_AUTHORIZED)]
     /// A non-participant tries to cancel a bet
     fun test_cancel_e_not_authorized()
     {
@@ -428,7 +428,7 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = 103)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_NOT_IN_FUNDING_PHASE)]
     /// Try to cancel a settled bet
     fun test_cancel_e_not_in_funding_phase()
     {

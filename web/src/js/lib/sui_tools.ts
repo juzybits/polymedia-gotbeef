@@ -2,7 +2,7 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x1f18cd4682f7ba6c4c78e20d2e49a567f8862c5c';
+export const GOTBEEF_PACKAGE = '0xa401a6943886634ffd0e0635c698109e655706e1';
 export const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
@@ -174,8 +174,8 @@ export function getErrorName(error?: string): string {
         '202': 'E_ALREADY_VOTED',
         '203': 'E_PLAYER_NOT_FOUND',
         // cancel()
-        '300': 'E_CANCEL_BET_HAS_FUNDS',
-        '301': 'E_CANCEL_NOT_AUTHORIZED',
+        '300': 'E_BET_HAS_FUNDS',
+        '301': 'E_NOT_AUTHORIZED',
     };
     return errorNames[errCode] || error;
 }

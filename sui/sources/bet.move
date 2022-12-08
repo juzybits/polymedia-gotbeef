@@ -45,8 +45,8 @@ module gotbeef::bet
     const E_PLAYER_NOT_FOUND: u64 = 203;
 
     // cancel()
-    const E_CANCEL_BET_HAS_FUNDS: u64 = 300;
-    const E_CANCEL_NOT_AUTHORIZED: u64 = 301;
+    const E_BET_HAS_FUNDS: u64 = 300;
+    const E_NOT_AUTHORIZED: u64 = 301;
 
     /* Settings */
 
@@ -252,11 +252,11 @@ module gotbeef::bet
     /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
     public entry fun cancel<T>(bet: &mut Bet<T>, ctx: &mut TxContext) {
         assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
-        assert!( vec_map::is_empty(&bet.funds), E_CANCEL_BET_HAS_FUNDS );
+        assert!( vec_map::is_empty(&bet.funds), E_BET_HAS_FUNDS );
         let sender = tx_context::sender(ctx);
         let is_player = vector::contains(&bet.players, &sender);
         let is_judge = vector::contains(&bet.judges, &sender);
-        assert!( is_player || is_judge, E_CANCEL_NOT_AUTHORIZED );
+        assert!( is_player || is_judge, E_NOT_AUTHORIZED );
         bet.phase = PHASE_CANCELED;
     }
 
