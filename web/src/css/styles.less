@@ -96,7 +96,6 @@ a:hover {
 }
 .button-container {
     .nes-btn {
-        width: 40%;
         min-width: 16em;
         display: block;
         margin: 1em auto;
@@ -221,6 +220,23 @@ a:hover {
             padding-right: 2em;
         }
         padding-right: 1em;
+    }
+    .nes-btn, .nes-input, .nes-textarea, .nes-select select {
+        border-image: initial;
+        border: 3px #212529 solid;
+    }
+    .nes-btn {
+        &:hover {
+            border-color: #000;
+        }
+        &:after, &:hover:after,
+        &.is-primary:after, &.is-primary:hover:after,
+        &.is-success:after, &.is-success:hover:after,
+        &.is-warning:after, &.is-warning:hover:after,
+        &.is-error:after, &.is-error:hover:after
+        {
+            box-shadow: initial;
+        }
     }
 }
 
