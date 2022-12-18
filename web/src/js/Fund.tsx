@@ -22,14 +22,15 @@ export function Fund(props: any) {
                 let smallestCoin = null; // to pay for gas
                 let payCoins = []; // to fund the bet
                 let payCoinsVal = 0; // sum of `payCoins` balances
+                let betSize = Number(props.bet.size);
 
                 for ( const coin of coins ) {
                     if (smallestCoin === null) {
                         smallestCoin = coin;
                         continue;
                     }
-                    let coinVal = coin.details.data.fields.balance;
-                    let smallestVal = smallestCoin.details.data.fields.balance;
+                    let coinVal = Number(coin.details.data.fields.balance);
+                    let smallestVal = Number(smallestCoin.details.data.fields.balance);
                     if (coinVal < smallestVal && coinVal >= GAS_BUDGET) {
                         payCoins.push(smallestCoin);
                         payCoinsVal += smallestVal;
@@ -38,12 +39,12 @@ export function Fund(props: any) {
                     }
                     payCoins.push(coin);
                     payCoinsVal += coinVal;
-                    if (payCoinsVal >= props.bet.size) {
+                    if (payCoinsVal >= betSize) {
                         break;
                     }
                 }
 
-                if (payCoinsVal >= props.bet.size) {
+                if (payCoinsVal >= betSize) {
                     console.debug(`[Fund.useEffect] Found coins to fund bet. Aggregate balance = ${payCoinsVal}. Coins:`, payCoins);
                     setPayCoins(payCoins);
                 } else {
