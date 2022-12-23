@@ -2,7 +2,7 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x486dbd28f5bea1744f4199a82062bc1813c93fe2';
+export const GOTBEEF_PACKAGE = '0x941eb93494c4a79f15c3881ce8c4a672535e9a0e';
 export const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
