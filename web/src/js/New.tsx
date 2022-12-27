@@ -19,9 +19,9 @@ export function New()
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
-    const [size, setSize] = useState(isProd ? '' : '0.0001');
-    const [players, setPlayers] = useState(isProd ? '' : '0x0611b818746af985b9f62caa20712e5ace095e50\n0xf2c658eadb26278f44616bd0ab3052af45c385f6');
-    const [judges, setJudges] = useState(isProd ? '' : '0xa4c6712ff811279d71866bfd8af05b165184a347');
+    const [size, setSize] = useState(isProd ? '' : '0.00001');
+    const [players, setPlayers] = useState(isProd ? '' : '0x23c3a8501f3532017ac6c116fc5d0061d4a29138\n0xac88f1e4ef92abea55460f7374b3ded3fa56a9f1');
+    const [judges, setJudges] = useState(isProd ? '' : '0xf2c658eadb26278f44616bd0ab3052af45c385f6');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
@@ -161,12 +161,13 @@ export function New()
             judgesArray,
         )
         .then((resp: any) => {
-            if (resp.effects.status.status == 'success') {
+            const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
+            if (effects.status.status == 'success') {
                 showConfetti('🥩');
-                const newObjId = resp.effects.created[0].reference.objectId;
+                const newObjId = effects.created[0].reference.objectId;
                 navigate('/bet/' + newObjId);
             } else {
-                setError( getErrorName(resp.effects.status.error) );
+                setError( getErrorName(effects.status.error) );
             }
         })
         .catch(error => {

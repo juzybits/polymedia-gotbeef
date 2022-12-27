@@ -33,14 +33,15 @@ export function Vote(props: any) {
         const player_addr = (e.target as HTMLButtonElement).value;
         castVote(props.bet, player_addr)
         .then(resp => {
-            if (resp.effects.status.status == 'success') {
+            const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
+            if (effects.status.status == 'success') {
                 showConfetti();
                 setError('');
                 props.reloadBet();
                 props.setModal('');
                 console.debug('[onClickVote] Success:', resp);
             } else {
-                setError( getErrorName(resp.effects.status.error) );
+                setError( getErrorName(effects.status.error) );
             }
         })
         .catch(error => {

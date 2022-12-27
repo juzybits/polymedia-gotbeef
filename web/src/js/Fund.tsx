@@ -83,14 +83,15 @@ export function Fund(props: any) {
         e.preventDefault();
         fundBet(props.bet, answer, payCoins)
         .then(resp => {
-            if (resp.effects.status.status == 'success') {
+            const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
+            if (effects.status.status == 'success') {
                 showConfetti('💸');
                 setError('');
                 props.reloadBet();
                 props.setModal('');
                 console.debug('[onClickFund] Success:', resp);
             } else {
-                setError( getErrorName(resp.effects.status.error) );
+                setError( getErrorName(effects.status.error) );
             }
         })
         .catch(error => {
