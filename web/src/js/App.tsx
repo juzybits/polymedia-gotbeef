@@ -51,7 +51,7 @@ export function App(props: any)
         </div>
 
         <div id='footer-signature'>
-            <a href='https://twitter.com/polymedia_app' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>polymedia</span></a>
+            <a href='https://polymedia.app/' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>polymedia</span></a>
         </div>
     </footer>
 

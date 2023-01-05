@@ -22,7 +22,7 @@ export function Home(props: any) {
     return <React.Fragment>
         <div>
             <p>
-                <i>Got Beef?</i> is a dApp to create on-chain bets on the <a href='https://sui.io/' className='rainbow' target='_blank'>Sui network</a>.
+                <i>Got Beef?</i> is a dApp to make on-chain bets on the <a href='https://sui.io/' className='rainbow' target='_blank'>Sui network</a>.
             </p>
             <p>
                 Bet objects serve as escrows (hold player funds) and provide a voting mechanism.
