@@ -20,8 +20,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.00001');
-    const [players, setPlayers] = useState(isProd ? '' : '0x23c3a8501f3532017ac6c116fc5d0061d4a29138\n0xac88f1e4ef92abea55460f7374b3ded3fa56a9f1');
-    const [judges, setJudges] = useState(isProd ? '' : '0xf2c658eadb26278f44616bd0ab3052af45c385f6');
+    const [players, setPlayers] = useState(isProd ? '' : '0xa070cec3d64cd7b367fd02fb7b9bb51db176f097\n0xb5322c5ee3750acf4c273840b99c41760339863d');
+    const [judges, setJudges] = useState(isProd ? '' : '0xe2a243eb358c11cd445baf34124141695d421fed');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
@@ -133,8 +133,8 @@ export function New()
                 arguments: [
                     Array.from( (new TextEncoder()).encode(title) ),
                     Array.from( (new TextEncoder()).encode(description) ),
-                    quorum,
-                    size,
+                    String(quorum),
+                    String(size),
                     players,
                     judges,
                 ],
