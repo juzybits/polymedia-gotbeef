@@ -1,9 +1,9 @@
 /// Helpers to interact with the Sui network
 
-import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo} from '@mysten/sui.js';
+import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo, Network } from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x21942a14bfd73efe4d908dec3cdaae8527d3e866';
-export const rpc = new JsonRpcProvider('https://fullnode.devnet.sui.io:443');
+export const GOTBEEF_PACKAGE = '0xb1b8095dc709795e5e2e31bcf6483865f1533e3e';
+export const rpc = new JsonRpcProvider(Network.DEVNET);
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
