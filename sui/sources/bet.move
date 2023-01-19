@@ -161,6 +161,7 @@ module gotbeef::bet
             winner: option::none(),
         };
         transfer::share_object(bet);
+        // TODO: emit event
     }
 
     /// Player locks funds for the bet

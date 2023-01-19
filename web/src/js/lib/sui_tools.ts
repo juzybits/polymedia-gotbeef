@@ -2,7 +2,7 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo, Network } from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x4b9437306d3369969e62a9f050f73eaa5370b3c8';
+export const GOTBEEF_PACKAGE = '0x9ebdb961aff250db6178604672f53098bdda35d3';
 export const rpc = new JsonRpcProvider(Network.DEVNET);
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
@@ -106,7 +106,7 @@ export async function getBet(objId: string): Promise<Bet|null> {
 /// Get all `Coin<T>` objects owned by the current address
 export async function getCoinObjects(address: string, type: string): Promise<any[]> {
     console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
-    return rpc.getObjectsOwnedByAddress(address)
+    return rpc.getObjectsOwnedByAddress(address) // TODO: use https://docs.sui.io/sui-jsonrpc#sui_getCoins
         .then((objectsInfo: SuiObjectInfo[]) => {
             const expectedType = `0x2::coin::Coin<${type}>`;
             let objectIds = objectsInfo.reduce((selected: string[], obj: SuiObjectInfo) => {
