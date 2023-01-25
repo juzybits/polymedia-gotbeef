@@ -23,7 +23,7 @@ sui move coverage bytecode --module bet
 
 ## How to publish the package
 ```
-sui client publish --verify-dependencies --gas-budget 30000
+sui client publish --gas-budget 30000
 ```
 
 ## How to use from `sui console`

@@ -2,6 +2,6 @@
 
 ## How to run locally
 ```
-yarn
+yarn --ignore-engines
 yarn serve
 ```
