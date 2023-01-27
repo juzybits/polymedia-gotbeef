@@ -1,6 +1,6 @@
 /// Miscellaneous convenience functions and constants
 
-export const isDev = window.location.hostname=='localhost' || window.location.hostname.includes('dev');
+export const isDev = window.location.hostname=='localhost';
 export const isProd = !isDev;
 
 /// Transform a long string like "startXXXXXXend" into "start...end"
