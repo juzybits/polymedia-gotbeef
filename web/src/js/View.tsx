@@ -123,7 +123,7 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={'https://explorer.devnet.sui.io/objects/'+betId} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
+                <td><a href={'https://explorer.sui.io/object/'+betId+'?network=devnet'} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
             </tr>
             {
             !bet.winner ? '' :
