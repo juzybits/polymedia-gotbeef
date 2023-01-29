@@ -18,6 +18,11 @@ export function App()
 
     // Return either 'devnet' or 'testnet'
     const getNetwork = (): string => {
+        // TODO: remove this in a few days
+        const loc = window.location;
+        if (loc.hostname == 'testnet.gotbeef.pages.dev') {
+            loc.replace('https://gotbeef.app' + loc.pathname + '?network=testnet');
+        }
         // Read 'network' URL parameter
         const params = new URLSearchParams(window.location.search);
         // Delete query string
