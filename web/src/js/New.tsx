@@ -37,8 +37,8 @@ export function New()
 
     // Parse player and judge addresses
     const addrRegex = /(0x[0-9a-fA-F]{40})/g;
-    const playersArray = players.match(addrRegex) || [];
-    const judgesArray = judges.match(addrRegex) || [];
+    const playersArray: string[] = players.match(addrRegex) || [];
+    const judgesArray: string[] = judges.match(addrRegex) || [];
 
     // Calculate minimum and maximum allowed quorum values (as per E_INVALID_QUORUM)
     const minQuorum = 1 + Math.floor(judgesArray.length/2);
@@ -123,6 +123,7 @@ export function New()
     ): Promise<SuiTransactionResponse> =>
     {
         console.debug(`[createBet] Calling bet::create on package: ${GOTBEEF_PACKAGE}`);
+        // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {

@@ -13,6 +13,7 @@ export function Vote(props: any) {
     const castVote = (bet: Bet, player_addr: string): Promise<SuiTransactionResponse> =>
     {
         console.debug(`[castVote] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
+        // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
@@ -33,6 +34,7 @@ export function Vote(props: any) {
         const player_addr = (e.target as HTMLButtonElement).value;
         castVote(props.bet, player_addr)
         .then(resp => {
+            // @ts-ignore
             const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
             if (effects.status.status == 'success') {
                 showConfetti();

@@ -61,6 +61,7 @@ export function Fund(props: any) {
     const fundBet = (bet: Bet, answer: string, coin: string): Promise<SuiTransactionResponse> =>
     {
         console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
+        // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
@@ -83,6 +84,7 @@ export function Fund(props: any) {
         e.preventDefault();
         fundBet(props.bet, answer, payCoins)
         .then(resp => {
+            // @ts-ignore
             const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
             if (effects.status.status == 'success') {
                 showConfetti('💸');

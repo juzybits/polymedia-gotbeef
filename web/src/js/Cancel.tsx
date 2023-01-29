@@ -12,6 +12,7 @@ export function Cancel(props: any) {
     const { signAndExecuteTransaction } = useWallet();
     const cancelBet = (bet: Bet): Promise<SuiTransactionResponse> => {
         console.debug(`[cancelBet] Calling bet::cancel on package: ${GOTBEEF_PACKAGE}`);
+        // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
