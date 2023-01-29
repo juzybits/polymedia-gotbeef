@@ -2,8 +2,8 @@ import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { Bet, getBet, getRecentTxns, getErrorName } from './lib/sui_tools';
-import { shorten, timeAgo } from './lib/common';
+import { Bet, getBet, getRecentTxns } from './lib/sui_tools';
+import { timeAgo } from './lib/common';
 
 export function Find()
 {

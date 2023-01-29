@@ -116,9 +116,9 @@ export async function getCoinObjects(address: string, type: string): Promise<any
             }, []);
             return rpc.getObjectBatch(objectIds)
                 .then(objectsData => { return objectsData })
-                .catch(error => []);
+                .catch(_error => []);
         })
-        .catch(error => []);
+        .catch(_error => []);
 }
 
 /// Get recent bet transactions

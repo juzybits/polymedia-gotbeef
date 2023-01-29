@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-export function Home(props: any) {
+export function Home() {
     useEffect(() => {
         document.title = `Got Beef?`;
     }, []);

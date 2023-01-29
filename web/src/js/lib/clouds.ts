@@ -71,7 +71,7 @@ function paintClouds(top: number, right: number, bottom: number, left: number): 
           'style',
           `top: ${imgTop}px; left: ${imgLeft}px`,
         );
-        el.addEventListener('click', (event) => {
+        el.addEventListener('click', (_event) => {
             el.className = 'steak';
         });
         document.body.appendChild(el);

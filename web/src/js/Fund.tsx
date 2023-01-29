@@ -58,7 +58,7 @@ export function Fund(props: any) {
     }, []);
 
     const { signAndExecuteTransaction } = useWallet();
-    const fundBet = (bet: Bet, answer: string, coin: string): Promise<SuiTransactionResponse> =>
+    const fundBet = (bet: Bet, answer: string, payCoins: any[]): Promise<SuiTransactionResponse> =>
     {
         console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
         // @ts-ignore

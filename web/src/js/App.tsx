@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { WalletProvider } from '@mysten/wallet-adapter-react';
@@ -7,10 +7,10 @@ import { WalletStandardAdapterProvider } from '@mysten/wallet-adapter-all-wallet
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
 
-export function App(props: any)
+export function App()
 {
     useEffect(() => {
-        const resizeObserver = new ResizeObserver((entries) => {
+        const resizeObserver = new ResizeObserver((_entries) => {
             reloadClouds();
         });
         resizeObserver.observe(document.getElementById('app') as Element);

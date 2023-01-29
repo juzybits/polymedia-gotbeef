@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function NotFound(props: any) {
+export function NotFound() {
     return <React.Fragment>
         <h2>Not found</h2>
         <div>

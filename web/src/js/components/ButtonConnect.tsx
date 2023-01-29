@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
-export function ButtonConnect(props: any)
+export function ButtonConnect()
 {
     const [error, setError]: any[] = useState(null);
     const [showWallets, setShowWallets] = useState(false);
 
-    const { wallets, wallet, connected, select, disconnect, getAccounts, signAndExecuteTransaction } = useWallet();
+    const { wallets, connected, select, disconnect } = useWallet();
 
     const handleShowWallets = () => {
         if (wallets.length==0) {

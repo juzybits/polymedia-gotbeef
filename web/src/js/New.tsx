@@ -30,7 +30,6 @@ export function New()
     const [currencyError, setCurrencyError] = useState('');
     const [playersError, setPlayersError] = useState('');
     const [judgesError, setJudgesError] = useState('');
-    const [quorumError, setQuorumError] = useState('');
 
     // Result
     const [error, setError] = useState('');
