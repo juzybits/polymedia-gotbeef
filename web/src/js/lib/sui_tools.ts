@@ -2,8 +2,22 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo, Network } from '@mysten/sui.js';
 
-export const GOTBEEF_PACKAGE = '0x1a4d83692a6ea8baaba90c4e690f366fac15a8f0';
-export const rpc = new JsonRpcProvider(Network.DEVNET);
+const GOTBEEF_PACKAGE_DEVNET = '0x1a4d83692a6ea8baaba90c4e690f366fac15a8f0';
+const GOTBEEF_PACKAGE_TESTNET = '0xd86352ad9f9ebf17902c2f2e742a816ad6a64775';
+const RPC_DEVNET = new JsonRpcProvider(Network.DEVNET);
+const RPC_TESTNET = new JsonRpcProvider('https://fullnode.testnet.sui.io:443');
+
+// NOTE: duplicated in polymedia-chat/web/src/js/lib/sui_client.ts
+export function getPackageAndRpc(network: string): [string, JsonRpcProvider] {
+    switch (network) {
+        case 'devnet':
+            return [GOTBEEF_PACKAGE_DEVNET, RPC_DEVNET];
+        case 'testnet':
+            return [GOTBEEF_PACKAGE_TESTNET, RPC_TESTNET];
+        default:
+            throw new Error('Invalid network: ' + network);
+    }
+}
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
@@ -24,7 +38,7 @@ export type Bet = {
 };
 
 /// Fetch and parse a `gotbeef::bet::Bet<T>` Sui object into our custom Bet type
-export async function getBet(objId: string): Promise<Bet|null> {
+export async function getBet(network: string, objId: string): Promise<Bet|null> {
     console.debug('[getBet] Looking up:', objId);
 
     const getPhaseName = (phaseCode: number): string => {
@@ -36,8 +50,10 @@ export async function getBet(objId: string): Promise<Bet|null> {
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
+    const [packageId, rpc] = getPackageAndRpc(network);
+
     // Handle leading zeros ('0x00ab::bet::Bet' is returned as '0xab::bet::Bet' by the RPC)
-    const packageName = GOTBEEF_PACKAGE.replace(/0x0+/, '0x0*'); // handle leading zeros
+    const packageName = packageId.replace(/0x0+/, '0x0*'); // handle leading zeros
     const betTypeRegex = new RegExp(`^${packageName}::bet::Bet<0x.+::.+::.+>$`);
     return rpc.getObject(objId)
         .then((obj: GetObjectDataResponse) => {
@@ -104,8 +120,9 @@ export async function getBet(objId: string): Promise<Bet|null> {
 }
 
 /// Get all `Coin<T>` objects owned by the current address
-export async function getCoinObjects(address: string, type: string): Promise<any[]> {
+export async function getCoinObjects(network: string, address: string, type: string): Promise<any[]> {
     console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
+    const [_packageId, rpc] = getPackageAndRpc(network);
     return rpc.getObjectsOwnedByAddress(address) // TODO: use https://docs.sui.io/sui-jsonrpc#sui_getCoins
         .then((objectsInfo: SuiObjectInfo[]) => {
             const expectedType = `0x2::coin::Coin<${type}>`;
@@ -122,16 +139,18 @@ export async function getCoinObjects(address: string, type: string): Promise<any
 }
 
 /// Get recent bet transactions
-export async function getRecentTxns(limit: number): Promise<SuiTransactionResponse[]> {
+export async function getRecentTxns(network: string, limit: number): Promise<SuiTransactionResponse[]> {
     const errorCatcher = (error: any) => {
         console.warn('[getRecentTxns] RPC error:', error.message);
         return [];
     };
 
+    const [packageId, rpc] = getPackageAndRpc(network);
+
     // @ts-ignore
     const transactions = await rpc.client.batchRequest([{
         method: 'sui_getTransactions',
-        args: [{ InputObject: GOTBEEF_PACKAGE }, null, limit, true],
+        args: [{ InputObject: packageId }, null, limit, true],
     }])
     .then(response => response[0].result.data)
     .catch(errorCatcher);

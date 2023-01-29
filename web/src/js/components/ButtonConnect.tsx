@@ -40,7 +40,7 @@ export function ButtonConnect()
     const WalletSelection = () => {
         return <> { wallets.map(wallet =>
             <button type='button' className='nes-btn' key={wallet.name} onClick={() => handleConnect(wallet.name)}>
-                <img src={wallet.name=='Sui Wallet' ? 'https://sui.io/favicon.png' : wallet.icon} style={{
+                <img src={wallet.icon} style={{
                     width: '1.5em',
                     verticalAlign: 'top',
                     marginRight: '0.5em',

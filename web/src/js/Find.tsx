@@ -1,5 +1,5 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
 import { Bet, getBet, getRecentTxns } from './lib/sui_tools';
@@ -7,10 +7,12 @@ import { timeAgo } from './lib/common';
 
 export function Find()
 {
+    const [network] = useOutletContext<string>();
+
     useEffect(() => {
         document.title = 'Got Beef? - Find';
-
-        getRecentTxns(18)
+        // Reload recent transaction list
+        getRecentTxns(network, 18)
         .then(txnData => {
             const txns = txnData.reduce((selected: object[], txn: any) => {
                 const cert = txn.certificate;
@@ -42,7 +44,6 @@ export function Find()
             }, []);
             setRecentBets(txns);
         });
-
     }, []);
 
     const [betId, setBetId] = useState('');
@@ -65,11 +66,11 @@ export function Find()
         }
 
         // Search
-        getBet(betIdClean).then(
+        getBet(network, betIdClean).then(
         (bet: Bet|null) => {
             setBet(bet);
             bet && navigate('/bet/' + bet.id, {
-                state: { bet: bet }
+                // state: { bet: bet } // No longer used
             });
         });
     };

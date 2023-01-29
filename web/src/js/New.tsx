@@ -1,11 +1,11 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useWallet } from '@mysten/wallet-adapter-react';
 import { SuiTransactionResponse } from '@mysten/sui.js';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { GOTBEEF_PACKAGE, getErrorName } from './lib/sui_tools';
+import { getErrorName, getPackageAndRpc } from './lib/sui_tools';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 
@@ -14,6 +14,9 @@ export function New()
     useEffect(() => {
         document.title = 'Got Beef? - New'
     }, []);
+
+    const [network] = useOutletContext<string>();
+    const [packageId, _rpc] = getPackageAndRpc(network);
 
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
@@ -121,12 +124,12 @@ export function New()
         judges: string[],
     ): Promise<SuiTransactionResponse> =>
     {
-        console.debug(`[createBet] Calling bet::create on package: ${GOTBEEF_PACKAGE}`);
+        console.debug(`[createBet] Calling bet::create on package: ${packageId}`);
         // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
-                packageObjectId: GOTBEEF_PACKAGE,
+                packageObjectId: packageId,
                 module: 'bet',
                 function: 'create',
                 typeArguments: [ currency ],

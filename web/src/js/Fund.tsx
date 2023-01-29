@@ -1,12 +1,15 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { SuiTransactionResponse } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
+import { useOutletContext } from 'react-router-dom';
 
-import { GOTBEEF_PACKAGE, Bet, getErrorName, getCoinObjects } from './lib/sui_tools';
+import { Bet, getErrorName, getCoinObjects, getPackageAndRpc } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
-export function Fund(props: any) {
-
+export function Fund(props: any)
+{
+    const [network] = useOutletContext<string>();
+    const [packageId, _rpc] = getPackageAndRpc(network);
     const [payCoins, setPayCoins]: any[] = useState(undefined);
     const [answer, setAnswer] = useState('');
     const [error, setError] = useState('');
@@ -17,7 +20,7 @@ export function Fund(props: any) {
     useEffect(() =>
     {
         getAccounts().then(addresses => {
-            getCoinObjects(addresses[0], props.bet.collatType)
+            getCoinObjects(network, addresses[0], props.bet.collatType)
             .then(coins => {
                 let smallestCoin = null; // to pay for gas
                 let payCoins = []; // to fund the bet
@@ -60,12 +63,12 @@ export function Fund(props: any) {
     const { signAndExecuteTransaction } = useWallet();
     const fundBet = (bet: Bet, answer: string, payCoins: any[]): Promise<SuiTransactionResponse> =>
     {
-        console.debug(`[fundBet] Calling bet::fund on package: ${GOTBEEF_PACKAGE}`);
+        console.debug(`[fundBet] Calling bet::fund on package: ${packageId}`);
         // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
-                packageObjectId: GOTBEEF_PACKAGE,
+                packageObjectId: packageId,
                 module: 'bet',
                 function: 'fund',
                 typeArguments: [ bet.collatType ],

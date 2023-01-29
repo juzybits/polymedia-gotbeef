@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { WalletProvider } from '@mysten/wallet-adapter-react';
@@ -16,9 +16,39 @@ export function App()
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
+    // Return either 'devnet' or 'testnet'
+    const getNetwork = (): string => {
+        // Read 'network' URL parameter
+        const params = new URLSearchParams(window.location.search);
+        // Delete query string
+        window.history.replaceState({}, document.title, window.location.pathname);
+        let newNetwork = params.get('network');
+        if (newNetwork === 'devnet' || newNetwork === 'testnet') {
+            // Update localStorage
+            localStorage.setItem('polymedia.network', newNetwork);
+            return newNetwork;
+        } else {
+            return localStorage.getItem('polymedia.network') || 'devnet';
+        }
+    };
+
+    const [network, setNetwork] = useState( getNetwork() );
+
+    const toggleNetwork = () => {
+        const newNetwork = network==='devnet' ? 'testnet' : 'devnet';
+        setNetwork(newNetwork);
+        localStorage.setItem('polymedia.network', newNetwork);
+        window.location.reload();
+    };
+
+    // NOTE: getNetwork and toggleNetwork are duplicated in polymedia-chat/web/src/js/App.tsx
+
     const walletAdapters = useMemo(() => [new WalletStandardAdapterProvider()], []);
 
     return <div id='page'>
+    <div id='network-widget'>
+        <a className='switch-btn' onClick={toggleNetwork}>{network}</a>
+    </div>
     <section id='main'>
 
         <header id='header'>
@@ -29,14 +59,14 @@ export function App()
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
-                &nbsp;~ <a href='https://chat.polymedia.app/@sui-fans'>CHAT<sup style={{color: 'deeppink', fontSize: '0.6em', top: '-1em'}}>NEW!</sup></a>
+                &nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT<sup style={{color: 'deeppink', fontSize: '0.6em', top: '-1em'}}>NEW!</sup></a>
             </nav>
 
         </header>
 
         <section id='content'>
         <WalletProvider adapters={walletAdapters}>
-            <Outlet context={[]} />
+            <Outlet context={[network]} />
         </WalletProvider>
         </section>
 

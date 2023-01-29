@@ -65,6 +65,19 @@ a:hover {
     margin: 2em 0 0.5em 0;
     padding: 1.2em 1.8em 1.6em;
 }
+#network-widget {
+    position: absolute;
+    top: 2;
+    right: 4;
+    color: white;
+    font-size: 0.9em;
+    .switch-btn {
+        &:hover {
+            color: lightgreen;
+            text-decoration: underline;
+        }
+    }
+}
 #header {
     text-align: center;
 }
@@ -240,6 +253,9 @@ a:hover {
         {
             box-shadow: initial;
         }
+    }
+    #network-widget {
+        color: inherit;
     }
 }
 

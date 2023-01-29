@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { useWallet } from "@mysten/wallet-adapter-react";
 
 import { ButtonConnect } from './components/ButtonConnect';
@@ -12,6 +12,7 @@ import { shorten } from './lib/common';
 export function View()
 {
     /* Data */
+    const [network] = useOutletContext<string>();
 
     const betId = useParams().uid || '';
     const [bet, setBet]: any[] = useState(undefined);
@@ -25,21 +26,22 @@ export function View()
     /* Load bet object data */
 
     const reloadBet = () => {
-        getBet(betId).then( (bet: Bet|null) => {
+        getBet(network, betId).then( (bet: Bet|null) => {
             setBet(bet);
         });
     };
 
-    const location = useLocation();
+    // const location = useLocation();
     useEffect(() => {
         document.title = `Got Beef? - View: ${betId}`;
-        if (location.state && location.state.bet) {
-            // Reuse the bet object data that Find.tsx has already fetched
-            setBet(location.state.bet);
-        } else {
-            // The user came directly to this URL, fetch bet object from Sui
-            reloadBet();
-        }
+        reloadBet();
+        // if (location.state && location.state.bet) {
+        //     // Reuse the bet object data that Find.tsx has already fetched
+        //     setBet(location.state.bet);
+        // } else {
+        //     // The user came directly to this URL, fetch bet object from Sui
+        //     reloadBet();
+        // }
     }, []);
 
     /* Decide which action buttons are visible to the user */
@@ -123,7 +125,7 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={'https://explorer.sui.io/object/'+betId+'?network=devnet'} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
+                <td><a href={'https://explorer.sui.io/object/'+betId+'?network='+network} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
             </tr>
             {
             !bet.winner ? '' :

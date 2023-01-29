@@ -1,23 +1,26 @@
 import React, { useState, SyntheticEvent } from 'react';
 import { SuiTransactionResponse } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
+import { useOutletContext } from 'react-router-dom';
 
-import { GOTBEEF_PACKAGE, Bet, getErrorName } from './lib/sui_tools';
+import { Bet, getErrorName, getPackageAndRpc } from './lib/sui_tools';
 import { showConfetti } from './lib/confetti';
 
 export function Vote(props: any) {
 
+    const [network] = useOutletContext<string>();
+    const [packageId, _rpc] = getPackageAndRpc(network);
     const [error, setError] = useState('');
 
     const { signAndExecuteTransaction } = useWallet();
     const castVote = (bet: Bet, player_addr: string): Promise<SuiTransactionResponse> =>
     {
-        console.debug(`[castVote] Calling bet::vote on package: ${GOTBEEF_PACKAGE}`);
+        console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
         // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
             data: {
-                packageObjectId: GOTBEEF_PACKAGE,
+                packageObjectId: packageId,
                 module: 'bet',
                 function: 'vote',
                 typeArguments: [ bet.collatType ],
