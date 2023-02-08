@@ -22,9 +22,9 @@ export function New()
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
-    const [size, setSize] = useState(isProd ? '' : '0.00001');
-    const [players, setPlayers] = useState(isProd ? '' : '0x0a7a24e08fea45cb86ff9009af2fabd27dd8e91c\n0x24548daea2fefaefcd2f6e6e0794ba8b2482956c');
-    const [judges, setJudges] = useState(isProd ? '' : '0x48cafb95dfbd0747c2ed35ad37210a80b671e129');
+    const [size, setSize] = useState(isProd ? '' : '0.000000007');
+    const [players, setPlayers] = useState(isProd ? '' : '0xa7e545af841aa71190621f5d48a7de163f12a0fa\n0x211a1943298c6cca52589da75686afe660a55dbe\n0xbc5de211409278c0e74cc3730e2fdf35f283322d');
+    const [judges, setJudges] = useState(isProd ? '' : '0x883438a87c245598eaf9a6e195f2596c5bbb2d4b');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
@@ -164,7 +164,8 @@ export function New()
             judgesArray,
         )
         .then((resp: any) => {
-            const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
+            // @ts-ignore
+            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
             if (effects.status.status == 'success') {
                 showConfetti('🥩');
                 const newObjId = effects.created[0].reference.objectId;

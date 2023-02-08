@@ -34,14 +34,16 @@ export function Cancel(props: any) {
     const onClickCancel = () => {
         cancelBet(props.bet)
         .then(resp => {
-            if (resp.effects.status.status == 'success') {
+            // @ts-ignore
+            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
+            if (effects.status.status == 'success') {
                 showConfetti('🧨');
                 setError('');
                 props.reloadBet();
                 props.setModal('');
                 console.debug('[onClickCancel] Success:', resp);
             } else {
-                setError( getErrorName(resp.effects.status.error) );
+                setError( getErrorName(effects.status.error) );
             }
         })
         .catch(error => {

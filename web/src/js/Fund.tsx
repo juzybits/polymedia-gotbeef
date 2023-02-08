@@ -88,7 +88,7 @@ export function Fund(props: any)
         fundBet(props.bet, answer, payCoins)
         .then(resp => {
             // @ts-ignore
-            const effects = resp.effects || resp.EffectsCert?.effects?.effects; // Sui/Ethos || Suiet
+            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
             if (effects.status.status == 'success') {
                 showConfetti('💸');
                 setError('');
