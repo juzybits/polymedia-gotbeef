@@ -16,13 +16,12 @@ export function App()
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
+    const network = 'devnet';
+    /*
+    // NOTE: getNetwork() and toggleNetwork() are duplicated in other Polymedia projects
+
     // Return either 'devnet' or 'testnet'
     const getNetwork = (): string => {
-        // TODO: remove this in a few days
-        const loc = window.location;
-        if (loc.hostname == 'testnet.gotbeef.pages.dev') {
-            loc.replace('https://gotbeef.app' + loc.pathname + '?network=testnet');
-        }
         // Read 'network' URL parameter
         const params = new URLSearchParams(window.location.search);
         // Delete query string
@@ -45,15 +44,14 @@ export function App()
         localStorage.setItem('polymedia.network', newNetwork);
         window.location.reload();
     };
-
-    // NOTE: getNetwork and toggleNetwork are duplicated in polymedia-chat/web/src/js/App.tsx
+    */
 
     const walletAdapters = useMemo(() => [new WalletStandardAdapterProvider()], []);
 
     return <div id='page'>
-    <div id='network-widget'>
+    {/*<div id='network-widget'>
         <a className='switch-btn' onClick={toggleNetwork}>{network}</a>
-    </div>
+    </div>*/}
     <section id='main'>
 
         <header id='header'>
@@ -64,7 +62,8 @@ export function App()
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
-                &nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT</a>
+                {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT</a>*/}
+                &nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans'} target='_blank'>CHAT</a>
             </nav>
 
         </header>
@@ -78,7 +77,6 @@ export function App()
     </section>
 
     <footer id='footer'>
-        {/* TODO: add version */}
         <div id='footer-links'>
             <a href='https://github.com/juzybits/gotbeef' target='_blank' aria-label='GitHub'><i className='icon icon-github'></i></a>
             <a href='https://twitter.com/polymedia_app' target='_blank' aria-label='Twitter'><i className='icon icon-twitter'></i></a>
