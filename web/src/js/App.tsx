@@ -64,7 +64,7 @@ export function App()
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
-                &nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT<sup style={{color: 'deeppink', fontSize: '0.6em', top: '-1em'}}>NEW!</sup></a>
+                &nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT</a>
             </nav>
 
         </header>

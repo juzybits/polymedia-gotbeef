@@ -29,5 +29,5 @@ sui client publish --gas-budget 30000
 ## How to use from `sui console`
 #### Fund a bet
 ```
-call --package PACKAGE_ID --module bet --function fund --type-args 0x2::sui::SUI --args BET_ID COIN_ID --gas-budget 1000
+call --package PACKAGE_ID --module bet --function fund --type-args 0x2::sui::SUI --args BET_ID 'from sui console' \[COIN_ID\] --gas-budget 1000
 ```
