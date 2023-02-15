@@ -58,6 +58,11 @@ export function Vote(props: any) {
         props.setModal('');
     };
 
+    const profileNameOrBlank = (address: string): string => {
+        const profile = props.profiles.get(address);
+        return profile ? profile.name : '';
+    };
+
     return <section className='bet-modal'>
         <h2>Vote</h2>
         Click the address of the winner:
@@ -65,6 +70,7 @@ export function Vote(props: any) {
         {
             props.bet.players.map((player: string) =>
                 <div key={player} className='player-box'>
+                    <div>{profileNameOrBlank(player)}</div>
                     <button type='button' className='nes-btn is-primary' style={{overflowWrap: 'anywhere'}}
                         value={player} onClick={onClickVote}>{player}
                     </button>

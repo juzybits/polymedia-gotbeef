@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
+import { SuiAddress } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
+import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
@@ -23,11 +25,35 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(undefined);
     const [userCanCancel, setUserCanCancel] = useState(undefined);
 
+    const [profileManager] = useState( new ProfileManager(network) );
+    const [profiles, setProfiles] = useState( new Map<SuiAddress, PolymediaProfile|null>() );
+
+    const fetchProfiles = (bet: Bet) => {
+        const lookupAddresses = [ ...bet.players, ...bet.judges ];
+        profileManager.getProfiles({lookupAddresses})
+        .then(profiles => {
+            setProfiles(profiles);
+        })
+        .catch((error: any) => {
+            console.warn(`[fetchProfiles] Request error: ${error.message}`);
+        })
+    };
+
+    const AddressOrProfile = (props: any) => {
+        const profile = profiles.get(props.address);
+        const shortAddr = shorten(props.address);
+        return <>{profile
+            ? <>{profile.name} ({shortAddr})</>
+            : shortAddr
+        }</>;
+    };
+
     /* Load bet object data */
 
     const reloadBet = () => {
         getBet(network, betId).then( (bet: Bet|null) => {
             setBet(bet);
+            bet && fetchProfiles(bet);
         });
     };
 
@@ -92,7 +118,7 @@ export function View()
 
                     {userCanVote &&
                     <button type='button' className='nes-btn is-success'
-                        onClick={() => setModal(<Vote bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
+                        onClick={() => setModal(<Vote bet={bet} profiles={profiles} reloadBet={reloadBet} setModal={setModal} />)}>
                         VOTE
                     </button>}
 
@@ -168,7 +194,7 @@ export function View()
         {
             bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
                 <tr>
-                    <td>{shorten(player_addr)}</td>
+                    <td><AddressOrProfile address={player_addr} /></td>
                     {!showFunded && <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>}
                     {showFunded && <td>{bet.funds.get(player_addr) ? 'Yes' : 'No'}</td>}
                 </tr>
@@ -188,7 +214,7 @@ export function View()
         {
             bet.judges.map((judge_addr: string) => <React.Fragment key={judge_addr}>
             <tr>
-                <td>{shorten(judge_addr)}</td>
+                <td><AddressOrProfile address={judge_addr} /></td>
                 <td>{shorten(bet.votesByJudge.get(judge_addr)) || '-'}</td>
             </tr>
             </React.Fragment>)
@@ -210,7 +236,7 @@ export function View()
         {
             bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
                 <tr>
-                    <td>{shorten(player_addr)}</td>
+                    <td><AddressOrProfile address={player_addr} /></td>
                     <td>{bet.answers.get(player_addr) || '-'}</td>
                 </tr>
             </React.Fragment>)
