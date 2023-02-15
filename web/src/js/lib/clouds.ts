@@ -8,7 +8,7 @@ export function reloadClouds(): void
 {
     // Remove all clouds
     let el = null;
-    while ( el = document.querySelector('.cloud, .steak') ) {
+    while ( el = document.querySelector('.cloud, .steak, .door-closed, .door-open') ) {
         el.parentNode?.removeChild(el);
     }
 
@@ -41,7 +41,14 @@ export function reloadClouds(): void
         0
     );
     // Paint clouds between the right edge of the page content and the right edge of the browser window
-    paintClouds(
+    // paintClouds(
+    //     0,
+    //     windowWitdth - IMG_WIDTH,
+    //     sideCloudsBottom,
+    //     page.offsetLeft + page.offsetWidth
+    // );
+    // Paint door between the right edge of the page content and the right edge of the browser window
+    paintDoor(
         0,
         windowWitdth - IMG_WIDTH,
         sideCloudsBottom,
@@ -76,6 +83,31 @@ function paintClouds(top: number, right: number, bottom: number, left: number): 
         });
         document.body.appendChild(el);
     }
+}
+
+function paintDoor(top: number, right: number, bottom: number, left: number): void {
+    const doorFitsInArea = (right > left) && (bottom > top);
+    if (!doorFitsInArea) {
+        return;
+    }
+    const imgTop = getRandomInt(top, bottom);
+    const imgLeft = getRandomInt(left, right);
+
+    const el = document.createElement('span');
+    el.className = 'door-closed';
+    el.setAttribute(
+      'style',
+      `top: ${imgTop}px; left: ${imgLeft}px`,
+    );
+    el.addEventListener('click', (_event) => {
+        if (el.className == 'door-closed') {
+            el.className = 'door-open';
+        } else {
+            const network = localStorage.getItem('polymedia.network') || 'devnet';
+            window.open('https://mountsogol.com?network='+network, '_blank')
+        }
+    });
+    document.body.appendChild(el);
 }
 
 function getRandomInt(min: number, max: number): number {
