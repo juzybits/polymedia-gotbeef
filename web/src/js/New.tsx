@@ -23,8 +23,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.000000007');
-    const [players, setPlayers] = useState(isProd ? '' : '0x27fa03c24d939874291f8af90d3f668c802f1e28\n0x0b0c6120e7a5898ce3f0404bfc5dbe0721aa5058\n0x635263017580c8a68e72cc5745e2e58ff71aac38');
-    const [judges, setJudges] = useState(isProd ? '' : '0xff79dbff0aa07057bc43738fa449caa95f7db7eb');
+    const [players, setPlayers] = useState(isProd ? '' : '0x7f3cdb0f2ce068e01fa0a081c031bf3eca1319cd\n0x623c9d5556fdb64084e8adb6dc73f15371415922\n0x75ae20603fb0a092c984f000bc400a0f4a64c6e1');
+    const [judges, setJudges] = useState(isProd ? '' : '0xf75a58269c596c52011a38761f951b59244b6e1f');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors

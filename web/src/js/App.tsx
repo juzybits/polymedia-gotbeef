@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 
 import { WalletProvider } from '@mysten/wallet-adapter-react';
