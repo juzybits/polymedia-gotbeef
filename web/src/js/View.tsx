@@ -25,7 +25,7 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(undefined);
     const [userCanCancel, setUserCanCancel] = useState(undefined);
 
-    const [profileManager] = useState( new ProfileManager(network) );
+    const [profileManager] = useState( new ProfileManager({network}) );
     const [profiles, setProfiles] = useState( new Map<SuiAddress, PolymediaProfile|null>() );
 
     const fetchProfiles = (bet: Bet) => {
