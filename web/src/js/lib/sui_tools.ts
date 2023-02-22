@@ -2,7 +2,7 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo, Network } from '@mysten/sui.js';
 
-const GOTBEEF_PACKAGE_DEVNET = '0x9bc8fbc11c449682446fced9f71fd7c7494e55c0';
+const GOTBEEF_PACKAGE_DEVNET = '0x8bef46dce8b34c0557fc1df2424352f3794a41d6';
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const RPC_DEVNET = new JsonRpcProvider(Network.DEVNET);
 const RPC_TESTNET = new JsonRpcProvider('https://fullnode.testnet.sui.io:443');
