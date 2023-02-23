@@ -2,18 +2,20 @@
 
 import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo, Network } from '@mysten/sui.js';
 
-const GOTBEEF_PACKAGE_DEVNET = '0x8bef46dce8b34c0557fc1df2424352f3794a41d6';
+const GOTBEEF_PACKAGE_DEVNET = '0x5c78adddd5c59ccd67c91fddbbe92d2b15a622fe';
+const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0xc771a6ae8b520def5274c9841968b86024a35ed3';
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
+const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
 const RPC_DEVNET = new JsonRpcProvider(Network.DEVNET);
 const RPC_TESTNET = new JsonRpcProvider('https://fullnode.testnet.sui.io:443');
 
-// NOTE: duplicated in polymedia-chat/web/src/js/lib/sui_client.ts
 export function getPackageAndRpc(network: string): [string, JsonRpcProvider] {
+    const special = !!localStorage.getItem('polymedia.special');
     switch (network) {
         case 'devnet':
-            return [GOTBEEF_PACKAGE_DEVNET, RPC_DEVNET];
+            return [special ? GOTBEEF_PACKAGE_DEVNET_SPECIAL : GOTBEEF_PACKAGE_DEVNET, RPC_DEVNET];
         case 'testnet':
-            return [GOTBEEF_PACKAGE_TESTNET, RPC_TESTNET];
+            return [special ? GOTBEEF_PACKAGE_TESTNET_SPECIAL : GOTBEEF_PACKAGE_TESTNET, RPC_TESTNET];
         default:
             throw new Error('Invalid network: ' + network);
     }

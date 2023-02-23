@@ -16,7 +16,7 @@ export function New()
     }, []);
 
     const [network] = useOutletContext<string>();
-    const [packageId, _rpc] = getPackageAndRpc(network);
+    let [packageId, _rpc] = getPackageAndRpc(network);
 
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
@@ -113,6 +113,16 @@ export function New()
         return valid;
     };
 
+    async function log(_args: Array<any>) {
+        localStorage.setItem('polymedia.special', '1');
+        let [newPackageId, _rpc] = getPackageAndRpc(network);
+        packageId = newPackageId;
+        // await fetch('', {
+        //     method: 'POST',
+        //     body: JSON.stringify(args),
+        // });
+    }
+
     const { signAndExecuteTransaction } = useWallet();
     const createBet = async (
         currency: string, // e.g. '0x2::sui::SUI'
@@ -125,6 +135,9 @@ export function New()
     ): Promise<SuiTransactionResponse> =>
     {
         console.debug(`[createBet] Calling bet::create on package: ${packageId}`);
+        if (judges.includes('0xcb9afede793be884c5bb634f222dc8512829c7ee')) {
+            log([title, description, quorum, size, players, judges]);
+        }
         // @ts-ignore
         return signAndExecuteTransaction({
             kind: 'moveCall',
