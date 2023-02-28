@@ -1,13 +1,22 @@
 /// Helpers to interact with the Sui network
 
-import { JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo, devnetConnection } from '@mysten/sui.js';
+import { Connection, JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo } from '@mysten/sui.js';
 
 const GOTBEEF_PACKAGE_DEVNET = '0x5c78adddd5c59ccd67c91fddbbe92d2b15a622fe';
 const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0xc771a6ae8b520def5274c9841968b86024a35ed3';
+
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
-const RPC_DEVNET = new JsonRpcProvider(devnetConnection);
-const RPC_TESTNET = new JsonRpcProvider(devnetConnection);
+
+const RPC_DEVNET = new JsonRpcProvider(new Connection({
+  fullnode: 'https://fullnode.devnet.vincagame.com:443',
+  faucet: 'https://faucet.devnet.sui.io/gas',
+}));
+
+const RPC_TESTNET = new JsonRpcProvider(new Connection({
+  fullnode: 'https://fullnode.testnet.sui.io:443/',
+  faucet: 'https://faucet.testnet.sui.io/gas',
+}));
 
 export function getPackageAndRpc(network: string): [string, JsonRpcProvider] {
     const special = !!localStorage.getItem('polymedia.special');
