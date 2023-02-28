@@ -92,7 +92,7 @@ export function Fund(props: any)
             if (effects.status.status == 'success') {
                 showConfetti('💸');
                 setError('');
-                props.reloadBet();
+                setTimeout(props.reloadBet, 1000);
                 props.setModal('');
                 console.debug('[onClickFund] Success:', resp);
             } else {

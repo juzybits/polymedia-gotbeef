@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useOutletContext } from 'react-router-dom';
+import { useLocation, useParams, useOutletContext } from 'react-router-dom';
 import { SuiAddress } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
 import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
@@ -50,17 +50,27 @@ export function View()
 
     /* Load bet object data */
 
+    const location = useLocation();
     const reloadBet = () => {
         getBet(network, betId).then( (bet: Bet|null) => {
-            setBet(bet);
-            bet && fetchProfiles(bet);
+            if (!bet && location.state && location.state.isNewBet) {
+                // Sometimes there is lag after the bet is created, so let's retry
+                setTimeout(reloadBet, 1000);
+            } else {
+                setBet(bet);
+                fetchProfiles(bet);
+            }
         });
     };
 
-    // const location = useLocation();
     useEffect(() => {
         document.title = `Got Beef? - View: ${betId}`;
         reloadBet();
+        // Periodically fetch the bet in case other participants made changes
+        const interval = setInterval(reloadBet, 5000);
+        return () => {
+            clearInterval(interval);
+        };
         // if (location.state && location.state.bet) {
         //     // Reuse the bet object data that Find.tsx has already fetched
         //     setBet(location.state.bet);
@@ -92,7 +102,7 @@ export function View()
     /* Render */
 
     if (typeof bet === 'undefined')
-        return <React.Fragment>Loading</React.Fragment>;
+        return <React.Fragment>Loading...</React.Fragment>;
 
     if (bet === null)
         return <React.Fragment>Bet not found.</React.Fragment>;

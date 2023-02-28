@@ -182,7 +182,9 @@ export function New()
             if (effects.status.status == 'success') {
                 showConfetti('🥩');
                 const newObjId = effects.created[0].reference.objectId;
-                navigate('/bet/' + newObjId);
+                navigate('/bet/' + newObjId, {
+                    state: { isNewBet: true }
+                });
             } else {
                 setError( getErrorName(effects.status.error) );
             }
