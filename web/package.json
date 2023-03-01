@@ -17,7 +17,7 @@
         "@parcel/transformer-less": "latest",
         "@types/react": "latest",
         "@types/react-dom": "latest",
-        "buffer": "^5.5.0",
+        "buffer": "5",
         "parcel": "latest",
         "process": "latest",
         "react-devtools": "latest"
