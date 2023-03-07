@@ -2,8 +2,8 @@
 
 import { Connection, JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo } from '@mysten/sui.js';
 
-const GOTBEEF_PACKAGE_DEVNET = '0x5c78adddd5c59ccd67c91fddbbe92d2b15a622fe';
-const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0xc771a6ae8b520def5274c9841968b86024a35ed3';
+const GOTBEEF_PACKAGE_DEVNET = '0xe3c84816ff7131135f56802bf4ddee7e1309391a';
+const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x29619c35c22cec86e0a2d2ceeb77b2429238f67f';
 
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
