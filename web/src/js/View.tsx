@@ -58,7 +58,7 @@ export function View()
                 setTimeout(reloadBet, 1000);
             } else {
                 setBet(bet);
-                fetchProfiles(bet);
+                bet && fetchProfiles(bet);
             }
         });
     };

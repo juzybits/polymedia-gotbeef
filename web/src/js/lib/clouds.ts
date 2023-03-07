@@ -47,12 +47,12 @@ export function reloadClouds(): void
         0
     );
     // Paint clouds between the right edge of the page content and the right edge of the browser window
-    // paintClouds(
-    //     0,
-    //     windowWitdth - IMG_WIDTH,
-    //     sideCloudsBottom,
-    //     page.offsetLeft + page.offsetWidth
-    // );
+    paintClouds(
+        0,
+        windowWitdth - IMG_WIDTH,
+        sideCloudsBottom,
+        page.offsetLeft + page.offsetWidth
+    );
     // Paint door between the right edge of the page content and the right edge of the browser window
     paintDoor(
         0,

@@ -1,12 +1,13 @@
 {
-    "name": "gotbeef-web",
-    "author": "juzybits <https://twitter.com/juzybits>",
+    "name": "@polymedia/gotbeef-web",
+    "author": "@juzybits (https://polymedia.app)",
     "license": "Apache-2.0",
     "private": true,
     "dependencies": {
         "@mysten/sui.js": "latest",
         "@mysten/wallet-adapter-all-wallets": "latest",
         "@mysten/wallet-adapter-react": "latest",
+        "@polymedia/profile-sdk": "latest",
         "js-confetti": "latest",
         "nes.css": "latest",
         "react": "18",

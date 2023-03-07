@@ -172,7 +172,7 @@
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.5.0.tgz#d2570971e3d9121b83091ced38db13e907ab4198"
   integrity sha512-FjGnXZfR4dY01Q1l3xjgaU+ruIlVomXZk8vzgsQXPFOv7O4pNiOOpJyMEMUnWcyUiktk4R9MxoJJrygOtdxaUw==
 
-"@mysten/bcs@0.6.1":
+"@mysten/bcs@0.6.1", "@mysten/bcs@^0.6.1":
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.6.1.tgz#9805bf61486bd10136e7d9c703408cea51a3a2fc"
   integrity sha512-xogS6EqXhyAeineYTy3RT6pWW5W9cy3A4uPIgwedGAQFZbW23zk/jlmZpJZuZmdzuD+EA524uuNsLGgFgzw11g==
@@ -198,7 +198,7 @@
     rpc-websockets "^7.5.0"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@0.29.1", "@mysten/sui.js@latest":
+"@mysten/sui.js@0.29.1", "@mysten/sui.js@^0.29.1", "@mysten/sui.js@latest":
   version "0.29.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.29.1.tgz#cd3b8ccd838c09363f17d5ae9362901c07d22143"
   integrity sha512-EupoejRft6RUOv9gzvAGnZNPRDD2a/YvUkWNQtijuEFADzJ1zRlE2YUFGn9fW+/kRgYLoR0WWMvd5rNYPD2nqg==
@@ -851,6 +851,14 @@
     "@parcel/utils" "2.8.3"
     chrome-trace-event "^1.0.2"
     nullthrows "^1.1.1"
+
+"@polymedia/profile-sdk@latest":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-0.1.2.tgz#79f16fecae1e53e67ccff6af5dd99c50eee5b336"
+  integrity sha512-pjBWsWXZf3UKKG8zHYZl3iv5Dj8McbtV64HRQahPs9qCrM8HPS3WXz5+oydRkCWJj5t0yhH+L1vIQq25UUCfCA==
+  dependencies:
+    "@mysten/bcs" "^0.6.1"
+    "@mysten/sui.js" "^0.29.1"
 
 "@remix-run/router@1.3.3":
   version "1.3.3"
