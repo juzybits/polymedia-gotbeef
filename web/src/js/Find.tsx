@@ -2,7 +2,7 @@ import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { Bet, getBet, getRecentTxns } from './lib/sui_tools';
+import { Bet, getBet, getRecentTxns } from './lib/beef';
 import { timeAgo } from './lib/common';
 
 export function Find()

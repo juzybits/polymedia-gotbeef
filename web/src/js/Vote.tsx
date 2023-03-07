@@ -3,7 +3,7 @@ import { SuiTransactionResponse } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
 import { useOutletContext } from 'react-router-dom';
 
-import { Bet, getErrorName, getPackageAndRpc } from './lib/sui_tools';
+import { Bet, getErrorName, getPackageAndRpc } from './lib/beef';
 import { showConfetti } from './lib/confetti';
 
 export function Vote(props: any) {

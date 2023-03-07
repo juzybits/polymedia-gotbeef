@@ -8,7 +8,7 @@ import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
 import { Cancel } from './Cancel';
-import { getBet, Bet } from './lib/sui_tools';
+import { getBet, Bet } from './lib/beef';
 import { shorten } from './lib/common';
 
 export function View()

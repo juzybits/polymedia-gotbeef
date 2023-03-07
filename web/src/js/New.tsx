@@ -5,7 +5,7 @@ import { SuiTransactionResponse } from '@mysten/sui.js';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { getErrorName, getPackageAndRpc } from './lib/sui_tools';
+import { getErrorName, getPackageAndRpc } from './lib/beef';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 

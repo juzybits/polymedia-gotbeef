@@ -7,7 +7,7 @@
         "@mysten/sui.js": "latest",
         "@mysten/wallet-adapter-all-wallets": "latest",
         "@mysten/wallet-adapter-react": "latest",
-        "@polymedia/profile-sdk": "latest",
+        "@polymedia/profile-sdk": "0.1.9",
         "js-confetti": "latest",
         "nes.css": "latest",
         "react": "18",
