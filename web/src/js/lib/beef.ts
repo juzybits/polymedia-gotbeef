@@ -145,6 +145,13 @@ export async function getCoinObjects(network: string, address: string, type: str
                     selected.push(obj.objectId);
                 return selected;
             }, []);
+
+// TODO: DELETE THIS TEMPORARY HACK (devnet RPC is down, Shinami RPC has disabled batch queries)
+const rpc = new JsonRpcProvider(new Connection({
+    fullnode: 'https://fullnode.devnet.vincagame.com:443',
+    faucet: 'https://faucet.devnet.sui.io/gas',
+}));
+
             return rpc.getObjectBatch(objectIds)
                 .then(objectsData => { return objectsData })
                 .catch(_error => []);
@@ -159,7 +166,13 @@ export async function getRecentTxns(network: string, limit: number): Promise<Sui
         return [];
     };
 
-    const [packageId, rpc] = getPackageAndRpc(network);
+    const [packageId, _rpc] = getPackageAndRpc(network);
+
+// TODO: DELETE THIS TEMPORARY HACK (devnet RPC is down, Shinami RPC has disabled batch queries)
+const rpc = new JsonRpcProvider(new Connection({
+    fullnode: 'https://fullnode.devnet.vincagame.com:443',
+    faucet: 'https://faucet.devnet.sui.io/gas',
+}));
 
     // @ts-ignore
     const transactions = await rpc.client.batchRequest([{
