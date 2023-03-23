@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams, useOutletContext } from 'react-router-dom';
 import { SuiAddress } from '@mysten/sui.js';
 import { useWallet } from "@mysten/wallet-adapter-react";
@@ -28,6 +28,8 @@ export function View()
     const [profileManager] = useState( new ProfileManager({network}) );
     const [profiles, setProfiles] = useState( new Map<SuiAddress, PolymediaProfile|null>() );
 
+    const refIsReloadInProgress = useRef(false);
+
     const fetchProfiles = (bet: Bet) => {
         const lookupAddresses = [ ...bet.players, ...bet.judges ];
         profileManager.getProfiles({lookupAddresses})
@@ -51,8 +53,12 @@ export function View()
     /* Load bet object data */
 
     const location = useLocation();
-    const reloadBet = () => {
-        getBet(network, betId).then( (bet: Bet|null) => {
+    const reloadBet = async () => {
+        if (refIsReloadInProgress.current) {
+            return;
+        }
+        refIsReloadInProgress.current = true;
+        await getBet(network, betId).then( (bet: Bet|null) => {
             if (!bet && location.state && location.state.isNewBet) {
                 // Sometimes there is lag after the bet is created, so let's retry
                 setTimeout(reloadBet, 1000);
@@ -61,6 +67,7 @@ export function View()
                 bet && fetchProfiles(bet);
             }
         });
+        refIsReloadInProgress.current = false;
     };
 
     useEffect(() => {

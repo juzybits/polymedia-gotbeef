@@ -10,6 +10,7 @@ const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
 
 const RPC_DEVNET = new JsonRpcProvider(new Connection({
   // fullnode: 'https://node.shinami.com/api/v1/dd67104025845f18ba98bf68489b84eb',
+  // fullnode: 'https://fullnode.devnet.vincagame.com:443',
   fullnode: 'https://fullnode.devnet.sui.io:443/',
   faucet: 'https://faucet.devnet.sui.io/gas',
 }));
