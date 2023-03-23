@@ -1,11 +1,14 @@
 import { useEffect, useMemo } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 
 import { WalletProvider } from '@mysten/wallet-adapter-react';
 import { WalletStandardAdapterProvider } from '@mysten/wallet-adapter-all-wallets';
 
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
+import imgAppChat from '../img/app-chat.webp';
+import imgAppCastle from '../img/app-castle.webp';
+import imgAppProfile from '../img/app-profile.webp';
 
 export function App()
 {
@@ -49,6 +52,7 @@ export function App()
     */
 
     const walletAdapters = useMemo(() => [new WalletStandardAdapterProvider()], []);
+    const location = useLocation();
 
     return <div id='page'>
     {/*<div id='network-widget'>
@@ -65,7 +69,7 @@ export function App()
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
                 {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT</a>*/}
-                &nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans'} target='_blank'>CHAT</a>
+                {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans'} target='_blank'>CHAT</a>*/}
             </nav>
 
         </header>
@@ -89,6 +93,48 @@ export function App()
             <a href='https://polymedia.app/' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>polymedia</span></a>
         </div>
     </footer>
+
+    {location.pathname==='/'
+    &&
+    <div id='more-from-us'>
+        <h2>More from us</h2>
+        <div id='apps-showcase'>
+            <div className='app'>
+                <div className='app-photo'>
+                    <img src={imgAppProfile} />
+                </div>
+                <div className='app-details'>
+                    <h3 className='app-title'>Polymedia Profile</h3>
+                    <p className='app-description'>Onchain identity system used in all our apps.</p>
+                    <a className='nes-btn is-primary' target='_blank'
+                        href='https://profile.polymedia.app/manage'>VISIT</a>
+                </div>
+            </div>
+            <div className='app'>
+                <div className='app-photo'>
+                    <img src={imgAppChat} />
+                </div>
+                <div className='app-details'>
+                    <h3 className='app-title'>Polymedia Chat</h3>
+                    <p className='app-description'>Unstoppable chat rooms, fully on-chain.</p>
+                    <a className='nes-btn is-primary' target='_blank'
+                        href='https://chat.polymedia.app/@sui-fans'>VISIT</a>
+                </div>
+            </div>
+            <div className='app'>
+                <div className='app-photo'>
+                    <img src={imgAppCastle} />
+                </div>
+                <div className='app-details'>
+                    <h3 className='app-title'>Journey to Mount Sogol</h3>
+                    <p className='app-description'>The door to The Invisible must be visible...</p>
+                    <a className='nes-btn is-primary' target='_blank'
+                        href='https://mountsogol.com'>VISIT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
 
     <span id='secret'>It's really hard to make something beautiful. And it's really worthwhile.</span>
 

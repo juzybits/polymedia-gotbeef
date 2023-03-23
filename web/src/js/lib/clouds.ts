@@ -5,9 +5,9 @@ const IMG_HEIGHT = 108; // px
 const IMG_SQRT = 125 // px, square root of the area
 
 // Preload images
-import imgDoorOpen from '../../img/door_open.webp';
+// import imgDoorOpen from '../../img/door_open.webp';
 import imgSteak from '../../img/steak.svg';
-(new Image()).src = imgDoorOpen;
+// (new Image()).src = imgDoorOpen;
 (new Image()).src = imgSteak;
 
 export function reloadClouds(): void
@@ -28,12 +28,13 @@ export function reloadClouds(): void
 
     // Get the elements that enclose the clouds
     const footer = document.getElementById('footer');
+    const moreFromUs = document.getElementById('more-from-us');
     const page = document.getElementById('page');
     if (!footer || !page) return;
 
     // Paint clouds between the footer and the bottom of the browser window
     paintClouds(
-        footer.offsetTop + 20,
+        moreFromUs ? (moreFromUs.offsetTop + moreFromUs.offsetHeight) : (footer.offsetTop + 20),
         windowWitdth - IMG_WIDTH,
         windowHeight - IMG_HEIGHT,
         0
@@ -53,6 +54,7 @@ export function reloadClouds(): void
         sideCloudsBottom,
         page.offsetLeft + page.offsetWidth
     );
+    /*
     // Paint door between the right edge of the page content and the right edge of the browser window
     paintDoor(
         0,
@@ -60,6 +62,7 @@ export function reloadClouds(): void
         sideCloudsBottom,
         page.offsetLeft + page.offsetWidth
     );
+    */
 }
 
 function paintClouds(top: number, right: number, bottom: number, left: number): void {
@@ -91,6 +94,7 @@ function paintClouds(top: number, right: number, bottom: number, left: number): 
     }
 }
 
+/*
 function paintDoor(top: number, right: number, bottom: number, left: number): void {
     const doorFitsInArea = (right > left) && (bottom > top);
     if (!doorFitsInArea) {
@@ -115,6 +119,7 @@ function paintDoor(top: number, right: number, bottom: number, left: number): vo
     });
     document.body.appendChild(el);
 }
+*/
 
 function getRandomInt(min: number, max: number): number {
   min = Math.ceil(min);
