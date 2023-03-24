@@ -106,8 +106,9 @@ export function App()
                 <div className='app-details'>
                     <h3 className='app-title'>Polymedia Profile</h3>
                     <p className='app-description'>Onchain identity system used in all our apps.</p>
-                    <a className='nes-btn is-primary' target='_blank'
-                        href='https://profile.polymedia.app/manage'>VISIT</a>
+                    <div className='app-btn-wrap'>
+                        <a className='nes-btn is-primary' target='_blank' href='https://profile.polymedia.app'>VISIT</a>
+                    </div>
                 </div>
             </div>
             <div className='app'>
@@ -117,8 +118,9 @@ export function App()
                 <div className='app-details'>
                     <h3 className='app-title'>Polymedia Chat</h3>
                     <p className='app-description'>Unstoppable chat rooms, fully on-chain.</p>
-                    <a className='nes-btn is-primary' target='_blank'
-                        href='https://chat.polymedia.app/@sui-fans'>VISIT</a>
+                    <div className='app-btn-wrap'>
+                        <a className='nes-btn is-primary' target='_blank' href='https://chat.polymedia.app/@sui-fans'>VISIT</a>
+                    </div>
                 </div>
             </div>
             <div className='app'>
@@ -128,8 +130,9 @@ export function App()
                 <div className='app-details'>
                     <h3 className='app-title'>Journey to Mount Sogol</h3>
                     <p className='app-description'>The door to The Invisible must be visible...</p>
-                    <a className='nes-btn is-primary' target='_blank'
-                        href='https://mountsogol.com'>VISIT</a>
+                    <div className='app-btn-wrap'>
+                        <a className='nes-btn is-primary' target='_blank' href='https://mountsogol.com'>VISIT</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -22,7 +22,7 @@ const RPC_TESTNET = new JsonRpcProvider(new Connection({
 }));
 
 export function getPackageAndRpc(network: string): [string, JsonRpcProvider] {
-    const special = !!localStorage.getItem('polymedia.special');
+    const special = localStorage.getItem('polymedia.special') === '1';
     switch (network) {
         case 'devnet':
             return [special ? GOTBEEF_PACKAGE_DEVNET_SPECIAL : GOTBEEF_PACKAGE_DEVNET, RPC_DEVNET];
