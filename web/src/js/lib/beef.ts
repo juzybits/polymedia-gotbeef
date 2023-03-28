@@ -1,9 +1,15 @@
 /// Helpers to interact with the Sui network
 
-import { Connection, JsonRpcProvider, SuiTransactionResponse, GetObjectDataResponse, SuiObjectInfo } from '@mysten/sui.js';
+import {
+    CoinStruct,
+    Connection,
+    JsonRpcProvider,
+    PaginatedCoins,
+    SuiMoveObject,
+} from '@mysten/sui.js';
 
-const GOTBEEF_PACKAGE_DEVNET = '0xe3c84816ff7131135f56802bf4ddee7e1309391a';
-const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x29619c35c22cec86e0a2d2ceeb77b2429238f67f';
+const GOTBEEF_PACKAGE_DEVNET = '0x9f3d5ee741df76f0e14dd26f71cc51ed77666b02e0f717f916a3e49becaf3853';
+const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x5831f3ee7b3e60e98f32cc90d72a1bac025f8f17251c6db7b9dad3d61c3c0c11';
 
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
@@ -11,7 +17,7 @@ const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
 const RPC_DEVNET = new JsonRpcProvider(new Connection({
   fullnode: 'https://node.shinami.com/api/v1/dd67104025845f18ba98bf68489b84eb',
   // fullnode: 'https://fullnode.devnet.vincagame.com:443',
-  // fullnode: 'https://fullnode.devnet.sui.io:443/',
+  // fullnode: 'https://fullnode.devnet.sui.io:443',
   faucet: 'https://faucet.devnet.sui.io/gas',
 }));
 
@@ -69,21 +75,27 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
     // Handle leading zeros ('0x00ab::bet::Bet' is returned as '0xab::bet::Bet' by the RPC)
     const packageName = packageId.replace(/0x0+/, '0x0*'); // handle leading zeros
     const betTypeRegex = new RegExp(`^${packageName}::bet::Bet<0x.+::.+::.+>$`);
-    return rpc.getObject(objId)
-        .then((obj: GetObjectDataResponse) => {
-            if (obj.status != 'Exists') {
-                console.warn('[getBet] Object does not exist. Status:', obj.status);
+    return rpc.getObject({
+            id: objId,
+            options: {
+                showContent: true,
+            },
+        })
+        .then(resp => {
+            if (resp.error || !resp.data) {
+                console.warn('[getBet] Error loading bet:', resp.error);
                 return null;
             }
 
-            const details = obj.details as any;
-            if (!details.data.type.match(betTypeRegex)) {
-                console.warn('[getBet] Found wrong object type:', details.data.type);
+            const obj = resp.data.content as SuiMoveObject;
+
+            if (!obj.type.match(betTypeRegex)) {
+                console.warn('[getBet] Found wrong object type:', obj.type);
                 return null;
             } else {
-                console.debug('[getBet] Found bet object:', obj);
+                console.debug('[getBet] Found bet object ' + resp.data.objectId);
 
-                const fields = details.data.fields;
+                const fields = obj.fields;
 
                 // Parse `Bet.funds: VecMap<address, Coin<T>>`
                 let funds = fields.funds.fields.contents || [];
@@ -110,7 +122,7 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
 
                 const bet: Bet = {
                     id: fields.id.id,
-                    collatType: getCollateralType(details.data.type),
+                    collatType: getCollateralType(obj.type),
                     title: fields.title,
                     description: fields.description,
                     quorum: fields.quorum,
@@ -134,56 +146,41 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
 }
 
 /// Get all `Coin<T>` objects owned by the current address
-export async function getCoinObjects(network: string, address: string, type: string): Promise<any[]> {
+export async function getCoinObjects(network: string, address: string, type: string): Promise<CoinStruct[]> {
     console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
     const [_packageId, rpc] = getPackageAndRpc(network);
-    return rpc.getObjectsOwnedByAddress(address) // TODO: use https://docs.sui.io/sui-jsonrpc#sui_getCoins
-        .then((objectsInfo: SuiObjectInfo[]) => {
-            const expectedType = `0x2::coin::Coin<${type}>`;
-            let objectIds = objectsInfo.reduce((selected: string[], obj: SuiObjectInfo) => {
-                if (obj.type == expectedType)
-                    selected.push(obj.objectId);
-                return selected;
-            }, []);
-
-// TODO: DELETE THIS TEMPORARY HACK (devnet RPC is down, Shinami RPC has disabled batch queries)
-const rpc = new JsonRpcProvider(new Connection({
-    fullnode: 'https://fullnode.devnet.vincagame.com:443',
-    faucet: 'https://faucet.devnet.sui.io/gas',
-}));
-
-            return rpc.getObjectBatch(objectIds)
-                .then(objectsData => { return objectsData })
-                .catch(_error => []);
-        })
-        .catch(_error => []);
-}
-
-/// Get recent bet transactions
-export async function getRecentTxns(network: string, limit: number): Promise<SuiTransactionResponse[]> {
-    const errorCatcher = (error: any) => {
-        console.warn('[getRecentTxns] RPC error:', error.message);
+    return rpc.getCoins({
+        owner: address,
+        coinType: type,
+    })
+    .then((resp: PaginatedCoins) => {
+        return resp.data;
+    })
+    .catch(error => {
+        console.warn('[getCoinObjects] Error:', error);
         return [];
-    };
-
-    const [packageId, _rpc] = getPackageAndRpc(network);
-
-// TODO: DELETE THIS TEMPORARY HACK (devnet RPC is down, Shinami RPC has disabled batch queries)
-const rpc = new JsonRpcProvider(new Connection({
-    fullnode: 'https://fullnode.devnet.vincagame.com:443',
-    faucet: 'https://faucet.devnet.sui.io/gas',
-}));
-
-    // @ts-ignore
-    const transactions = await rpc.client.batchRequest([{
-        method: 'sui_getTransactions',
-        args: [{ InputObject: packageId }, null, limit, true],
-    }])
-    .then(response => response[0].result.data)
-    .catch(errorCatcher);
-
-    return rpc.getTransactionWithEffectsBatch(transactions).catch(errorCatcher);
+    });
 }
+
+/// Get recent bet transactions // TODO: reimplement
+// export async function getRecentTxns(network: string, limit: number): Promise<SuiTransactionResponse[]> {
+//     const errorCatcher = (error: any) => {
+//         console.warn('[getRecentTxns] RPC error:', error.message);
+//         return [];
+//     };
+
+//     const [packageId, rpc] = getPackageAndRpc(network);
+
+//     // @ts-ignore
+//     const transactions = await rpc.client.batchRequest([{
+//         method: 'sui_getTransactions',
+//         args: [{ InputObject: packageId }, null, limit, true],
+//     }])
+//     .then(response => response[0].result.data)
+//     .catch(errorCatcher);
+
+//     return rpc.getTransactionWithEffectsBatch(transactions).catch(errorCatcher);
+// }
 
 export function getErrorName(error?: string): string {
     if (!error) {

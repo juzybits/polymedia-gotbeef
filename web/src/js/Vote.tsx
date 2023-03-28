@@ -1,6 +1,6 @@
 import React, { useState, SyntheticEvent } from 'react';
-import { SuiTransactionResponse } from '@mysten/sui.js';
-import { useWallet } from "@mysten/wallet-adapter-react";
+import { TransactionBlock } from '@mysten/sui.js';
+import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
 import { Bet, getErrorName, getPackageAndRpc } from './lib/beef';
@@ -12,24 +12,26 @@ export function Vote(props: any) {
     const [packageId, _rpc] = getPackageAndRpc(network);
     const [error, setError] = useState('');
 
-    const { signAndExecuteTransaction } = useWallet();
-    const castVote = (bet: Bet, player_addr: string): Promise<SuiTransactionResponse> =>
+    const { signAndExecuteTransactionBlock } = useWalletKit();
+    const castVote = (bet: Bet, player_addr: string): Promise<any> => // TODO add type
     {
         console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
-        // @ts-ignore
-        return signAndExecuteTransaction({
-            kind: 'moveCall',
-            data: {
-                packageObjectId: packageId,
-                module: 'bet',
-                function: 'vote',
-                typeArguments: [ bet.collatType ],
-                arguments: [
-                    bet.id,
-                    player_addr,
-                ],
-                gasBudget: 10000,
-            }
+
+        const tx = new TransactionBlock();
+        tx.moveCall({
+            target: `${packageId}::bet::vote`,
+            typeArguments: [ bet.collatType ],
+            arguments: [
+                tx.object(bet.id),
+                tx.pure(player_addr),
+            ],
+        });
+
+        return signAndExecuteTransactionBlock({
+            transactionBlock: tx,
+            options: {
+                showEffects: true,
+            },
         });
     };
 

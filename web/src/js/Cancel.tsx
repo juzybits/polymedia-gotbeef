@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { SuiTransactionResponse } from '@mysten/sui.js';
-import { useWallet } from "@mysten/wallet-adapter-react";
+import { TransactionBlock } from '@mysten/sui.js';
+import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
 import { Bet, getErrorName, getPackageAndRpc } from './lib/beef';
@@ -12,22 +12,24 @@ export function Cancel(props: any) {
     const [error, setError] = useState('');
 
     const [packageId, _rpc] = getPackageAndRpc(network);
-    const { signAndExecuteTransaction } = useWallet();
-    const cancelBet = (bet: Bet): Promise<SuiTransactionResponse> => {
+    const { signAndExecuteTransactionBlock } = useWalletKit();
+    const cancelBet = (bet: Bet): Promise<any> => { // TODO add type
         console.debug(`[cancelBet] Calling bet::cancel on package: ${packageId}`);
-        // @ts-ignore
-        return signAndExecuteTransaction({
-            kind: 'moveCall',
-            data: {
-                packageObjectId: packageId,
-                module: 'bet',
-                function: 'cancel',
-                typeArguments: [ bet.collatType ],
-                arguments: [
-                    bet.id,
-                ],
-                gasBudget: 10000,
-            }
+
+        const tx = new TransactionBlock();
+        tx.moveCall({
+            target: `${packageId}::bet::cancel`,
+            typeArguments: [ bet.collatType ],
+            arguments: [
+                tx.object(bet.id),
+            ],
+        });
+
+        return signAndExecuteTransactionBlock({
+            transactionBlock: tx,
+            options: {
+                showEffects: true,
+            },
         });
     };
 

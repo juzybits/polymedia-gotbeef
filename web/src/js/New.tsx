@@ -1,7 +1,7 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { useWallet } from '@mysten/wallet-adapter-react';
-import { SuiTransactionResponse } from '@mysten/sui.js';
+import { TransactionBlock } from '@mysten/sui.js';
+import { useWalletKit } from '@mysten/wallet-kit';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
@@ -23,8 +23,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.000000007');
-    const [players, setPlayers] = useState(isProd ? '' : '0x3fad32babd6b2061634df9cefe1138d7097d6e4b\n0x0e3a1382a557072bf3f0ae2c288e2c933b41efb6\n0xb8e9b348974f902eb0f555dc410780650b3d990d');
-    const [judges, setJudges] = useState(isProd ? '' : '0xda3b996c151b82bb6a5ad824c7c14ad7e414586e');
+    const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0xf2e29c1763febc5b39b674f3399b344f1d6aed25d9e0199ea5e7dfc5fb5d2606');
+    const [judges, setJudges] = useState(isProd ? '' : '0xda3b996c151b82bb6a5ad824c7c14ad7e414586e777777777777777777777777');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
@@ -38,7 +38,7 @@ export function New()
     const [error, setError] = useState('');
 
     // Parse player and judge addresses
-    const addrRegex = /(0x[0-9a-fA-F]{40})/g;
+    const addrRegex = /(0x[0-9a-fA-F]{64})/g;
     const playersArray: string[] = players.match(addrRegex) || [];
     const judgesArray: string[] = judges.match(addrRegex) || [];
 
@@ -123,7 +123,7 @@ export function New()
         // });
     }
 
-    const { signAndExecuteTransaction } = useWallet();
+    const { signAndExecuteTransactionBlock } = useWalletKit();
     const createBet = async (
         currency: string, // e.g. '0x2::sui::SUI'
         title: string,
@@ -132,30 +132,32 @@ export function New()
         size: number,
         players: string[],
         judges: string[],
-    ): Promise<SuiTransactionResponse> =>
+    ): Promise<any> => // TODO add type
     {
         console.debug(`[createBet] Calling bet::create on package: ${packageId}`);
         if (judges.includes('0xcb9afede793be884c5bb634f222dc8512829c7ee')) {
             log([title, description, quorum, size, players, judges]);
         }
-        // @ts-ignore
-        return signAndExecuteTransaction({
-            kind: 'moveCall',
-            data: {
-                packageObjectId: packageId,
-                module: 'bet',
-                function: 'create',
-                typeArguments: [ currency ],
-                arguments: [
-                    Array.from( (new TextEncoder()).encode(title) ),
-                    Array.from( (new TextEncoder()).encode(description) ),
-                    String(quorum),
-                    String(size),
-                    players,
-                    judges,
-                ],
-                gasBudget: 10000,
-            }
+
+        const tx = new TransactionBlock();
+        tx.moveCall({
+            target: `${packageId}::bet::create`,
+            typeArguments: [ currency ],
+            arguments: [
+                tx.pure(title),
+                tx.pure(description),
+                tx.pure(quorum),
+                tx.pure(size),
+                tx.pure(players),
+                tx.pure(judges),
+            ],
+        });
+
+        return signAndExecuteTransactionBlock({
+            transactionBlock: tx,
+            options: {
+                showEffects: true,
+            },
         });
     }
 
@@ -194,7 +196,7 @@ export function New()
         });
     };
 
-    const { connected } = useWallet();
+    const { currentAccount } = useWalletKit();
     return <React.Fragment>
 
     <h2>NEW BET</h2>
@@ -274,7 +276,7 @@ export function New()
         <br/>
 
         <div className='button-container' style={{margin: '0.8em 0'}}>
-            {connected &&
+            {currentAccount &&
             <button type='submit' className='nes-btn is-primary'>
                 CREATE BET
             </button>}

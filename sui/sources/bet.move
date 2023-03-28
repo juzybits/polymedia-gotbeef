@@ -190,7 +190,7 @@ module gotbeef::bet
         // Return change to sender
         let change = total_balance - bet.size;
         if ( change > 0 ) {
-            transfer::transfer(
+            transfer::public_transfer(
                 coin::split(&mut total_coin, change, ctx),
                 tx_context::sender(ctx)
             );

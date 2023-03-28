@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams, useOutletContext } from 'react-router-dom';
 import { SuiAddress } from '@mysten/sui.js';
-import { useWallet } from "@mysten/wallet-adapter-react";
+import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
 
 import { ButtonConnect } from './components/ButtonConnect';
@@ -89,22 +89,20 @@ export function View()
 
     /* Decide which action buttons are visible to the user */
 
-    const { connected, getAccounts } = useWallet();
+    const { isConnected, currentAccount } = useWalletKit();
     useEffect(() => {
-        if (!connected || !bet) {
+        if (!isConnected || !bet || !currentAccount) {
             return;
         }
-        getAccounts().then(addresses => {
-            const userAddr = addresses[0];
-            const isJudge = bet.judges.includes(userAddr);
-            const isPlayer = bet.players.includes(userAddr);
-            setIsPlayer(isPlayer);
-            setIsJudge(isJudge);
-            setUserCanFund( isPlayer && bet.phase == 'funding' && !bet.funds.has(userAddr) );
-            setUserCanVote( isJudge && bet.phase == 'voting' && !bet.votesByJudge.has(userAddr) );
-            setUserCanCancel( (isPlayer||isJudge) && bet.phase == 'funding' && bet.funds.size == 0 );
-        });
-    }, [connected, bet]);
+        const userAddr = currentAccount.address;
+        const isJudge = bet.judges.includes(userAddr);
+        const isPlayer = bet.players.includes(userAddr);
+        setIsPlayer(isPlayer);
+        setIsJudge(isJudge);
+        setUserCanFund( isPlayer && bet.phase == 'funding' && !bet.funds.has(userAddr) );
+        setUserCanVote( isJudge && bet.phase == 'voting' && !bet.votesByJudge.has(userAddr) );
+        setUserCanCancel( (isPlayer||isJudge) && bet.phase == 'funding' && bet.funds.size == 0 );
+    }, [isConnected, bet, currentAccount]);
 
     /* Render */
 
@@ -114,7 +112,7 @@ export function View()
     if (bet === null)
         return <React.Fragment>Bet not found.</React.Fragment>;
 
-    // TODO: show date of last update
+    // MAYBE: show date of last update
     const showFunded = ['funding'].includes(bet.phase);
     return <React.Fragment>
     {
@@ -126,7 +124,7 @@ export function View()
             <section id='bet-actions-container' className='nes-container with-title'>
                 <h3 className='title'>Actions</h3>
                 <div id='bet-actions' className='button-container'>
-                {connected && <>
+                {isConnected && <>
                     {userCanFund &&
                     <button type='button' className='nes-btn is-success'
                         onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>

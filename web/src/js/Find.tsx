@@ -1,9 +1,10 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+// import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { Bet, getBet, getRecentTxns } from './lib/beef';
-import { timeAgo } from './lib/common';
+import { Bet, getBet } from './lib/beef';
+// import { timeAgo } from './lib/common';
 
 export function Find()
 {
@@ -12,44 +13,44 @@ export function Find()
     useEffect(() => {
         document.title = 'Got Beef? - Find';
         // Reload recent transaction list
-        getRecentTxns(network, 18)
-        .then(txnData => {
-            const txns = txnData.reduce((selected: object[], txn: any) => {
-                const cert = txn.certificate;
-                const call = cert.data.transactions[0].Call;
-                const effects = txn.effects;
-                if (call.function == 'create' && effects.status.status == 'success') {
-                    selected.push({
-                        time: txn.timestamp_ms,
-                        betId: effects.created[0].reference.objectId,
-                        name: cert.data.transactions[0].Call.arguments[0],
-                        // amount: cert.data.transactions[0].Call.arguments[3],
-                        // txnId: cert.transactionDigest,
-                        // func: call.function,
-                        // status: effects.status.status,
-                    });
-                }
-                /*
-                else {
-                    const betUrl = 'https://explorer.devnet.sui.io/objects/' + encodeURIComponent(cert.data.transactions[0].Call.arguments[0]);
-                    const txnUrl = 'https://explorer.devnet.sui.io/transactions/' + encodeURIComponent(cert.transactionDigest);
-                    const status = effects.status.status;
-                    const error = effects.status.error ? (getErrorName(effects.status.error)+' | '+effects.status.error) : '';
+        // getRecentTxns(network, 18) // TODO: reimplement
+        // .then(txnData => {
+        //     const txns = txnData.reduce((selected: object[], txn: any) => {
+        //         const cert = txn.certificate;
+        //         const call = cert.data.transactions[0].Call;
+        //         const effects = txn.effects;
+        //         if (call.function == 'create' && effects.status.status == 'success') {
+        //             selected.push({
+        //                 time: txn.timestamp_ms,
+        //                 betId: effects.created[0].reference.objectId,
+        //                 name: cert.data.transactions[0].Call.arguments[0],
+        //                 // amount: cert.data.transactions[0].Call.arguments[3],
+        //                 // txnId: cert.transactionDigest,
+        //                 // func: call.function,
+        //                 // status: effects.status.status,
+        //             });
+        //         }
+        //         /*
+        //         else {
+        //             const betUrl = 'https://explorer.devnet.sui.io/objects/' + encodeURIComponent(cert.data.transactions[0].Call.arguments[0]);
+        //             const txnUrl = 'https://explorer.devnet.sui.io/transactions/' + encodeURIComponent(cert.transactionDigest);
+        //             const status = effects.status.status;
+        //             const error = effects.status.error ? (getErrorName(effects.status.error)+' | '+effects.status.error) : '';
 
-                    // console.log(txn);
-                    console.log(timeAgo(txn.timestamp_ms), call.function, status, betUrl, txnUrl, '\n'+(error||''));
-                }
-                */
-                return selected;
-            }, []);
-            setRecentBets(txns);
-        });
+        //             // console.log(txn);
+        //             console.log(timeAgo(txn.timestamp_ms), call.function, status, betUrl, txnUrl, '\n'+(error||''));
+        //         }
+        //         */
+        //         return selected;
+        //     }, []);
+        //     setRecentBets(txns);
+        // });
     }, []);
 
     const [betId, setBetId] = useState('');
     const [bet, setBet]: any[] = useState(undefined);
     const [error, setError] = useState('');
-    const [recentBets, setRecentBets]: any[] = useState([]);
+    // const [recentBets, setRecentBets]: any[] = useState([]);
 
     const navigate = useNavigate();
     const onSubmitSearch = (e: SyntheticEvent) => {
@@ -57,7 +58,7 @@ export function Find()
 
         // Validate input
         const betIdClean = betId.trim()
-        if ( betIdClean.match(/^0x[0-9a-fA-F]{40}$/) ) {
+        if ( betIdClean.match(/^0x[0-9a-fA-F]{64}$/) ) {
             setError('');
         } else {
             setBet(undefined);
@@ -108,6 +109,7 @@ export function Find()
 
         </form>
 
+{/*
         <br/>
         <br/>
         <h3 style={{marginBottom: '1em'}}>RECENT BETS</h3>
@@ -118,13 +120,10 @@ export function Find()
                 </span>
                 &nbsp;
                 <Link to={`/bet/${txn.betId}`}>{txn.name}</Link>
-                {/*{txn.amount} |&nbsp;*/}
-                {/*{shorten(txn.txnId, 3, 4)} |&nbsp;*/}
-                {/*{txn.func} |&nbsp;*/}
-                {/*{txn.status}*/}
                 <hr/>
             </div>)
         }
+*/}
 
     </React.Fragment>;
 }

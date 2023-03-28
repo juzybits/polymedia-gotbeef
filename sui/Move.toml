@@ -5,7 +5,7 @@ authors = ["juzybits <https://twitter.com/juzybits>"]
 license = "Apache-2.0"
 
 [dependencies]
-Sui = { local = "../../sui/crates/sui-framework" }
+Sui = { local = "../../sui/crates/sui-framework/packages/sui-framework" }
 
 [addresses]
 gotbeef = "0x0"

@@ -22,7 +22,7 @@ module gotbeef::transfers
             balance::join( &mut total_balance, coin::into_balance(coin) );
         };
         // Send all funds
-        transfer::transfer(
+        transfer::public_transfer(
             coin::from_balance(total_balance, ctx),
             recipient
         );
@@ -35,7 +35,7 @@ module gotbeef::transfers
         while (i > 0) {
             i = i - 1;
             let (addr, coin) = vec_map::remove_entry_by_idx(funds, i);
-            transfer::transfer(coin, addr);
+            transfer::public_transfer(coin, addr);
         }
     }
 }

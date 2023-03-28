@@ -5,9 +5,8 @@
     "private": true,
     "dependencies": {
         "@mysten/sui.js": "latest",
-        "@mysten/wallet-adapter-all-wallets": "latest",
-        "@mysten/wallet-adapter-react": "latest",
-        "@polymedia/profile-sdk": "0.1.12",
+        "@mysten/wallet-kit": "latest",
+        "@polymedia/profile-sdk": "0.1.13",
         "js-confetti": "latest",
         "nes.css": "latest",
         "react": "18",

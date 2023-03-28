@@ -1,8 +1,7 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 
-import { WalletProvider } from '@mysten/wallet-adapter-react';
-import { WalletStandardAdapterProvider } from '@mysten/wallet-adapter-all-wallets';
+import { WalletKitProvider } from '@mysten/wallet-kit';
 
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
@@ -51,7 +50,6 @@ export function App()
     };
     */
 
-    const walletAdapters = useMemo(() => [new WalletStandardAdapterProvider()], []);
     const location = useLocation();
 
     return <div id='page'>
@@ -75,9 +73,9 @@ export function App()
         </header>
 
         <section id='content'>
-        <WalletProvider adapters={walletAdapters}>
+        <WalletKitProvider>
             <Outlet context={[network]} />
-        </WalletProvider>
+        </WalletKitProvider>
         </section>
 
     </section>
