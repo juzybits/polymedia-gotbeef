@@ -1,10 +1,8 @@
 /// Helpers to interact with the Sui network
 
 import {
-    CoinStruct,
     Connection,
     JsonRpcProvider,
-    PaginatedCoins,
     SuiMoveObject,
 } from '@mysten/sui.js';
 
@@ -170,43 +168,6 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
             return null;
         });
 }
-
-/// Get all `Coin<T>` objects owned by the current address
-export async function getCoinObjects(network: string, address: string, type: string): Promise<CoinStruct[]> {
-    console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
-    const {rpc} = getConfig(network);
-    return rpc.getCoins({
-        owner: address,
-        coinType: type,
-    })
-    .then((resp: PaginatedCoins) => {
-        return resp.data;
-    })
-    .catch(error => {
-        console.warn('[getCoinObjects] Error:', error);
-        return [];
-    });
-}
-
-/// Get recent bet transactions // TODO: reimplement
-// export async function getRecentTxns(network: string, limit: number): Promise<SuiTransactionResponse[]> {
-//     const errorCatcher = (error: any) => {
-//         console.warn('[getRecentTxns] RPC error:', error.message);
-//         return [];
-//     };
-
-//     const {packageId, rpc} = getConfig(network);
-
-//     // @ts-ignore
-//     const transactions = await rpc.client.batchRequest([{
-//         method: 'sui_getTransactions',
-//         args: [{ InputObject: packageId }, null, limit, true],
-//     }])
-//     .then(response => response[0].result.data)
-//     .catch(errorCatcher);
-
-//     return rpc.getTransactionWithEffectsBatch(transactions).catch(errorCatcher);
-// }
 
 export function getErrorName(error?: string): string {
     if (!error) {

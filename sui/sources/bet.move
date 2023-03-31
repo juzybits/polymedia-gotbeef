@@ -14,6 +14,7 @@ module gotbeef::bet
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::display;
+    use sui::event;
     use sui::object::{Self, ID, UID};
     use sui::package;
     use sui::transfer;
@@ -88,6 +89,11 @@ module gotbeef::bet
         // funds: vector<Item>, // (maybe) prize can be any asset(s)
     }
 
+    struct CreateBetEvent has copy, drop {
+        bet_id: ID,
+        bet_title: String,
+    }
+
     /* Accessors */
 
     public fun phase<T>(bet: &Bet<T>): u8 {
@@ -147,8 +153,15 @@ module gotbeef::bet
         assert!( (quorum > judge_len/2) && (quorum <= judge_len), E_INVALID_QUORUM );
         assert!( size > 0, E_INVALID_BET_SIZE );
 
+        let bet_uid = object::new(ctx);
+
+        event::emit(CreateBetEvent {
+            bet_id: object::uid_to_inner(&bet_uid),
+            bet_title: utf8(title),
+        });
+
         let bet = Bet<T> {
-            id: object::new(ctx),
+            id: bet_uid,
             phase: PHASE_FUND,
             title: utf8(title),
             description: utf8(description),
@@ -163,7 +176,6 @@ module gotbeef::bet
             winner: option::none(),
         };
         transfer::share_object(bet);
-        // TODO: emit event
     }
 
     /// Player locks funds for the bet

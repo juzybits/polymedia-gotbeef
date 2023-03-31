@@ -1,56 +1,57 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
-// import { Link, useNavigate, useOutletContext } from 'react-router-dom';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import { PaginatedEvents, SuiAddress } from '@mysten/sui.js';
 
 import { FieldError } from './components/FieldError';
-import { Bet, getBet } from './lib/gotbeef';
-// import { timeAgo } from './lib/common';
+import { Bet, getBet, getConfig } from './lib/gotbeef';
+import { timeAgo } from './lib/common';
 
 export function Find()
 {
     const [network] = useOutletContext<string>();
-
-    useEffect(() => {
-        document.title = 'Got Beef? - Find';
-        // Reload recent transaction list
-        // getRecentTxns(network, 18) // TODO: reimplement
-        // .then(txnData => {
-        //     const txns = txnData.reduce((selected: object[], txn: any) => {
-        //         const cert = txn.certificate;
-        //         const call = cert.data.transactions[0].Call;
-        //         const effects = txn.effects;
-        //         if (call.function == 'create' && effects.status.status == 'success') {
-        //             selected.push({
-        //                 time: txn.timestamp_ms,
-        //                 betId: effects.created[0].reference.objectId,
-        //                 name: cert.data.transactions[0].Call.arguments[0],
-        //                 // amount: cert.data.transactions[0].Call.arguments[3],
-        //                 // txnId: cert.transactionDigest,
-        //                 // func: call.function,
-        //                 // status: effects.status.status,
-        //             });
-        //         }
-        //         /*
-        //         else {
-        //             const betUrl = 'https://explorer.devnet.sui.io/objects/' + encodeURIComponent(cert.data.transactions[0].Call.arguments[0]);
-        //             const txnUrl = 'https://explorer.devnet.sui.io/transactions/' + encodeURIComponent(cert.transactionDigest);
-        //             const status = effects.status.status;
-        //             const error = effects.status.error ? (getErrorName(effects.status.error)+' | '+effects.status.error) : '';
-
-        //             // console.log(txn);
-        //             console.log(timeAgo(txn.timestamp_ms), call.function, status, betUrl, txnUrl, '\n'+(error||''));
-        //         }
-        //         */
-        //         return selected;
-        //     }, []);
-        //     setRecentBets(txns);
-        // });
-    }, []);
+    const {packageId, rpc} = getConfig(network);
 
     const [betId, setBetId] = useState('');
     const [bet, setBet]: any[] = useState(undefined);
     const [error, setError] = useState('');
-    // const [recentBets, setRecentBets]: any[] = useState([]);
+    const [recentBets, setRecentBets]: any[] = useState([]);
+
+    useEffect(() => {
+        document.title = 'Got Beef? - Find';
+        loadRecentBets()
+        .catch(error => {
+            console.warn('[loadRecentBets]', error.stack);
+            setError('[loadRecentBets] ' + error.message);
+        });
+    }, []);
+
+    type BetSummary = {
+        id: SuiAddress,
+        title: string,
+        time: number,
+    };
+    type CreateBetEventData = {
+        bet_id: SuiAddress,
+        bet_title: string,
+    }
+    const loadRecentBets = async () =>
+    {
+        const events: PaginatedEvents = await rpc.queryEvents({
+            query: { MoveEventType: packageId+'::bet::CreateBetEvent' },
+            limit: 20,
+            order: 'descending'
+        });
+
+        const bets: BetSummary[] = events.data.map(event => {
+            const eventData = event.parsedJson as CreateBetEventData;
+            return {
+                id: eventData.bet_id,
+                title: eventData.bet_title,
+                time: event.timestampMs || 0,
+            };
+        });
+        setRecentBets(bets);
+    };
 
     const navigate = useNavigate();
     const onSubmitSearch = (e: SyntheticEvent) => {
@@ -109,21 +110,19 @@ export function Find()
 
         </form>
 
-{/*
         <br/>
         <br/>
         <h3 style={{marginBottom: '1em'}}>RECENT BETS</h3>
         {
-            recentBets.slice(0, 9).map((txn: any) => <div key={txn.betId}>
+            recentBets.map((bet: any) => <div key={bet.id}>
                 <span style={{minWidth: '6.5em', display: 'inline-block', textAlign: 'right'}}>
-                    {timeAgo(txn.time)}
+                    {timeAgo(bet.time)}
                 </span>
                 &nbsp;
-                <Link to={`/bet/${txn.betId}`}>{txn.name}</Link>
+                <Link to={`/bet/${bet.id}`}>{bet.title}</Link>
                 <hr/>
             </div>)
         }
-*/}
 
     </React.Fragment>;
 }
