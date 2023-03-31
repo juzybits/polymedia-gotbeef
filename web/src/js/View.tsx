@@ -8,7 +8,7 @@ import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
 import { Cancel } from './Cancel';
-import { getBet, Bet } from './lib/beef';
+import { getBet, Bet } from './lib/gotbeef';
 import { shorten } from './lib/common';
 
 export function View()

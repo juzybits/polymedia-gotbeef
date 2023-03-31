@@ -8,32 +8,58 @@ import {
     SuiMoveObject,
 } from '@mysten/sui.js';
 
-const GOTBEEF_PACKAGE_DEVNET = '0x9f3d5ee741df76f0e14dd26f71cc51ed77666b02e0f717f916a3e49becaf3853';
-const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x5831f3ee7b3e60e98f32cc90d72a1bac025f8f17251c6db7b9dad3d61c3c0c11';
+const GOTBEEF_PACKAGE_LOCALNET = '0x123';
+const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0x123';
+
+const GOTBEEF_PACKAGE_DEVNET = '0x545df007010fa30389a53e418673cadb6b74d5c543010f10c39bf142c73e309d';
+const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x2dec635ecb8f297a5e3d9edf1ede63f6d1c0404f69acdbbe9579edb5574cfe42';
 
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
 
+const RPC_LOCALNET = new JsonRpcProvider(new Connection({
+    fullnode: 'http://127.0.0.1:9000',
+    faucet: 'http://127.0.0.1:9123',
+}));
+
 const RPC_DEVNET = new JsonRpcProvider(new Connection({
-  fullnode: 'https://node.shinami.com/api/v1/dd67104025845f18ba98bf68489b84eb',
-  // fullnode: 'https://fullnode.devnet.vincagame.com:443',
-  // fullnode: 'https://fullnode.devnet.sui.io:443',
-  faucet: 'https://faucet.devnet.sui.io/gas',
+    fullnode: 'https://fullnode.devnet.sui.io:443',
+    // fullnode: 'https://node.shinami.com/api/v1/dd67104025845f18ba98bf68489b84eb',
+    // fullnode: 'https://sui-devnet-endpoint.blockvision.org',
+    // fullnode: 'https://fullnode.devnet.vincagame.com:443',
+    faucet: 'https://faucet.devnet.sui.io/gas',
 }));
 
 const RPC_TESTNET = new JsonRpcProvider(new Connection({
-  // fullnode: '...',
-  fullnode: 'https://fullnode.testnet.sui.io:443/',
-  faucet: 'https://faucet.testnet.sui.io/gas',
+    fullnode: 'https://fullnode.testnet.sui.io:443',
+    // fullnode: 'https://sui-testnet-endpoint.blockvision.org',
+    // fullnode: 'https://fullnode.testnet.vincagame.com:443',
+    faucet: 'https://faucet.testnet.sui.io/gas',
 }));
 
-export function getPackageAndRpc(network: string): [string, JsonRpcProvider] {
+type Config = {
+    rpc: JsonRpcProvider;
+    packageId: string;
+};
+
+export function getConfig(network: string): Config {
     const special = localStorage.getItem('polymedia.special') === '1';
     switch (network) {
+        case 'localnet':
+            return {
+                rpc: RPC_LOCALNET,
+                packageId: special ? GOTBEEF_PACKAGE_LOCALNET_SPECIAL : GOTBEEF_PACKAGE_LOCALNET,
+            };
         case 'devnet':
-            return [special ? GOTBEEF_PACKAGE_DEVNET_SPECIAL : GOTBEEF_PACKAGE_DEVNET, RPC_DEVNET];
+            return {
+                rpc: RPC_DEVNET,
+                packageId: special ? GOTBEEF_PACKAGE_DEVNET_SPECIAL : GOTBEEF_PACKAGE_DEVNET,
+            };
         case 'testnet':
-            return [special ? GOTBEEF_PACKAGE_TESTNET_SPECIAL : GOTBEEF_PACKAGE_TESTNET, RPC_TESTNET];
+            return {
+                rpc: RPC_TESTNET,
+                packageId: special ? GOTBEEF_PACKAGE_TESTNET_SPECIAL : GOTBEEF_PACKAGE_TESTNET,
+            };
         default:
             throw new Error('Invalid network: ' + network);
     }
@@ -70,7 +96,7 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
-    const [packageId, rpc] = getPackageAndRpc(network);
+    const {packageId, rpc} = getConfig(network);
 
     // Handle leading zeros ('0x00ab::bet::Bet' is returned as '0xab::bet::Bet' by the RPC)
     const packageName = packageId.replace(/0x0+/, '0x0*'); // handle leading zeros
@@ -148,7 +174,7 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
 /// Get all `Coin<T>` objects owned by the current address
 export async function getCoinObjects(network: string, address: string, type: string): Promise<CoinStruct[]> {
     console.debug('[getCoinObjects] Looking for Coin objects of type:', type);
-    const [_packageId, rpc] = getPackageAndRpc(network);
+    const {rpc} = getConfig(network);
     return rpc.getCoins({
         owner: address,
         coinType: type,
@@ -169,7 +195,7 @@ export async function getCoinObjects(network: string, address: string, type: str
 //         return [];
 //     };
 
-//     const [packageId, rpc] = getPackageAndRpc(network);
+//     const {packageId, rpc} = getConfig(network);
 
 //     // @ts-ignore
 //     const transactions = await rpc.client.batchRequest([{

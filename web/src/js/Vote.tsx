@@ -3,13 +3,13 @@ import { TransactionBlock } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
-import { Bet, getErrorName, getPackageAndRpc } from './lib/beef';
+import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
 export function Vote(props: any) {
 
     const [network] = useOutletContext<string>();
-    const [packageId, _rpc] = getPackageAndRpc(network);
+    const {packageId} = getConfig(network);
     const [error, setError] = useState('');
 
     const { signAndExecuteTransactionBlock } = useWalletKit();

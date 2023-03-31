@@ -4,14 +4,14 @@ import { CoinStruct, TransactionBlock } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
-import { Bet, getErrorName, getCoinObjects, getPackageAndRpc } from './lib/beef';
+import { Bet, getErrorName, getCoinObjects, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 */
 export function Fund(_props: any)
 {
     /*
     const [network] = useOutletContext<string>();
-    const [packageId, _rpc] = getPackageAndRpc(network);
+    const {packageId} = getConfig(network);
     const [payCoins, setPayCoins] = useState<CoinStruct[]>([]);
     const [answer, setAnswer] = useState('');
     const [error, setError] = useState('');

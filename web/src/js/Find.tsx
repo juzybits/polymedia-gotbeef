@@ -3,7 +3,7 @@ import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 
 import { FieldError } from './components/FieldError';
-import { Bet, getBet } from './lib/beef';
+import { Bet, getBet } from './lib/gotbeef';
 // import { timeAgo } from './lib/common';
 
 export function Find()

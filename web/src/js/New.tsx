@@ -5,7 +5,7 @@ import { useWalletKit } from '@mysten/wallet-kit';
 
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { getErrorName, getPackageAndRpc } from './lib/beef';
+import { getErrorName, getConfig } from './lib/gotbeef';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 
@@ -16,7 +16,7 @@ export function New()
     }, []);
 
     const [network] = useOutletContext<string>();
-    let [packageId, _rpc] = getPackageAndRpc(network);
+    let {packageId} = getConfig(network);
 
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
@@ -115,7 +115,7 @@ export function New()
 
     async function log(_args: Array<any>) {
         localStorage.setItem('polymedia.special', '1');
-        let [newPackageId, _rpc] = getPackageAndRpc(network);
+        let {packageId: newPackageId} = getConfig(network);
         packageId = newPackageId;
         // await fetch('', {
         //     method: 'POST',

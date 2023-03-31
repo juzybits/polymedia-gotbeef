@@ -3,7 +3,7 @@ import { TransactionBlock } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
-import { Bet, getErrorName, getPackageAndRpc } from './lib/beef';
+import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
 export function Cancel(props: any) {
@@ -11,7 +11,7 @@ export function Cancel(props: any) {
     const [network] = useOutletContext<string>();
     const [error, setError] = useState('');
 
-    const [packageId, _rpc] = getPackageAndRpc(network);
+    const { packageId } = getConfig(network);
     const { signAndExecuteTransactionBlock } = useWalletKit();
     const cancelBet = (bet: Bet): Promise<any> => { // TODO add type
         console.debug(`[cancelBet] Calling bet::cancel on package: ${packageId}`);
