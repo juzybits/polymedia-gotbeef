@@ -17,13 +17,13 @@ export function View()
     const [network] = useOutletContext<string>();
 
     const betId = useParams().uid || '';
-    const [bet, setBet]: any[] = useState(undefined);
-    const [modal, setModal]: any[] = useState(null);
-    const [isPlayer, setIsPlayer] = useState(undefined);
-    const [isJudge, setIsJudge] = useState(undefined);
-    const [userCanFund, setUserCanFund] = useState(undefined);
-    const [userCanVote, setUserCanVote] = useState(undefined);
-    const [userCanCancel, setUserCanCancel] = useState(undefined);
+    const [bet, setBet] = useState<Bet|null|undefined>(undefined);
+    const [modal, setModal] = useState<React.ReactNode|null>(null);
+    const [isPlayer, setIsPlayer] = useState(false);
+    const [isJudge, setIsJudge] = useState(false);
+    const [userCanFund, setUserCanFund] = useState(false);
+    const [userCanVote, setUserCanVote] = useState(false);
+    const [userCanCancel, setUserCanCancel] = useState(false);
 
     const [profileManager] = useState( new ProfileManager({network}) );
     const [profiles, setProfiles] = useState( new Map<SuiAddress, PolymediaProfile|null>() );
@@ -36,14 +36,13 @@ export function View()
         .then(profiles => {
             setProfiles(profiles);
         })
-        .catch((error: any) => {
-            console.warn(`[fetchProfiles] Request error: ${error.message}`);
+        .catch(error => {
+            console.warn('[fetchProfiles]', error.stack);
         })
     };
-
-    const AddressOrProfile = (props: any) => {
-        const profile = profiles.get(props.address);
-        const shortAddr = shorten(props.address);
+    const AddressOrProfile: React.FC<{address: SuiAddress}> = ({address}) => {
+        const profile = profiles.get(address);
+        const shortAddr = shorten(address);
         return <>{profile
             ? <>{profile.name} ({shortAddr})</>
             : shortAddr
@@ -207,7 +206,8 @@ export function View()
         </thead>
         <tbody>
         {
-            bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
+            bet.players.map(player_addr =>
+            <React.Fragment key={player_addr}>
                 <tr>
                     <td><AddressOrProfile address={player_addr} /></td>
                     {!showFunded && <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>}
@@ -227,10 +227,11 @@ export function View()
         </thead>
         <tbody>
         {
-            bet.judges.map((judge_addr: string) => <React.Fragment key={judge_addr}>
+            bet.judges.map(judge_addr =>
+            <React.Fragment key={judge_addr}>
             <tr>
                 <td><AddressOrProfile address={judge_addr} /></td>
-                <td>{shorten(bet.votesByJudge.get(judge_addr)) || '-'}</td>
+                <td>{shorten(bet.votesByJudge.get(judge_addr))}</td>
             </tr>
             </React.Fragment>)
         }
@@ -249,7 +250,8 @@ export function View()
         </thead>
         <tbody>
         {
-            bet.players.map((player_addr: string) => <React.Fragment key={player_addr}>
+            bet.players.map(player_addr =>
+            <React.Fragment key={player_addr}>
                 <tr>
                     <td><AddressOrProfile address={player_addr} /></td>
                     <td>{bet.answers.get(player_addr) || '-'}</td>

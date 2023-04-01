@@ -12,9 +12,9 @@ export function Find()
     const {packageId, rpc} = getConfig(network);
 
     const [betId, setBetId] = useState('');
-    const [bet, setBet]: any[] = useState(undefined);
+    const [bet, setBet] = useState<Bet|null|undefined>(undefined);
     const [error, setError] = useState('');
-    const [recentBets, setRecentBets]: any[] = useState([]);
+    const [recentBets, setRecentBets] = useState<BetSummary[]>([]);
 
     useEffect(() => {
         document.title = 'Got Beef? - Find';
@@ -114,7 +114,8 @@ export function Find()
         <br/>
         <h3 style={{marginBottom: '1em'}}>RECENT BETS</h3>
         {
-            recentBets.map((bet: any) => <div key={bet.id}>
+            recentBets.map((bet: BetSummary) =>
+            <div key={bet.id}>
                 <span style={{minWidth: '6.5em', display: 'inline-block', textAlign: 'right'}}>
                     {timeAgo(bet.time)}
                 </span>

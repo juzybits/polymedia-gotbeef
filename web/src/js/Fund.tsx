@@ -3,15 +3,24 @@ import {
     CoinBalance,
     CoinStruct,
     PaginatedCoins,
-    TransactionBlock
+    TransactionBlock,
+    TransactionEffects,
 } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
-export function Fund(props: any)
-{
+
+export const Fund: React.FC<{
+    bet: Bet,
+    reloadBet: () => Promise<void>,
+    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>,
+}> = ({
+    bet,
+    reloadBet,
+    setModal,
+}) => {
     const [network] = useOutletContext<string>();
     const {packageId, rpc} = getConfig(network);
     const [payCoins, setPayCoins] = useState<CoinStruct[]>([]);
@@ -41,23 +50,27 @@ export function Fund(props: any)
         // Check if the user has enough balance to fund for the bet
         const coinBalance: CoinBalance = await rpc.getBalance({
             owner: currentAccount.address,
-            coinType: props.bet.collatType,
+            coinType: bet.collatType,
         });
-        if (props.bet.size > coinBalance.totalBalance) {
+        if (bet.size > coinBalance.totalBalance) {
             throw new Error("Your wallet doesn't have enough balance to fund the bet");
         }
 
         // Get the coin objects
         const paginatedCoins: PaginatedCoins = await rpc.getCoins({
             owner: currentAccount.address,
-            coinType: props.bet.collatType,
+            coinType: bet.collatType,
         });
         // if (paginatedCoins.hasNextPage) // TODO
         setPayCoins(paginatedCoins.data);
     };
 
     const { signAndExecuteTransactionBlock } = useWalletKit();
-    const fundBet = (bet: Bet, answer: string, payCoins: CoinStruct[]): Promise<any> => // TODO add type
+    const fundBet = (
+        bet: Bet,
+        answer: string,
+        payCoins: CoinStruct[]
+    ): ReturnType<typeof signAndExecuteTransactionBlock> =>
     {
         if (!currentAccount) {
             throw new Error('Wallet not connected');
@@ -103,15 +116,14 @@ export function Fund(props: any)
     const onClickFund = (e: SyntheticEvent) =>
     {
         e.preventDefault();
-        fundBet(props.bet, answer, payCoins)
+        fundBet(bet, answer, payCoins)
         .then(resp => {
-            // @ts-ignore
-            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
+            const effects = resp.effects as TransactionEffects;
             if (effects.status.status == 'success') {
                 showConfetti('💸');
                 setError('');
-                setTimeout(props.reloadBet, 1000);
-                props.setModal('');
+                setTimeout(reloadBet, 1000);
+                setModal('');
                 console.debug('[onClickFund] Success:', resp);
             } else {
                 setError( getErrorName(effects.status.error) );
@@ -119,18 +131,18 @@ export function Fund(props: any)
         })
         .catch(error => {
             setError( getErrorName(error.message) );
-            console.warn(error);
+            console.warn('[onClickFund]', error.stack);
         });
     };
 
     const onClickBack = () => {
-        props.setModal('');
+        setModal('');
     };
 
     return <section className='bet-modal'>
         <h2>Fund bet</h2>
         <div>
-            Bet size is {props.bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {props.bet.collatType}
+            Bet size is {bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {bet.collatType}
             <br/>
             <form onSubmit={onClickFund} className='nes-field'>
                 <label htmlFor='answer_field'>Answer (optional)</label>

@@ -1,19 +1,33 @@
 import React, { useState, SyntheticEvent } from 'react';
-import { TransactionBlock } from '@mysten/sui.js';
+import { SuiAddress, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
+import { PolymediaProfile } from '@polymedia/profile-sdk';
 
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
-export function Vote(props: any) {
+export const Vote: React.FC<{
+    bet: Bet,
+    reloadBet: () => Promise<void>,
+    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>,
+    profiles: Map<SuiAddress, PolymediaProfile|null>,
+}> = ({
+    bet,
+    reloadBet,
+    setModal,
+    profiles,
 
+}) => {
     const [network] = useOutletContext<string>();
     const {packageId} = getConfig(network);
     const [error, setError] = useState('');
 
     const { signAndExecuteTransactionBlock } = useWalletKit();
-    const castVote = (bet: Bet, player_addr: string): Promise<any> => // TODO add type
+    const castVote = (
+        bet: Bet,
+        player_addr: string
+    ): ReturnType<typeof signAndExecuteTransactionBlock> =>
     {
         console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
 
@@ -37,15 +51,14 @@ export function Vote(props: any) {
 
     const onClickVote = (e: SyntheticEvent) => {
         const player_addr = (e.target as HTMLButtonElement).value;
-        castVote(props.bet, player_addr)
+        castVote(bet, player_addr)
         .then(resp => {
-            // @ts-ignore
-            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
+            const effects = resp.effects as TransactionEffects;
             if (effects.status.status == 'success') {
                 showConfetti();
                 setError('');
-                setTimeout(props.reloadBet, 1000);
-                props.setModal('');
+                setTimeout(reloadBet, 1000);
+                setModal('');
                 console.debug('[onClickVote] Success:', resp);
             } else {
                 setError( getErrorName(effects.status.error) );
@@ -57,11 +70,11 @@ export function Vote(props: any) {
     };
 
     const onClickBack = () => {
-        props.setModal('');
+        setModal('');
     };
 
     const profileNameOrBlank = (address: string): string => {
-        const profile = props.profiles.get(address);
+        const profile = profiles.get(address);
         return profile ? profile.name : '';
     };
 
@@ -70,14 +83,14 @@ export function Vote(props: any) {
         Click the address of the winner:
         <br/>
         {
-            props.bet.players.map((player: string) =>
+            bet.players.map((player: string) =>
                 <div key={player} className='player-box'>
                     <div>{profileNameOrBlank(player)}</div>
                     <button type='button' className='nes-btn is-primary' style={{overflowWrap: 'anywhere'}}
                         value={player} onClick={onClickVote}>{player}
                     </button>
                     <span className='player-box-answer'>
-                        <b>ANSWER:</b> {props.bet.answers.get(player) || '-'}
+                        <b>ANSWER:</b> {bet.answers.get(player) || '-'}
                     </span>
                 </div>
             )

@@ -1,19 +1,26 @@
 import React, { useState } from 'react';
-import { TransactionBlock } from '@mysten/sui.js';
+import { TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
-export function Cancel(props: any) {
-
+export const Cancel: React.FC<{
+    bet: Bet,
+    reloadBet: () => Promise<void>,
+    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>,
+}> = ({
+    bet,
+    reloadBet,
+    setModal,
+}) => {
     const [network] = useOutletContext<string>();
     const [error, setError] = useState('');
 
     const { packageId } = getConfig(network);
     const { signAndExecuteTransactionBlock } = useWalletKit();
-    const cancelBet = (bet: Bet): Promise<any> => { // TODO add type
+    const cancelBet = (bet: Bet): ReturnType<typeof signAndExecuteTransactionBlock> => {
         console.debug(`[cancelBet] Calling bet::cancel on package: ${packageId}`);
 
         const tx = new TransactionBlock();
@@ -34,15 +41,14 @@ export function Cancel(props: any) {
     };
 
     const onClickCancel = () => {
-        cancelBet(props.bet)
+        cancelBet(bet)
         .then(resp => {
-            // @ts-ignore
-            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
+            const effects = resp.effects as TransactionEffects;
             if (effects.status.status == 'success') {
                 showConfetti('🧨');
                 setError('');
-                setTimeout(props.reloadBet, 1000);
-                props.setModal('');
+                setTimeout(reloadBet, 1000);
+                setModal('');
                 console.debug('[onClickCancel] Success:', resp);
             } else {
                 setError( getErrorName(effects.status.error) );
@@ -54,7 +60,7 @@ export function Cancel(props: any) {
     };
 
     const onClickBack = () => {
-        props.setModal('');
+        setModal('');
     };
 
     return <section className='bet-modal'>

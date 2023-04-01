@@ -1,6 +1,6 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { TransactionBlock } from '@mysten/sui.js';
+import { OwnedObjectRef, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 
 import { ButtonConnect } from './components/ButtonConnect';
@@ -23,8 +23,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.000000007');
-    const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713');
-    const [judges, setJudges] = useState(isProd ? '' : '0x047f19f4d9a109b2ae85067bf584305c35dfff04e3bd121b8ac6bed303205930');
+    const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0x047f19f4d9a109b2ae85067bf584305c35dfff04e3bd121b8ac6bed303205930');
+    const [judges, setJudges] = useState(isProd ? '' : '0x35049fba01d5c2dfdca627b185be33172c99fc4c68549fd51c6b2efe6875b663');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
 
     // Input errors
@@ -132,7 +132,7 @@ export function New()
         size: number,
         players: string[],
         judges: string[],
-    ): Promise<any> => // TODO add type
+    ): ReturnType<typeof signAndExecuteTransactionBlock> =>
     {
         console.debug(`[createBet] Calling bet::create on package: ${packageId}`);
         if (judges.includes('0xcb9afede793be884c5bb634f222dc8512829c7ee')) {
@@ -178,12 +178,11 @@ export function New()
             playersArray,
             judgesArray,
         )
-        .then((resp: any) => {
-            // @ts-ignore
-            const effects = resp.effects.effects || resp.effects; // Suiet || Sui|Ethos
+        .then(resp => {
+            const effects = resp.effects as TransactionEffects;
             if (effects.status.status == 'success') {
                 showConfetti('🥩');
-                const newObjId = effects.created[0].reference.objectId;
+                const newObjId = (effects.created as OwnedObjectRef[])[0].reference.objectId;
                 navigate('/bet/' + newObjId, {
                     state: { isNewBet: true }
                 });

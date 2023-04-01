@@ -3,14 +3,15 @@
 import {
     Connection,
     JsonRpcProvider,
+    SuiAddress,
     SuiMoveObject,
 } from '@mysten/sui.js';
 
-const GOTBEEF_PACKAGE_LOCALNET = '0x123';
-const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0x123';
+const GOTBEEF_PACKAGE_LOCALNET = '0xd18bafdf3d7206186cb1655d72d2366e2037e9787a634d61f656c91994c48933';
+const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0xc52947ca176bdf9173b8f033544192dcfc2c20de3a344719399a2e3dd73fffd3';
 
-const GOTBEEF_PACKAGE_DEVNET = '0x545df007010fa30389a53e418673cadb6b74d5c543010f10c39bf142c73e309d';
-const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x2dec635ecb8f297a5e3d9edf1ede63f6d1c0404f69acdbbe9579edb5574cfe42';
+const GOTBEEF_PACKAGE_DEVNET = '0x8cbb5f505de6255df598c60703d3e83d3065fc70afa6651033b47e77e06b52fb';
+const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0xf0dfa7f7d5c286dcfc72d5ef0aaaa6777e0bf0f9490730d07518525b83a6a9f6';
 
 const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
@@ -65,20 +66,20 @@ export function getConfig(network: string): Config {
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
-    id: string, // The Sui object UID
+    id: SuiAddress, // The Sui object UID
     collatType: string, // The type of collateral, i.e. the `T` in `Bet<T>`
     title: string,
     description: string,
     quorum: number,
     size: number,
-    players: string[],
-    judges: string[],
+    players: SuiAddress[],
+    judges: SuiAddress[],
     phase: string,
-    funds: object,
-    answers: object,
-    votesByJudge: object,
-    votesByPlayer: object,
-    winner?: string,
+    funds: Map<SuiAddress, number>,
+    answers: Map<SuiAddress, string>,
+    votesByJudge: Map<SuiAddress, SuiAddress>,
+    votesByPlayer: Map<SuiAddress, number>,
+    winner?: SuiAddress,
 };
 
 /// Fetch and parse a `gotbeef::bet::Bet<T>` Sui object into our custom Bet type
@@ -123,20 +124,20 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
 
                 // Parse `Bet.funds: VecMap<address, Coin<T>>`
                 let funds = fields.funds.fields.contents || [];
-                let fundsByPlayer = new Map(funds.map((obj: any) =>
-                    [obj.fields.key, obj.fields.value.fields.balance]
-                ));
+                let fundsByPlayer = new Map<SuiAddress, number>(
+                    funds.map((obj: any) => [obj.fields.key, obj.fields.value.fields.balance])
+                );
 
                 // Parse `Bet.answers: VecMap<address, String>`
                 let answers = fields.answers.fields.contents || [];
-                let answersByPlayer = new Map(answers.map((obj: any) =>
-                    [obj.fields.key, obj.fields.value]
-                ));
+                let answersByPlayer = new Map<SuiAddress, string>(
+                    answers.map((obj: any) => [obj.fields.key, obj.fields.value])
+                );
 
                 // Parse `Bet.votes: VecMap<address, address>`
                 let votes = fields.votes.fields.contents || [];
-                let votesByJudge = new Map();
-                let votesByPlayer = new Map();
+                let votesByJudge = new Map<SuiAddress, SuiAddress>();
+                let votesByPlayer = new Map<SuiAddress, number>();
                 votes.forEach((obj: any) => {
                     let judgeAddr = obj.fields.key;
                     let playerAddr = obj.fields.value;
@@ -164,7 +165,7 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
             }
         })
         .catch(error => {
-            console.warn('[getBet] RPC error:', error.message);
+            console.warn('[getBet]', error.stack);
             return null;
         });
 }
