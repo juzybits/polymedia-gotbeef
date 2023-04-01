@@ -168,7 +168,7 @@ module gotbeef::bet
     public entry fun fund<T>(
         bet: &mut Bet<T>,
         answer: vector<u8>,
-        player_coins: vector<Coin<T>>,
+        player_coin: Coin<T>,
         ctx: &mut TxContext)
     {
         let player_addr = tx_context::sender(ctx);
@@ -177,27 +177,20 @@ module gotbeef::bet
         assert!( vector::contains(&bet.players, &player_addr), E_ONLY_PLAYERS_CAN_FUND );
         assert!( !vec_map::contains(&bet.funds, &player_addr), E_ALREADY_FUNDED );
 
-        let total_coin = coin::zero<T>(ctx);
-        while ( vector::length(&player_coins) > 0 ) {
-            let player_coin = vector::pop_back(&mut player_coins);
-            coin::join(&mut total_coin, player_coin);
-        };
-
-        let total_balance = coin::value(&total_coin);
+        let total_balance = coin::value(&player_coin);
         assert!( total_balance >= bet.size, E_FUNDS_BELOW_BET_SIZE );
-        vector::destroy_empty(player_coins);
 
         // Return change to sender
         let change = total_balance - bet.size;
         if ( change > 0 ) {
             transfer::public_transfer(
-                coin::split(&mut total_coin, change, ctx),
+                coin::split(&mut player_coin, change, ctx),
                 tx_context::sender(ctx)
             );
         };
 
         // Fund the bet
-        vec_map::insert(&mut bet.funds, player_addr, total_coin);
+        vec_map::insert(&mut bet.funds, player_addr, player_coin);
 
         // Save the player's answer
         vec_map::insert(&mut bet.answers, player_addr, string::utf8(answer));
@@ -271,4 +264,6 @@ module gotbeef::bet
         let distance_to_win = bet.quorum - bet.most_votes;
         return votes_remaining < distance_to_win
     }
+
+    // TODO create Display<Profile> and claim Publisher
 }
