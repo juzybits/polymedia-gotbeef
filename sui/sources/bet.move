@@ -10,10 +10,12 @@
 module gotbeef::bet
 {
     use std::option::{Self, Option};
-    use std::string::{Self, String};
+    use std::string::{String, utf8};
     use std::vector;
     use sui::coin::{Self, Coin};
-    use sui::object::{Self, UID};
+    use sui::display;
+    use sui::object::{Self, ID, UID};
+    use sui::package;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::vec_map::{Self, VecMap};
@@ -148,8 +150,8 @@ module gotbeef::bet
         let bet = Bet<T> {
             id: object::new(ctx),
             phase: PHASE_FUND,
-            title: string::utf8(title),
-            description: string::utf8(description),
+            title: utf8(title),
+            description: utf8(description),
             quorum: quorum,
             size: size,
             players: players,
@@ -193,7 +195,7 @@ module gotbeef::bet
         vec_map::insert(&mut bet.funds, player_addr, player_coin);
 
         // Save the player's answer
-        vec_map::insert(&mut bet.answers, player_addr, string::utf8(answer));
+        vec_map::insert(&mut bet.answers, player_addr, utf8(answer));
 
         // If all players have funded the Bet, advance to the voting phase
         if ( vec_map::size(&bet.funds) == vector::length(&bet.players) ) {
@@ -265,5 +267,32 @@ module gotbeef::bet
         return votes_remaining < distance_to_win
     }
 
-    // TODO create Display<Profile> and claim Publisher
+    // One-Time-Witness
+    struct BET has drop {}
+
+    fun init(otw: BET, ctx: &mut TxContext)
+    {
+        let publisher = package::claim(otw, ctx);
+
+        let bet_display = display::new_with_fields<Bet<sui::sui::SUI>>(
+            &publisher,
+            vector[
+                utf8(b"name"),
+                utf8(b"description"),
+                utf8(b"link"),
+                utf8(b"project_url"),
+                utf8(b"creator"),
+            ], vector[
+                utf8(b"Bet: {title}"),
+                utf8(b"{description}"),
+                utf8(b"https://gotbeef.app/bet/{id}"),
+                utf8(b"https://gotbeef.app"),
+                utf8(b"https://polymedia.app")
+            ], ctx
+        );
+        display::update_version(&mut bet_display);
+
+        transfer::public_transfer(publisher, tx_context::sender(ctx));
+        transfer::public_transfer(bet_display, tx_context::sender(ctx));
+    }
 }
