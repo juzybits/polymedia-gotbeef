@@ -26,6 +26,10 @@ export function New()
     const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0x047f19f4d9a109b2ae85067bf584305c35dfff04e3bd121b8ac6bed303205930');
     const [judges, setJudges] = useState(isProd ? '' : '0x35049fba01d5c2dfdca627b185be33172c99fc4c68549fd51c6b2efe6875b663');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
+    const [playersArray, setPlayersArray] = useState(new Array<string>());
+    const [judgesArray, setJudgesArray] = useState(new Array<string>());
+    const [minQuorum, setMinQuorum] = useState(1);
+    const [maxQuorum, setMaxQuorum] = useState(1);
 
     // Input errors
     const [titleError, setTitleError] = useState('');
@@ -39,18 +43,25 @@ export function New()
 
     // Parse player and judge addresses
     const addrRegex = /(0x[0-9a-fA-F]{64})/g;
-    const playersArray: string[] = players.match(addrRegex) || [];
-    const judgesArray: string[] = judges.match(addrRegex) || [];
+    useEffect(() => {
+        setPlayersArray( players.match(addrRegex) || []);
+    }, [players])
+    useEffect(() => {
+        setJudgesArray( judges.match(addrRegex) || []);
+    }, [judges])
 
     // Calculate minimum and maximum allowed quorum values (as per E_INVALID_QUORUM)
-    const minQuorum = 1 + Math.floor(judgesArray.length/2);
-    const maxQuorum = judgesArray.length || 1;
-    if (quorum < minQuorum) {
-        setQuorum(minQuorum);
-    } else
-    if (quorum > maxQuorum) {
-        setQuorum(maxQuorum);
-    }
+    useEffect(() => {
+        const minQuorum = 1 + Math.floor(judgesArray.length/2);
+        const maxQuorum = judgesArray.length || 1;
+        setMinQuorum(minQuorum);
+        setMaxQuorum(maxQuorum);
+        if (quorum < minQuorum) {
+            setQuorum(minQuorum);
+        } else if (quorum > maxQuorum) {
+            setQuorum(maxQuorum);
+        }
+    }, [judgesArray]);
 
     const validateForm = (): boolean => {
         let valid = true;
@@ -62,7 +73,7 @@ export function New()
             valid = false;
         }
 
-        if (+size >= 0) {
+        if (+size > 0) {
             setSizeError('');
         } else {
             setSizeError('your size is not size');
