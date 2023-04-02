@@ -1,7 +1,6 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import {
     CoinBalance,
-    CoinStruct,
     PaginatedCoins,
     TransactionBlock,
     TransactionEffects,
@@ -23,7 +22,7 @@ export const Fund: React.FC<{
 }) => {
     const [network] = useOutletContext<string>();
     const {packageId, rpc} = getConfig(network);
-    const [payCoins, setPayCoins] = useState<CoinStruct[]>([]);
+    const [userHasFunds, setUserHasFunds] = useState(false);
     const [answer, setAnswer] = useState('');
     const [error, setError] = useState('');
 
@@ -31,45 +30,38 @@ export const Fund: React.FC<{
     const { currentAccount } = useWalletKit();
 
     useEffect(() => {
-        fetchUserCoins()
+        checkUserFunds()
         .catch(error => {
-            console.warn('[fetchUserCoins]', error.stack);
-            setError('[fetchUserCoins] ' + error.message);
+            console.warn('[checkUserFunds]', error.stack);
+            setError('[checkUserFunds] ' + error.message);
         });
     }, [currentAccount]);
 
-    const fetchUserCoins = async () =>
+    const checkUserFunds = async () =>
     {
-        setPayCoins([]);
+        setUserHasFunds(false);
         setError('');
 
         if (!currentAccount) {
             throw new Error('Wallet not connected');
         }
 
-        // Check if the user has enough balance to fund for the bet
         const coinBalance: CoinBalance = await rpc.getBalance({
             owner: currentAccount.address,
             coinType: bet.collatType,
         });
+
         if (bet.size > coinBalance.totalBalance) {
             throw new Error("Your wallet doesn't have enough balance to fund the bet");
+        } else {
+            setUserHasFunds(true);
         }
-
-        // Get the coin objects
-        const paginatedCoins: PaginatedCoins = await rpc.getCoins({
-            owner: currentAccount.address,
-            coinType: bet.collatType,
-        });
-        // if (paginatedCoins.hasNextPage) // TODO
-        setPayCoins(paginatedCoins.data);
     };
 
     const { signAndExecuteTransactionBlock } = useWalletKit();
-    const fundBet = (
+    const fundBet = async (
         bet: Bet,
         answer: string,
-        payCoins: CoinStruct[]
     ): ReturnType<typeof signAndExecuteTransactionBlock> =>
     {
         if (!currentAccount) {
@@ -84,7 +76,15 @@ export const Fund: React.FC<{
             fundingCoin = tx.splitCoins(tx.gas, [tx.pure(bet.size)]);
         }
         else {
-            const [firstCoin, ...otherCoins] = payCoins; // MAYBE: do rpc.getCoins() here
+            // Get the coin objects
+            const paginatedCoins: PaginatedCoins = await rpc.getCoins({
+                owner: currentAccount.address,
+                coinType: bet.collatType,
+            });
+            // if (paginatedCoins.hasNextPage) // MAYBE (unlikely it's needed in practice)
+
+            // Merge all coins into one
+            const [firstCoin, ...otherCoins] = paginatedCoins.data;
             const firstCoinInput = tx.object(firstCoin.coinObjectId);
             if (otherCoins.length) {
                 tx.mergeCoins(
@@ -116,7 +116,7 @@ export const Fund: React.FC<{
     const onClickFund = (e: SyntheticEvent) =>
     {
         e.preventDefault();
-        fundBet(bet, answer, payCoins)
+        fundBet(bet, answer)
         .then(resp => {
             const effects = resp.effects as TransactionEffects;
             if (effects.status.status == 'success') {
@@ -146,14 +146,14 @@ export const Fund: React.FC<{
             <br/>
             <form onSubmit={onClickFund} className='nes-field'>
                 <label htmlFor='answer_field'>Answer (optional)</label>
-                <input type='text' id='answer_field' className={`nes-input ${payCoins.length ? '' : 'is-disabled'}`} maxLength={500}
+                <input type='text' id='answer_field' className={`nes-input ${userHasFunds ? '' : 'is-disabled'}`} maxLength={500}
                     spellCheck='false' autoCorrect='off' autoComplete='off'
-                    value={answer} disabled={!payCoins.length} onChange={e => setAnswer(e.target.value)}
+                    value={answer} disabled={!userHasFunds} onChange={e => setAnswer(e.target.value)}
                 />
             </form>
             <br/>
-            <button type='button' className={`nes-btn ${payCoins.length ? 'is-success' : 'is-disabled'}`}
-                    disabled={!payCoins.length} onClick={onClickFund}>
+            <button type='button' className={`nes-btn ${userHasFunds ? 'is-success' : 'is-disabled'}`}
+                    disabled={!userHasFunds} onClick={onClickFund}>
                 FUND
             </button>
             &nbsp;
