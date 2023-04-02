@@ -18,7 +18,7 @@ export function App()
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
-    const network = 'devnet'; // TODO network dropdown
+    const network = 'localnet'; // TODO network dropdown
     // Delete query string
     window.history.replaceState({}, document.title, window.location.pathname);
     /*

@@ -111,6 +111,13 @@ export function View()
     if (bet === null)
         return <React.Fragment>Bet not found.</React.Fragment>;
 
+    const getBetLink = (network: string, betId: SuiAddress): string => {
+        if (network=='localnet')
+            return 'http://localhost:3000/object/'+betId;
+        else
+            return 'https://explorer.sui.io/object/'+betId+'?network='+network;
+    };
+
     // MAYBE: show date of last update
     const showFunded = ['funding'].includes(bet.phase);
     return <React.Fragment>
@@ -165,7 +172,7 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={'https://explorer.sui.io/object/'+betId+'?network='+network} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
+                <td><a href={getBetLink(network, betId)} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
             </tr>
             {
             !bet.winner ? '' :
