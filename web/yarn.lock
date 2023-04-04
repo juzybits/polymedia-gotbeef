@@ -851,6 +851,11 @@
     "@mysten/sui.js" "^0.30.0"
     "@mysten/wallet-standard" "^0.5.0"
 
+"@polymedia/webutils@latest":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@polymedia/webutils/-/webutils-0.1.0.tgz#3091cd9753867a9d1b688cb393efaeea4f086cc3"
+  integrity sha512-Z6S8zaNhUj6IZtADB3Q+oFehSL6Knhg0XiaMJYAtH1VQEZH2e319Do9NTr3CYVLuJygmGARDLeCral6nQJKD2g==
+
 "@remix-run/router@1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.5.0.tgz#57618e57942a5f0131374a9fdb0167e25a117fdc"

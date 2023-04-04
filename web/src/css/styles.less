@@ -8,12 +8,14 @@
 /* Variables */
 
 @page-width: 810px;
+@body-background-color: #5c94fc;
 @page-background-color: #f7f7f7;
+@cursor-pointer: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAzElEQVRYR+2X0Q6AIAhF5f8/2jYXZkwEjNSVvVUjDpcrGgT7FUkI2D9xRfQETwNIiWO85wfINfQUEyxBG2ArsLwC0jioGt5zFcwF4OYDPi/mBYKm4t0U8ATgRm3ThFoAqkhNgWkA0jJLvaOVSs7j3qMnSgXWBMiWPXe94QqMBMBc1VZIvaTu5u5pQewq0EqNZvIEMCmxAawK0DNkay9QmfFNAJUXfgGgUkLaE7j/h8fnASkxHTz0DGIBMCnBeeM7AArpUd3mz2x3C7wADglA8BcWMZhZAAAAAElFTkSuQmCC) 14 0, pointer;
 
 /* Default elements */
 
 body {
-    background: #5c94fc;
+    background: @body-background-color;
     overflow-wrap: anywhere;
 }
 ul {
@@ -65,17 +67,29 @@ a:hover {
     margin: 2em 0 0.5em 0;
     padding: 1.2em 1.8em 1.6em;
 }
-#network-widget {
+#network-selector {
     position: absolute;
-    top: 2;
-    right: 4;
+    right: 5;
+    top: 3;
+    z-index: 1;
+    background: @body-background-color;
     color: white;
     font-size: 0.9em;
-    .switch-btn {
-        &:hover {
-            color: lightgreen;
-            text-decoration: underline;
+    padding: 0 0 3px 3px;
+    text-align: right;
+    user-select: none;
+    .network-options {
+        .network-option {
+            &:hover:not(.selected) {
+                cursor: @cursor-pointer;
+                color: lightgreen;
+                text-decoration: underline;
+            }
         }
+    }
+    @media (max-width: @page-width) {
+        color: inherit;
+        background: @page-background-color;
     }
 }
 #header {
@@ -83,7 +97,7 @@ a:hover {
 }
 #title {
     font-size: 2.3em;
-    &:hover #cow {
+    span:hover #cow {
         display: inline-block;
     }
 }
@@ -354,9 +368,6 @@ a:hover {
         {
             box-shadow: initial;
         }
-    }
-    #network-widget {
-        color: inherit;
     }
 }
 

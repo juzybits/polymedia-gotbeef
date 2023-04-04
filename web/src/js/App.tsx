@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-
 import { WalletKitProvider } from '@mysten/wallet-kit';
 
+import { NetworkSelector, currentNetwork as network } from '@polymedia/webutils';
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
 import imgAppChat from '../img/app-chat.webp';
@@ -18,49 +18,15 @@ export function App()
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
-    const network = 'localnet'; // TODO network dropdown
-    // Delete query string
-    window.history.replaceState({}, document.title, window.location.pathname);
-    /*
-    // NOTE: getNetwork() and toggleNetwork() are duplicated in other Polymedia projects
-
-    // Return either 'devnet' or 'testnet'
-    const getNetwork = (): string => {
-        // Read 'network' URL parameter
-        const params = new URLSearchParams(window.location.search);
-        // Delete query string
-        window.history.replaceState({}, document.title, window.location.pathname);
-        let newNetwork = params.get('network');
-        if (newNetwork === 'devnet' || newNetwork === 'testnet') {
-            // Update localStorage
-            localStorage.setItem('polymedia.network', newNetwork);
-            return newNetwork;
-        } else {
-            return localStorage.getItem('polymedia.network') || 'devnet';
-        }
-    };
-
-    const [network, setNetwork] = useState( getNetwork() );
-
-    const toggleNetwork = () => {
-        const newNetwork = network==='devnet' ? 'testnet' : 'devnet';
-        setNetwork(newNetwork);
-        localStorage.setItem('polymedia.network', newNetwork);
-        window.location.reload();
-    };
-    */
-
     const location = useLocation();
 
     return <div id='page'>
-    {/*<div id='network-widget'>
-        <a className='switch-btn' onClick={toggleNetwork}>{network}</a>
-    </div>*/}
+    <NetworkSelector />
     <section id='main'>
 
         <header id='header'>
 
-            <h1 id='title'>GOT BEEF?<img id='cow' src={cowImage} alt='got beef?' onClick={reloadClouds} /></h1>
+            <h1 id='title'><span>GOT BEEF?<img id='cow' src={cowImage} alt='got beef?' onClick={reloadClouds} /></span></h1>
 
             <nav id='nav'>
                 <Link to='/'>HOME</Link>
@@ -105,7 +71,7 @@ export function App()
                     <h3 className='app-title'>Polymedia Profile</h3>
                     <p className='app-description'>Onchain identity system used in all our apps.</p>
                     <div className='app-btn-wrap'>
-                        <a className='nes-btn is-primary' target='_blank' href='https://profile.polymedia.app'>VISIT</a>
+                        <a className='nes-btn is-primary' target='_blank' href={'https://profile.polymedia.app?network='+network}>VISIT</a>
                     </div>
                 </div>
             </div>
@@ -117,7 +83,7 @@ export function App()
                     <h3 className='app-title'>Polymedia Chat</h3>
                     <p className='app-description'>Unstoppable chat rooms, fully on-chain.</p>
                     <div className='app-btn-wrap'>
-                        <a className='nes-btn is-primary' target='_blank' href='https://chat.polymedia.app/@sui-fans'>VISIT</a>
+                        <a className='nes-btn is-primary' target='_blank' href={'https://chat.polymedia.app/@sui-fans?network='+network}>VISIT</a>
                     </div>
                 </div>
             </div>
@@ -129,7 +95,7 @@ export function App()
                     <h3 className='app-title'>Journey to Mount Sogol</h3>
                     <p className='app-description'>The door to The Invisible must be visible...</p>
                     <div className='app-btn-wrap'>
-                        <a className='nes-btn is-primary' target='_blank' href='https://mountsogol.com'>VISIT</a>
+                        <a className='nes-btn is-primary' target='_blank' href={'https://mountsogol.com?network='+network}>VISIT</a>
                     </div>
                 </div>
             </div>
