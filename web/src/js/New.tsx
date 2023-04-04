@@ -155,8 +155,8 @@ export function New()
             target: `${packageId}::bet::create`,
             typeArguments: [ currency ],
             arguments: [
-                tx.pure(title),
-                tx.pure(description),
+                tx.pure(Array.from( (new TextEncoder()).encode(title) )),
+                tx.pure(Array.from( (new TextEncoder()).encode(description) )),
                 tx.pure(quorum),
                 tx.pure(size),
                 tx.pure(players),

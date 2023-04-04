@@ -100,7 +100,7 @@ export const Fund: React.FC<{
             typeArguments: [ bet.collatType ],
             arguments: [
                 tx.object(bet.id),
-                tx.pure(answer),
+                tx.pure(Array.from( (new TextEncoder()).encode(answer) )),
                 fundingCoin,
             ],
         });
