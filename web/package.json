@@ -6,7 +6,7 @@
     "dependencies": {
         "@mysten/sui.js": "latest",
         "@mysten/wallet-kit": "latest",
-        "@polymedia/profile-sdk": "0.1.13",
+        "@polymedia/profile-sdk": "latest",
         "@polymedia/webutils": "latest",
         "js-confetti": "latest",
         "nes.css": "latest",

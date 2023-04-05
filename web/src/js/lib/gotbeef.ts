@@ -6,6 +6,7 @@ import {
     SuiAddress,
     SuiMoveObject,
 } from '@mysten/sui.js';
+import { RPC_CONFIG } from '@polymedia/webutils';
 
 const GOTBEEF_PACKAGE_LOCALNET = '0x1a985987ed7d70ad92612bcdb76b0c5c86ead5b084c0d9b840019c8aa20718a9';
 const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0x3eb38194f47f3b28f9c2f4ccd1dda4bc2a247ff39b06eacb35fc306cd69cfa7e';
@@ -17,23 +18,19 @@ const GOTBEEF_PACKAGE_TESTNET = '0x123';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
 
 const RPC_LOCALNET = new JsonRpcProvider(new Connection({
-    fullnode: 'http://127.0.0.1:9000',
-    faucet: 'http://127.0.0.1:9123',
+    fullnode: RPC_CONFIG.LOCALNET_FULLNODE,
+    faucet: RPC_CONFIG.LOCALNET_FAUCET,
 }));
 
 const RPC_DEVNET = new JsonRpcProvider(new Connection({
-    fullnode: 'https://fullnode.devnet.sui.io:443',
     // fullnode: 'https://node.shinami.com/api/v1/dd67104025845f18ba98bf68489b84eb',
-    // fullnode: 'https://sui-devnet-endpoint.blockvision.org',
-    // fullnode: 'https://fullnode.devnet.vincagame.com:443',
-    faucet: 'https://faucet.devnet.sui.io/gas',
+    fullnode: RPC_CONFIG.DEVNET_FULLNODE,
+    faucet: RPC_CONFIG.DEVNET_FAUCET,
 }));
 
 const RPC_TESTNET = new JsonRpcProvider(new Connection({
-    fullnode: 'https://fullnode.testnet.sui.io:443',
-    // fullnode: 'https://sui-testnet-endpoint.blockvision.org',
-    // fullnode: 'https://fullnode.testnet.vincagame.com:443',
-    faucet: 'https://faucet.testnet.sui.io/gas',
+    fullnode: RPC_CONFIG.TESTNET_FULLNODE,
+    faucet: RPC_CONFIG.TESTNET_FAUCET,
 }));
 
 type Config = {
