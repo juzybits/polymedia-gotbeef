@@ -10,15 +10,15 @@
         "@polymedia/webutils": "latest",
         "js-confetti": "latest",
         "nes.css": "latest",
-        "react": "18",
-        "react-dom": "18",
-        "react-router-dom": "6"
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "react-router-dom": "^6.0.0"
     },
     "devDependencies": {
         "@parcel/transformer-less": "latest",
         "@types/react": "latest",
         "@types/react-dom": "latest",
-        "buffer": "5",
+        "buffer": "^5.0.0",
         "parcel": "latest",
         "process": "latest",
         "react-devtools": "latest"

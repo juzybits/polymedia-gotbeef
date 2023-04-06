@@ -114,6 +114,7 @@ export function Find()
         <br/>
         <h3 style={{marginBottom: '1em'}}>RECENT BETS</h3>
         {
+            !recentBets.length ? 'Loading...' :
             recentBets.map((bet: BetSummary) =>
             <div key={bet.id}>
                 <span style={{minWidth: '6.5em', display: 'inline-block', textAlign: 'right'}}>
