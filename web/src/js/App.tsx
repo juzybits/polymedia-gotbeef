@@ -1,16 +1,36 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { WalletKitProvider } from '@mysten/wallet-kit';
+import { Connection, JsonRpcProvider } from '@mysten/sui.js';
 
-import { NetworkSelector, currentNetwork as network } from '@polymedia/webutils';
+import { NetworkName, NetworkSelector, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
 import imgAppChat from '../img/app-chat.webp';
 import imgAppCastle from '../img/app-castle.webp';
 import imgAppProfile from '../img/app-profile.webp';
 
-export function App()
-{
+export type AppContext = {
+    network: NetworkName,
+    rpcProvider: JsonRpcProvider,
+};
+
+export function App() {
+    const location = useLocation();
+    const [network, setNetwork] = useState<NetworkName|null>(null);
+    const [rpcProvider, setRpcProvider] = useState<JsonRpcProvider|null>(null);
+
+    useEffect(() => {
+        async function initialize() {
+            const network = loadNetwork();
+            const rpcConfig = await loadRpcConfig({network});
+            const rpcProvider = new JsonRpcProvider(new Connection(rpcConfig));
+            setNetwork(network);
+            setRpcProvider(rpcProvider);
+        };
+        initialize();
+    }, []);
+
     useEffect(() => {
         const resizeObserver = new ResizeObserver((_entries) => {
             reloadClouds();
@@ -18,10 +38,17 @@ export function App()
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
-    const location = useLocation();
+    if (!network || !rpcProvider) {
+        return <></>;
+    }
+
+    const appContext: AppContext = {
+        network,
+        rpcProvider,
+    };
 
     return <div id='page'>
-    <NetworkSelector />
+    <NetworkSelector currentNetwork={network} />
     <section id='main'>
 
         <header id='header'>
@@ -40,7 +67,7 @@ export function App()
 
         <section id='content'>
         <WalletKitProvider>
-            <Outlet context={[network]} />
+            <Outlet context={appContext} />
         </WalletKitProvider>
         </section>
 
@@ -102,8 +129,6 @@ export function App()
         </div>
     </div>
     }
-
-    <span id='secret'>It's really hard to make something beautiful. And it's really worthwhile.</span>
 
     </div>;
 }

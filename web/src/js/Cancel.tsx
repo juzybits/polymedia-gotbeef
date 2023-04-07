@@ -3,6 +3,7 @@ import { TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
+import { AppContext } from './App';
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
@@ -15,7 +16,7 @@ export const Cancel: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const [network] = useOutletContext<string>();
+    const {network} = useOutletContext<AppContext>();
     const [error, setError] = useState('');
 
     const { packageId } = getConfig(network);

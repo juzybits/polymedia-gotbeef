@@ -4,6 +4,7 @@ import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 import { PolymediaProfile } from '@polymedia/profile-sdk';
 
+import { AppContext } from './App';
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
@@ -19,7 +20,7 @@ export const Vote: React.FC<{
     profiles,
 
 }) => {
-    const [network] = useOutletContext<string>();
+    const {network} = useOutletContext<AppContext>();
     const {packageId} = getConfig(network);
     const [error, setError] = useState('');
 

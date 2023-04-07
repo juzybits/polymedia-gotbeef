@@ -4,6 +4,7 @@ import { SuiAddress } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
 
+import { AppContext } from './App';
 import { ButtonConnect } from './components/ButtonConnect';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
@@ -14,7 +15,7 @@ import { shorten } from './lib/common';
 export function View()
 {
     /* Data */
-    const [network] = useOutletContext<string>();
+    const {network, rpcProvider} = useOutletContext<AppContext>();
 
     const betId = useParams().uid || '';
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);
@@ -25,7 +26,7 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(false);
     const [userCanCancel, setUserCanCancel] = useState(false);
 
-    const [profileManager] = useState( new ProfileManager({network}) );
+    const [profileManager] = useState( new ProfileManager({network, rpcProvider}) );
     const [profiles, setProfiles] = useState( new Map<SuiAddress, PolymediaProfile|null>() );
 
     const refIsReloadInProgress = useRef(false);
@@ -57,7 +58,7 @@ export function View()
             return;
         }
         refIsReloadInProgress.current = true;
-        await getBet(network, betId).then( (bet: Bet|null) => {
+        await getBet(network, rpcProvider, betId).then( (bet: Bet|null) => {
             if (!bet && location.state && location.state.isNewBet) {
                 // Sometimes there is lag after the bet is created, so let's retry
                 setTimeout(reloadBet, 1000);

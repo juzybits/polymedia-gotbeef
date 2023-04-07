@@ -2,14 +2,15 @@ import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { PaginatedEvents, SuiAddress } from '@mysten/sui.js';
 
+import { AppContext } from './App';
 import { FieldError } from './components/FieldError';
 import { Bet, getBet, getConfig } from './lib/gotbeef';
 import { timeAgo } from './lib/common';
 
 export function Find()
 {
-    const [network] = useOutletContext<string>();
-    const {packageId, rpc} = getConfig(network);
+    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {packageId} = getConfig(network);
 
     const [betId, setBetId] = useState('');
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);
@@ -36,7 +37,7 @@ export function Find()
     }
     const loadRecentBets = async () =>
     {
-        const events: PaginatedEvents = await rpc.queryEvents({
+        const events: PaginatedEvents = await rpcProvider.queryEvents({
             query: { MoveEventType: packageId+'::bet::CreateBetEvent' },
             limit: 20,
             order: 'descending'
@@ -68,7 +69,7 @@ export function Find()
         }
 
         // Search
-        getBet(network, betIdClean).then(
+        getBet(network, rpcProvider, betIdClean).then(
         (bet: Bet|null) => {
             setBet(bet);
             bet && navigate('/bet/' + bet.id, {

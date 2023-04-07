@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import { OwnedObjectRef, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 
+import { AppContext } from './App';
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
 import { getErrorName, getConfig } from './lib/gotbeef';
@@ -15,7 +16,7 @@ export function New()
         document.title = 'Got Beef? - New'
     }, []);
 
-    const [network] = useOutletContext<string>();
+    const {network} = useOutletContext<AppContext>();
     let {packageId} = getConfig(network);
 
     // Inputs

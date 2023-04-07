@@ -8,6 +8,7 @@ import {
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 
+import { AppContext } from './App';
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
 
@@ -20,8 +21,8 @@ export const Fund: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const [network] = useOutletContext<string>();
-    const {packageId, rpc} = getConfig(network);
+    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {packageId} = getConfig(network);
     const [userHasFunds, setUserHasFunds] = useState(false);
     const [answer, setAnswer] = useState('');
     const [error, setError] = useState('');
@@ -46,7 +47,7 @@ export const Fund: React.FC<{
             throw new Error('Wallet not connected');
         }
 
-        const coinBalance: CoinBalance = await rpc.getBalance({
+        const coinBalance: CoinBalance = await rpcProvider.getBalance({
             owner: currentAccount.address,
             coinType: bet.collatType,
         });
@@ -77,7 +78,7 @@ export const Fund: React.FC<{
         }
         else {
             // Get the coin objects
-            const paginatedCoins: PaginatedCoins = await rpc.getCoins({
+            const paginatedCoins: PaginatedCoins = await rpcProvider.getCoins({
                 owner: currentAccount.address,
                 coinType: bet.collatType,
             });

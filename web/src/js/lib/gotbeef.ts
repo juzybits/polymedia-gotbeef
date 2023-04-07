@@ -1,12 +1,8 @@
 /// Helpers to interact with the Sui network
 
-import {
-    Connection,
-    JsonRpcProvider,
-    SuiAddress,
-    SuiMoveObject,
-} from '@mysten/sui.js';
-import { RPC_CONFIG } from '@polymedia/webutils';
+
+import { JsonRpcProvider, SuiAddress, SuiMoveObject } from '@mysten/sui.js';
+import { NetworkName } from '@polymedia/webutils';
 
 const GOTBEEF_PACKAGE_LOCALNET = '0x1a985987ed7d70ad92612bcdb76b0c5c86ead5b084c0d9b840019c8aa20718a9';
 const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0x3eb38194f47f3b28f9c2f4ccd1dda4bc2a247ff39b06eacb35fc306cd69cfa7e';
@@ -17,43 +13,22 @@ const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0xf0dfa7f7d5c286dcfc72d5ef0aaaa6777e0bf0
 const GOTBEEF_PACKAGE_TESTNET = '0x69caca41c789f88541abe2259b92703b89d27216a586ac2df65ff9431094be5d';
 const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
 
-const RPC_LOCALNET = new JsonRpcProvider(new Connection({
-    fullnode: RPC_CONFIG.LOCALNET_FULLNODE,
-    faucet: RPC_CONFIG.LOCALNET_FAUCET,
-}));
-
-const RPC_DEVNET = new JsonRpcProvider(new Connection({
-    // fullnode: 'https://node.shinami.com/api/v1/dd67104025845f18ba98bf68489b84eb',
-    fullnode: RPC_CONFIG.DEVNET_FULLNODE,
-    faucet: RPC_CONFIG.DEVNET_FAUCET,
-}));
-
-const RPC_TESTNET = new JsonRpcProvider(new Connection({
-    fullnode: RPC_CONFIG.TESTNET_FULLNODE,
-    faucet: RPC_CONFIG.TESTNET_FAUCET,
-}));
-
 type Config = {
-    rpc: JsonRpcProvider;
     packageId: string;
 };
-
-export function getConfig(network: string): Config {
+export function getConfig(network: NetworkName): Config {
     const special = localStorage.getItem('polymedia.special') === '1';
     switch (network) {
         case 'localnet':
             return {
-                rpc: RPC_LOCALNET,
                 packageId: special ? GOTBEEF_PACKAGE_LOCALNET_SPECIAL : GOTBEEF_PACKAGE_LOCALNET,
             };
         case 'devnet':
             return {
-                rpc: RPC_DEVNET,
                 packageId: special ? GOTBEEF_PACKAGE_DEVNET_SPECIAL : GOTBEEF_PACKAGE_DEVNET,
             };
         case 'testnet':
             return {
-                rpc: RPC_TESTNET,
                 packageId: special ? GOTBEEF_PACKAGE_TESTNET_SPECIAL : GOTBEEF_PACKAGE_TESTNET,
             };
         default:
@@ -80,7 +55,7 @@ export type Bet = {
 };
 
 /// Fetch and parse a `gotbeef::bet::Bet<T>` Sui object into our custom Bet type
-export async function getBet(network: string, objId: string): Promise<Bet|null> {
+export async function getBet(network: NetworkName, rpc: JsonRpcProvider, objId: string): Promise<Bet|null> {
     console.debug('[getBet] Looking up:', objId);
 
     const getPhaseName = (phaseCode: number): string => {
@@ -92,7 +67,7 @@ export async function getBet(network: string, objId: string): Promise<Bet|null> 
         return match ? match[1] : 'ERROR_TYPE_NOT_FOUND';
     };
 
-    const {packageId, rpc} = getConfig(network);
+    const {packageId} = getConfig(network);
 
     // Handle leading zeros ('0x00ab::bet::Bet' is returned as '0xab::bet::Bet' by the RPC)
     const packageName = packageId.replace(/0x0+/, '0x0*'); // handle leading zeros
