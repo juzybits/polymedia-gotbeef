@@ -24,8 +24,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.000000007');
-    const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0x047f19f4d9a109b2ae85067bf584305c35dfff04e3bd121b8ac6bed303205930');
-    const [judges, setJudges] = useState(isProd ? '' : '0x35049fba01d5c2dfdca627b185be33172c99fc4c68549fd51c6b2efe6875b663');
+    const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0x139f6d74d202cd572dad492c69eb5d9a62d0ce4a348fe162f074e278b64e3613\n0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713');
+    const [judges, setJudges] = useState(isProd ? '' : '0x047f19f4d9a109b2ae85067bf584305c35dfff04e3bd121b8ac6bed303205930');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
     const [playersArray, setPlayersArray] = useState(new Array<string>());
     const [judgesArray, setJudgesArray] = useState(new Array<string>());
