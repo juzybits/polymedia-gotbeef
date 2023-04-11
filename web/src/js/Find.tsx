@@ -48,7 +48,7 @@ export function Find()
             return {
                 id: eventData.bet_id,
                 title: eventData.bet_title,
-                time: event.timestampMs || 0,
+                time: Number(event.timestampMs||0),
             };
         });
         setRecentBets(bets);

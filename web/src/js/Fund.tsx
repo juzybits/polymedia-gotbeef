@@ -52,7 +52,7 @@ export const Fund: React.FC<{
             coinType: bet.collatType,
         });
 
-        if (bet.size > coinBalance.totalBalance) {
+        if (bet.size > BigInt(coinBalance.totalBalance)) {
             throw new Error("Your wallet doesn't have enough balance to fund the bet");
         } else {
             setUserHasFunds(true);
