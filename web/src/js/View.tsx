@@ -31,7 +31,7 @@ export function View()
 
     const refIsReloadInProgress = useRef(false);
 
-    const fetchProfiles = (bet: Bet) => {
+    const fetchProfiles = (bet: Bet) => { // TODO: do only once
         const lookupAddresses = [ ...bet.players, ...bet.judges ];
         profileManager.getProfiles({lookupAddresses})
         .then(profiles => {
@@ -59,9 +59,10 @@ export function View()
         }
         refIsReloadInProgress.current = true;
         await getBet(network, rpcProvider, betId).then( (bet: Bet|null) => {
-            if (!bet && location.state && location.state.isNewBet) {
-                // Sometimes there is lag after the bet is created, so let's retry
-                setTimeout(reloadBet, 1000);
+            if (!bet && location.state && location.state.newBet) {
+                // Use prefilled Bet object from New.tsx
+                setBet(location.state.newBet);
+                fetchProfiles(location.state.newBet);
             } else {
                 setBet(bet);
                 bet && fetchProfiles(bet);

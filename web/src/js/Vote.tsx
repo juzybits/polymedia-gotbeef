@@ -58,7 +58,7 @@ export const Vote: React.FC<{
             if (effects.status.status == 'success') {
                 showConfetti();
                 setError('');
-                setTimeout(reloadBet, 1000);
+                setTimeout(reloadBet, 1000); // TODO edit current bet object
                 setModal('');
                 console.debug('[onClickVote] Success:', resp);
             } else {

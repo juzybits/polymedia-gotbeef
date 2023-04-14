@@ -46,9 +46,9 @@
     global-agent "^3.0.0"
 
 "@headlessui/react@^1.7.13":
-  version "1.7.13"
-  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.13.tgz#fd150b394954e9f1d86ed2340cffd1217d6e7628"
-  integrity sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==
+  version "1.7.14"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.14.tgz#75f19552c535113640fe8a3a40e71474f49e89c9"
+  integrity sha512-znzdq9PG8rkwcu9oQ2FwIy0ZFtP9Z7ycS+BAqJ3R5EIqC/0bJGvhT7193rFf+45i9nnPsYvCQVW4V/bB9Xc+gA==
   dependencies:
     client-only "^0.0.1"
 
@@ -289,10 +289,10 @@
   dependencies:
     "@noble/hashes" "1.3.0"
 
-"@noble/curves@~0.8.3":
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-0.8.3.tgz#ad6d48baf2599cf1d58dcb734c14d5225c8996e0"
-  integrity sha512-OqaOf4RWDaCRuBKJLDURrgVxjLmneGsiCXGuzYB5y95YithZMA6w4uk34DHSm0rKMrrYiaeZj48/81EvaAScLQ==
+"@noble/curves@~1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.0.0.tgz#e40be8c7daf088aaf291887cbc73f43464a92932"
+  integrity sha512-2upgEu0iLiDVDZkNLeFV2+ht0BAVgQnEmCk6JsOch9Rp8xfkMCbvbAZlA2pBHQc73dbl+vFOXfqkf4uemdn0bw==
   dependencies:
     "@noble/hashes" "1.3.0"
 
@@ -878,9 +878,9 @@
     nullthrows "^1.1.1"
 
 "@polymedia/profile-sdk@latest":
-  version "0.1.21"
-  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-0.1.21.tgz#2d3a097b1f818965c62f4bc40a7d76a24e92b60a"
-  integrity sha512-xTwZE0kC0syY/TdKwlbjO+MUaZ16vkNF/sQD8yADqn3heJFp/loueRFIsgTDW1X0KGGiUQxuZW8U3whYzvpjpw==
+  version "0.1.22"
+  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-0.1.22.tgz#71e8214110f5db134cb261ec55192dc5ccad6705"
+  integrity sha512-EJ1vMuSYUX4MFyHvKSFlaDmcaTvnot5NDRtdDIC5bDZVNTYQqrpuKjnnKx+leJETQVtpsr7EOFafR3gy1C28gA==
   dependencies:
     "@mysten/bcs" latest
     "@mysten/sui.js" latest
@@ -888,9 +888,9 @@
     "@polymedia/webutils" latest
 
 "@polymedia/webutils@latest":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@polymedia/webutils/-/webutils-0.1.7.tgz#bd4926f5c2c2ec45317d7aa9bf35f08858e404c5"
-  integrity sha512-oUVXrmxHuJtHvABgAGf9IZLCAfcxmhCLH0O2DvBGMYwRMpc5CIzrWjPsA+LPrC1fx63VFDXqSWParR7u33VtCA==
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@polymedia/webutils/-/webutils-0.1.8.tgz#0d9a0aada10b96f23b23c923b1457f143fe127dc"
+  integrity sha512-h0fPrL4iXdZm5+FK5teQS1wpF3w/7I7Ner2AxJHz2MrRfeCQZ1eLHD72oypzeyfErEIKKW7hOdCXg7PAnQl2Dw==
 
 "@remix-run/router@1.5.0":
   version "1.5.0"
@@ -903,11 +903,11 @@
   integrity sha512-ZxOhsSyxYwLJj3pLZCefNitxsj093tb2vq90mp2txoYeBqbcjDjqFhyM8eUjq/uFm6zJ+mUuqxlS2FkuSY1MTA==
 
 "@scure/bip32@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@scure/bip32/-/bip32-1.2.0.tgz#35692d8f8cc3207200239fc119f9e038e5f465df"
-  integrity sha512-O+vT/hBVk+ag2i6j2CDemwd1E1MtGt+7O1KzrPNsaNvSsiEK55MyPIxJIMI2PS8Ijj464B2VbQlpRoQXxw1uHg==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@scure/bip32/-/bip32-1.3.0.tgz#6c8d980ef3f290987736acd0ee2e0f0d50068d87"
+  integrity sha512-bcKpo1oj54hGholplGLpqPHRbIsnbixFtc06nwuNM5/dwSXOq/AAYoIBRsBmnZJSdfeNW5rnff7NTAz3ZCqR9Q==
   dependencies:
-    "@noble/curves" "~0.8.3"
+    "@noble/curves" "~1.0.0"
     "@noble/hashes" "~1.3.0"
     "@scure/base" "~1.1.0"
 
@@ -1037,9 +1037,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@latest":
-  version "18.0.34"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.34.tgz#e553444a578f023e6e1ac499514688fb80b0a984"
-  integrity sha512-NO1UO8941541CJl1BeOXi8a9dNKFK09Gnru5ZJqkm4Q3/WoQJtHvmwt0VX0SB9YCEwe7TfSSxDuaNmx6H2BAIQ==
+  version "18.0.35"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.35.tgz#192061cb1044fe01f2d3a94272cd35dd50502741"
+  integrity sha512-6Laome31HpetaIUGFWl1VQ3mdSImwxtFZ39rh059a1MNnKGqBpC88J6NJ8n/Is3Qx7CefDGLgf/KhN/sYCf7ag==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -1333,9 +1333,9 @@ camelcase@^4.0.0:
   integrity sha512-FxAv7HpHrXbh3aPo4o2qxHay2lkLY3x5Mw3KeE4KQE8ysVfziWeRZDwcjauvwBSGEC/nXUPzZy8zeh4HokqOnw==
 
 caniuse-lite@^1.0.30001449:
-  version "1.0.30001477"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001477.tgz#a2ffb2276258233034bbb869d4558b02658a511e"
-  integrity sha512-lZim4iUHhGcy5p+Ri/G7m84hJwncj+Kz7S5aD4hoQfslKZJgt0tHc/hafVbqHC5bbhHb+mrW2JOUHkI5KH7toQ==
+  version "1.0.30001478"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001478.tgz#0ef8a1cf8b16be47a0f9fc4ecfc952232724b32a"
+  integrity sha512-gMhDyXGItTHipJj2ApIvR+iVB5hd0KP3svMWWXDvZOmjzJJassGLMfxRkQCSYgGd2gtdL/ReeiyvMSFD1Ss6Mw==
 
 capture-stack-trace@^1.0.0:
   version "1.0.2"
@@ -1690,14 +1690,14 @@ duplexer3@^0.1.4:
   integrity sha512-1A8za6ws41LQgv9HrE/66jyC5yuSjQ3L/KOpFtoBilsAK2iA2wuS5rTt1OCzIvtS2V7nVmedsUU+DGRcjBmOYA==
 
 electron-to-chromium@^1.4.284:
-  version "1.4.358"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.358.tgz#301afde62c1bbe36aeec3155b11f7db1c5b01c78"
-  integrity sha512-dbqpWy662dGVwq27q8i6+t5FPcQiFPs/VExXJ+/T9Xp9KUV0b5bvG+B/i07FNNr7PgcN3GhZQCZoYJ9EUfnIOg==
+  version "1.4.364"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.364.tgz#da9702efd0101627f250f5e90a90a829feb41d7f"
+  integrity sha512-v6GxKdF57qfweXSfnne9nw1vS/86G4+UtscEe+3HQF+zhhrjAY4+9A4gstIQO56gyZvVrt9MZwt9aevCz/tohQ==
 
 electron@^23.1.2:
-  version "23.2.2"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-23.2.2.tgz#b15c5e8f7e067f6412f47b86caf8fb1444402838"
-  integrity sha512-8UfC2NCaqLJvdWoAfzAi56DaF+8cD3QPbnabKMdYNxMhYJ54gAje4ChVRo3sUMD5uSMk6MbPYCdnoMusCrfzrQ==
+  version "23.2.3"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-23.2.3.tgz#527407a685c7c480f51898cda8b62af005bfb164"
+  integrity sha512-cw844B2eMehG/j7YmJenCzYSqZYNV/YOV+lqFqFzgd4YMVo3LSBS1w+izKcfWPbqgP4Zdz4iR6p8Pdjm9hNaTQ==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^16.11.26"

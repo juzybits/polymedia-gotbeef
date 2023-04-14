@@ -1,12 +1,12 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { OwnedObjectRef, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
+import { OwnedObjectRef, SuiAddress, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 
 import { AppContext } from './App';
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { getErrorName, getConfig } from './lib/gotbeef';
+import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 
@@ -195,8 +195,25 @@ export function New()
             if (effects.status.status == 'success') {
                 showConfetti('🥩');
                 const newObjId = (effects.created as OwnedObjectRef[])[0].reference.objectId;
+                // Prefill a Bet object so View.tsx can render it immediately
+                const newBet: Bet = {
+                    id: newObjId,
+                    collatType: currency,
+                    title,
+                    description,
+                    quorum: Math.floor(+quorum),
+                    size: Math.floor(+size*1_000_000_000),
+                    players: playersArray,
+                    judges: judgesArray,
+                    phase: 'funding',
+                    funds: new Map<SuiAddress, number>(),
+                    answers: new Map<SuiAddress, string>(),
+                    votesByJudge: new Map<SuiAddress, SuiAddress>(),
+                    votesByPlayer: new Map<SuiAddress, number>(),
+                    winner: '',
+                };
                 navigate('/bet/' + newObjId, {
-                    state: { isNewBet: true }
+                    state: { newBet }
                 });
             } else {
                 setError( getErrorName(effects.status.error) );
