@@ -877,10 +877,10 @@
     chrome-trace-event "^1.0.2"
     nullthrows "^1.1.1"
 
-"@polymedia/profile-sdk@latest":
-  version "0.1.22"
-  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-0.1.22.tgz#71e8214110f5db134cb261ec55192dc5ccad6705"
-  integrity sha512-EJ1vMuSYUX4MFyHvKSFlaDmcaTvnot5NDRtdDIC5bDZVNTYQqrpuKjnnKx+leJETQVtpsr7EOFafR3gy1C28gA==
+"@polymedia/profile-sdk@^0.1.23":
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-0.1.23.tgz#b1fc33210a715f0c4c70690eb1f7c6c5f62485b2"
+  integrity sha512-+QV8E3V9Kl7L+Go8BIN8nz9DKJnbzkv1h656FsXCPcGCtuusJgP6/X3/LqSYBwZrKq/2RiLeribi/Rml0NVMpA==
   dependencies:
     "@mysten/bcs" latest
     "@mysten/sui.js" latest
@@ -1690,14 +1690,14 @@ duplexer3@^0.1.4:
   integrity sha512-1A8za6ws41LQgv9HrE/66jyC5yuSjQ3L/KOpFtoBilsAK2iA2wuS5rTt1OCzIvtS2V7nVmedsUU+DGRcjBmOYA==
 
 electron-to-chromium@^1.4.284:
-  version "1.4.364"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.364.tgz#da9702efd0101627f250f5e90a90a829feb41d7f"
-  integrity sha512-v6GxKdF57qfweXSfnne9nw1vS/86G4+UtscEe+3HQF+zhhrjAY4+9A4gstIQO56gyZvVrt9MZwt9aevCz/tohQ==
+  version "1.4.365"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.365.tgz#ccd9e352d4493aa288d87e6ea36f3edf350c045e"
+  integrity sha512-FRHZO+1tUNO4TOPXmlxetkoaIY8uwHzd1kKopK/Gx2SKn1L47wJXWD44wxP5CGRyyP98z/c8e1eBzJrgPeiBOg==
 
 electron@^23.1.2:
-  version "23.2.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-23.2.3.tgz#527407a685c7c480f51898cda8b62af005bfb164"
-  integrity sha512-cw844B2eMehG/j7YmJenCzYSqZYNV/YOV+lqFqFzgd4YMVo3LSBS1w+izKcfWPbqgP4Zdz4iR6p8Pdjm9hNaTQ==
+  version "23.2.4"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-23.2.4.tgz#6f19be9e45c5e5cdf736d0ed747ce4ed4c4bbfeb"
+  integrity sha512-ceFd+KIhzK3srGY22kcBu8QH7hV1G3DHlgrg2LGjg7mgtzxlXeyKzk2Efq0iFNu3ly14QKfiN5gYdvEenmzOAA==
   dependencies:
     "@electron/get" "^2.0.0"
     "@types/node" "^16.11.26"
