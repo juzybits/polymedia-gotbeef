@@ -259,13 +259,27 @@ module gotbeef::bet
     /// - (maybe) If a quorum of judges agrees to cancel the bet.
     /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
     public entry fun cancel<T>(bet: &mut Bet<T>, ctx: &mut TxContext) {
-        assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
-        assert!( vec_map::is_empty(&bet.funds), E_BET_HAS_FUNDS );
+        let cancel = false;
         let sender = tx_context::sender(ctx);
         let is_player = vector::contains(&bet.players, &sender);
         let is_judge = vector::contains(&bet.judges, &sender);
+        let has_funds = !vec_map::is_empty(&bet.funds);
         assert!( is_player || is_judge, E_NOT_AUTHORIZED );
-        bet.phase = PHASE_CANCELED;
+        assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
+        assert!( !has_funds, E_BET_HAS_FUNDS );
+
+        // During the initial funding phase, if no player has locked any funds yet,
+        // a single judge or player can cancel the bet.
+        if (bet.phase == PHASE_FUND && !has_funds) {
+            cancel = true;
+        }
+        else {
+            // TODO
+        };
+
+        if ( cancel ) {
+            bet.phase = PHASE_CANCELED;
+        };
     }
 
     /* Helpers */
