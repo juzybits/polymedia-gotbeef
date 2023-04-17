@@ -83,9 +83,7 @@ export async function getBet(network: NetworkName, rpc: JsonRpcProvider, objId: 
                 console.warn('[getBet] Error loading bet:', resp.error);
                 return null;
             }
-
             const obj = resp.data.content as SuiMoveObject;
-
             if (!obj.type.match(betTypeRegex)) {
                 console.warn('[getBet] Found wrong object type:', obj.type);
                 return null;

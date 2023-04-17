@@ -24,8 +24,8 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.000000007');
-    const [players, setPlayers] = useState(isProd ? '' : '0x93543ba125f9c0826b567813193737e9e69077ecd427238cb0eb4acbb096edc5\n0x139f6d74d202cd572dad492c69eb5d9a62d0ce4a348fe162f074e278b64e3613\n0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713');
-    const [judges, setJudges] = useState(isProd ? '' : '0x047f19f4d9a109b2ae85067bf584305c35dfff04e3bd121b8ac6bed303205930');
+    const [players, setPlayers] = useState(isProd ? '' : '0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713\n0xe956f7c91679020f75d94c44f08fe5caefb4b1be6d384b9f1093ddccff6a93f5\n0x7102570010cdc0f73bd14372c5a33df6f4560f11d75fbd87c1ab372755276ebc');
+    const [judges, setJudges] = useState(isProd ? '' : '0x5d8133281aa26ad73542c0b53014c6831c37b9d98e7603fd0db2e1cc4453934a');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
     const [playersArray, setPlayersArray] = useState(new Array<string>());
     const [judgesArray, setJudgesArray] = useState(new Array<string>());
@@ -57,9 +57,9 @@ export function New()
         const maxQuorum = judgesArray.length || 1;
         setMinQuorum(minQuorum);
         setMaxQuorum(maxQuorum);
-        if (quorum < minQuorum) {
+        if (Number(quorum) < minQuorum) {
             setQuorum(minQuorum);
-        } else if (quorum > maxQuorum) {
+        } else if (Number(quorum) > maxQuorum) {
             setQuorum(maxQuorum);
         }
     }, [judgesArray]);
@@ -264,7 +264,7 @@ export function New()
                 value={currency} onChange={e => setCurrency(e.target.value)}
             >
                 <option disabled value=''>- select -</option>
-                <option value='0x2::sui::SUI'>SUI</option>
+                <option value='0x2::sui::SUI'>SUI</option> {/* TODO: allow any token*/}
             </select>
         </div>
         <FieldError error={currencyError} />
