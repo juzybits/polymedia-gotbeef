@@ -4,7 +4,7 @@
 import { JsonRpcProvider, SuiAddress, SuiMoveObject } from '@mysten/sui.js';
 import { NetworkName } from '@polymedia/webutils';
 
-const GOTBEEF_PACKAGE_LOCALNET = '0x1a985987ed7d70ad92612bcdb76b0c5c86ead5b084c0d9b840019c8aa20718a9';
+const GOTBEEF_PACKAGE_LOCALNET = '0x965d1bfb15be36bdd041ce93825926a31668b27427e9d4f1d0dccdd75df622a0';
 const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0x123';
 
 const GOTBEEF_PACKAGE_DEVNET = '0xe3bf7bfbe0c7053e37e836e7c9fd8ee506a9b9df52da0ac75496c9b21d3358d1';

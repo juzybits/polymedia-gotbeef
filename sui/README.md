@@ -23,7 +23,7 @@ sui move coverage bytecode --module bet
 
 ## How to publish the package
 ```
-sui client publish --gas-budget 30000
+sui client publish --gas-budget 100000000 | grep packageId
 ```
 
 ## How to use from `sui console`

@@ -123,7 +123,7 @@ export const Fund: React.FC<{
             if (effects.status.status == 'success') {
                 showConfetti('💸');
                 setError('');
-                setTimeout(reloadBet, 1000); // TODO edit current bet object
+                setTimeout(reloadBet, 1000); // TODO show "loading..."
                 setModal('');
                 console.debug('[onClickFund] Success:', resp);
             } else {
