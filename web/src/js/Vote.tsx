@@ -20,15 +20,15 @@ export const Vote: React.FC<{
     profiles,
 
 }) => {
-    const {network} = useOutletContext<AppContext>();
+    const {network, rpcProvider} = useOutletContext<AppContext>();
     const {packageId} = getConfig(network);
     const [error, setError] = useState('');
 
-    const { signAndExecuteTransactionBlock } = useWalletKit();
-    const castVote = (
+    const { signTransactionBlock } = useWalletKit();
+    const castVote = async (
         bet: Bet,
         player_addr: string
-    ): ReturnType<typeof signAndExecuteTransactionBlock> =>
+    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
     {
         console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
 
@@ -42,8 +42,12 @@ export const Vote: React.FC<{
             ],
         });
 
-        return signAndExecuteTransactionBlock({
+        const signedTx = await signTransactionBlock({
             transactionBlock: tx,
+        });
+        return rpcProvider.executeTransactionBlock({
+            transactionBlock: signedTx.transactionBlockBytes,
+            signature: signedTx.signature,
             options: {
                 showEffects: true,
             },
@@ -58,8 +62,8 @@ export const Vote: React.FC<{
             if (effects.status.status == 'success') {
                 showConfetti();
                 setError('');
-                setTimeout(reloadBet, 1000); // TODO show "loading..."
                 setModal('');
+                reloadBet();
                 console.debug('[onClickVote] Success:', resp);
             } else {
                 setError( getErrorName(effects.status.error) );

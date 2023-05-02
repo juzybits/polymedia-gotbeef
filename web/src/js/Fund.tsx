@@ -59,11 +59,11 @@ export const Fund: React.FC<{
         }
     };
 
-    const { signAndExecuteTransactionBlock } = useWalletKit();
+    const { signTransactionBlock } = useWalletKit();
     const fundBet = async (
         bet: Bet,
         answer: string,
-    ): ReturnType<typeof signAndExecuteTransactionBlock> =>
+    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
     {
         if (!currentAccount) {
             throw new Error('Wallet not connected');
@@ -106,8 +106,12 @@ export const Fund: React.FC<{
             ],
         });
 
-        return signAndExecuteTransactionBlock({
+        const signedTx = await signTransactionBlock({
             transactionBlock: tx,
+        });
+        return rpcProvider.executeTransactionBlock({
+            transactionBlock: signedTx.transactionBlockBytes,
+            signature: signedTx.signature,
             options: {
                 showEffects: true,
             },
@@ -123,8 +127,8 @@ export const Fund: React.FC<{
             if (effects.status.status == 'success') {
                 showConfetti('💸');
                 setError('');
-                setTimeout(reloadBet, 1000); // TODO show "loading..."
                 setModal('');
+                reloadBet();
                 console.debug('[onClickFund] Success:', resp);
             } else {
                 setError( getErrorName(effects.status.error) );

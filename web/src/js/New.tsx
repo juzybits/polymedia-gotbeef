@@ -1,12 +1,12 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { OwnedObjectRef, SuiAddress, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
+import { OwnedObjectRef, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 
 import { AppContext } from './App';
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { Bet, getErrorName, getConfig } from './lib/gotbeef';
+import { getConfig, getErrorName } from './lib/gotbeef';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
 
@@ -16,7 +16,7 @@ export function New()
         document.title = 'Got Beef? - New'
     }, []);
 
-    const {network} = useOutletContext<AppContext>();
+    const {network, rpcProvider} = useOutletContext<AppContext>();
     let {packageId} = getConfig(network);
 
     // Inputs
@@ -135,7 +135,7 @@ export function New()
         // });
     }
 
-    const { signAndExecuteTransactionBlock } = useWalletKit();
+    const { signTransactionBlock } = useWalletKit();
     const createBet = async (
         currency: string, // e.g. '0x2::sui::SUI'
         title: string,
@@ -144,7 +144,7 @@ export function New()
         size: number,
         players: string[],
         judges: string[],
-    ): ReturnType<typeof signAndExecuteTransactionBlock> =>
+    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
     {
         console.debug(`[createBet] Calling bet::create on package: ${packageId}`);
         if (judges.includes('0xcb9afede793be884c5bb634f222dc8512829c7ee')) {
@@ -165,8 +165,12 @@ export function New()
             ],
         });
 
-        return signAndExecuteTransactionBlock({
+        const signedTx = await signTransactionBlock({
             transactionBlock: tx,
+        });
+        return rpcProvider.executeTransactionBlock({
+            transactionBlock: signedTx.transactionBlockBytes,
+            signature: signedTx.signature,
             options: {
                 showEffects: true,
             },
@@ -195,26 +199,7 @@ export function New()
             if (effects.status.status == 'success') {
                 showConfetti('🥩');
                 const newObjId = (effects.created as OwnedObjectRef[])[0].reference.objectId;
-                // Prefill a Bet object so View.tsx can render it immediately
-                const newBet: Bet = {
-                    id: newObjId,
-                    collatType: currency,
-                    title,
-                    description,
-                    quorum: Math.floor(+quorum),
-                    size: Math.floor(+size*1_000_000_000),
-                    players: playersArray,
-                    judges: judgesArray,
-                    phase: 'funding',
-                    funds: new Map<SuiAddress, number>(),
-                    answers: new Map<SuiAddress, string>(),
-                    votesByJudge: new Map<SuiAddress, SuiAddress>(),
-                    votesByPlayer: new Map<SuiAddress, number>(),
-                    winner: '',
-                };
-                navigate('/bet/' + newObjId, {
-                    state: { newBet }
-                });
+                navigate('/bet/' + newObjId);
             } else {
                 setError( getErrorName(effects.status.error) );
             }

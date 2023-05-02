@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocation, useParams, useOutletContext } from 'react-router-dom';
+import { useParams, useOutletContext } from 'react-router-dom';
 import { SuiAddress } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
@@ -53,21 +53,14 @@ export function View()
 
     /* Load bet object data */
 
-    const location = useLocation();
     const reloadBet = async () => {
         if (refIsReloadInProgress.current) {
             return;
         }
         refIsReloadInProgress.current = true;
         await getBet(network, rpcProvider, betId).then( (bet: Bet|null) => {
-            if (!bet && location.state && location.state.newBet) {
-                // Use prefilled Bet object from New.tsx
-                setBet(location.state.newBet);
-                fetchProfiles(location.state.newBet);
-            } else {
-                setBet(bet);
-                bet && fetchProfiles(bet);
-            }
+            setBet(bet);
+            bet && fetchProfiles(bet);
         });
         refIsReloadInProgress.current = false;
     };

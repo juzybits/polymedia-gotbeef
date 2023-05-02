@@ -16,12 +16,15 @@ export const Cancel: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const {network} = useOutletContext<AppContext>();
+    const {network, rpcProvider} = useOutletContext<AppContext>();
     const [error, setError] = useState('');
 
     const { packageId } = getConfig(network);
-    const { signAndExecuteTransactionBlock } = useWalletKit();
-    const cancelBet = (bet: Bet): ReturnType<typeof signAndExecuteTransactionBlock> => {
+    const { signTransactionBlock } = useWalletKit();
+    const cancelBet = async (
+        bet: Bet
+    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
+    {
         console.debug(`[cancelBet] Calling bet::cancel on package: ${packageId}`);
 
         const tx = new TransactionBlock();
@@ -33,8 +36,12 @@ export const Cancel: React.FC<{
             ],
         });
 
-        return signAndExecuteTransactionBlock({
+        const signedTx = await signTransactionBlock({
             transactionBlock: tx,
+        });
+        return rpcProvider.executeTransactionBlock({
+            transactionBlock: signedTx.transactionBlockBytes,
+            signature: signedTx.signature,
             options: {
                 showEffects: true,
             },
@@ -48,8 +55,8 @@ export const Cancel: React.FC<{
             if (effects.status.status == 'success') {
                 showConfetti('🧨');
                 setError('');
-                setTimeout(reloadBet, 1000); // TODO show "loading..."
                 setModal('');
+                reloadBet();
                 console.debug('[onClickCancel] Success:', resp);
             } else {
                 setError( getErrorName(effects.status.error) );
