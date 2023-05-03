@@ -126,7 +126,6 @@ export function New()
     };
 
     async function log(_args: Array<any>) {
-        localStorage.setItem('polymedia.special', '1');
         let {packageId: newPackageId} = getConfig(network);
         packageId = newPackageId;
         // await fetch('', {

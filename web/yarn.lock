@@ -843,18 +843,18 @@
     nullthrows "^1.1.1"
 
 "@polymedia/profile-sdk@latest":
-  version "0.1.29"
-  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-0.1.29.tgz#31a81717b9cec4b38696182209012c6cf184d6fd"
-  integrity sha512-ShpXrgPxGPI4pTwdcI5x610btFGWetuFuqlrDn+19zleTCMlCjcGDAsg41HDDvL+xvYuJDN2bFS9Din7oqJFTw==
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@polymedia/profile-sdk/-/profile-sdk-1.0.0.tgz#54579894bc92ff9a19e6e27581e483640320673b"
+  integrity sha512-DbmbV40bHKkDVwxio9RKhNCNbZrtCY6YgwHATw83W2Yoq85wC5AMk/iy9CeG8jaYI7j1aNKNZ1zKHwWIDox2oA==
   dependencies:
     "@mysten/bcs" latest
     "@mysten/sui.js" latest
     "@mysten/wallet-kit-core" latest
 
 "@polymedia/webutils@latest":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@polymedia/webutils/-/webutils-0.1.9.tgz#cd21081c798e963c648a00edc29bf189bc058227"
-  integrity sha512-h+rjBU1pURpFkFzFCaaaMsNuZEN02FAebynLt8QV4Bll3qYX/98fya32NoodX+u6kqDW1sge+ex2Ob/aux1qjg==
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@polymedia/webutils/-/webutils-1.0.0.tgz#2fe839a33c940cfff3f6b417d7bba6c499b4a0ba"
+  integrity sha512-6L8JjucCBCk+sf/k+yw/1sn5QZMpsfBGGogCYR5pNE/hXJFP7w8clOIRVDXJ9BvOosF9fOHl7ua9s+CGUXFsSA==
 
 "@remix-run/router@1.6.0":
   version "1.6.0"

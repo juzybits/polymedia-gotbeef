@@ -5,32 +5,23 @@ import { JsonRpcProvider, SuiAddress, SuiMoveObject } from '@mysten/sui.js';
 import { NetworkName } from '@polymedia/webutils';
 
 const GOTBEEF_PACKAGE_LOCALNET = '0x965d1bfb15be36bdd041ce93825926a31668b27427e9d4f1d0dccdd75df622a0';
-const GOTBEEF_PACKAGE_LOCALNET_SPECIAL = '0x123';
-
 const GOTBEEF_PACKAGE_DEVNET = '0xe3bf7bfbe0c7053e37e836e7c9fd8ee506a9b9df52da0ac75496c9b21d3358d1';
-const GOTBEEF_PACKAGE_DEVNET_SPECIAL = '0x123';
-
 const GOTBEEF_PACKAGE_TESTNET = '0x69caca41c789f88541abe2259b92703b89d27216a586ac2df65ff9431094be5d';
-const GOTBEEF_PACKAGE_TESTNET_SPECIAL = '0x123';
+const GOTBEEF_PACKAGE_MAINNET = '0x8221cc562f8c58c922c6a40ecbc7e2f16b0159fb683470c22e96d21a0dc52beb';
 
 type Config = {
     packageId: string;
 };
 export function getConfig(network: NetworkName): Config {
-    const special = localStorage.getItem('polymedia.special') === '1';
     switch (network) {
         case 'localnet':
-            return {
-                packageId: special ? GOTBEEF_PACKAGE_LOCALNET_SPECIAL : GOTBEEF_PACKAGE_LOCALNET,
-            };
+            return { packageId: GOTBEEF_PACKAGE_LOCALNET };
         case 'devnet':
-            return {
-                packageId: special ? GOTBEEF_PACKAGE_DEVNET_SPECIAL : GOTBEEF_PACKAGE_DEVNET,
-            };
+            return { packageId: GOTBEEF_PACKAGE_DEVNET };
         case 'testnet':
-            return {
-                packageId: special ? GOTBEEF_PACKAGE_TESTNET_SPECIAL : GOTBEEF_PACKAGE_TESTNET,
-            };
+            return { packageId: GOTBEEF_PACKAGE_TESTNET };
+        case 'mainnet':
+            return { packageId: GOTBEEF_PACKAGE_MAINNET };
         default:
             throw new Error('Invalid network: ' + network);
     }
