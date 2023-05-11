@@ -3,7 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { WalletKitProvider } from '@mysten/wallet-kit';
 import { Connection, JsonRpcProvider } from '@mysten/sui.js';
 
-import { NetworkName, NetworkSelector, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
+import { NetworkName, NetworkSelector, isLocalhost, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
 import imgAppChat from '../img/app-chat.webp';
@@ -19,10 +19,11 @@ export function App() {
     const location = useLocation();
     const [network, setNetwork] = useState<NetworkName|null>(null);
     const [rpcProvider, setRpcProvider] = useState<JsonRpcProvider|null>(null);
+    const showNetworkSelector = isLocalhost();
 
     useEffect(() => {
         async function initialize() {
-            const network = loadNetwork();
+            const network = isLocalhost() ? loadNetwork() : 'mainnet';
             const rpcConfig = await loadRpcConfig({network});
             const rpcProvider = new JsonRpcProvider(new Connection(rpcConfig));
             setNetwork(network);
@@ -48,7 +49,7 @@ export function App() {
     };
 
     return <div id='page'>
-    <NetworkSelector currentNetwork={network} />
+    {showNetworkSelector && <NetworkSelector currentNetwork={network} />}
     <section id='main'>
 
         <header id='header'>
