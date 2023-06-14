@@ -19,7 +19,7 @@ export function reloadClouds(): void
     }
 
     // Get window dimensions
-    const windowWitdth = window.innerWidth
+    const windowWidth = window.innerWidth
     || document.documentElement.clientWidth
     || document.body.clientWidth;
     const windowHeight = window.innerHeight
@@ -35,7 +35,7 @@ export function reloadClouds(): void
     // Paint clouds between the footer and the bottom of the browser window
     paintClouds(
         moreFromUs ? (moreFromUs.offsetTop + moreFromUs.offsetHeight) : (footer.offsetTop + 20),
-        windowWitdth - IMG_WIDTH,
+        windowWidth - IMG_WIDTH,
         windowHeight - IMG_HEIGHT,
         0
     );
@@ -50,7 +50,7 @@ export function reloadClouds(): void
     // Paint clouds between the right edge of the page content and the right edge of the browser window
     paintClouds(
         0,
-        windowWitdth - IMG_WIDTH,
+        windowWidth - IMG_WIDTH,
         sideCloudsBottom,
         page.offsetLeft + page.offsetWidth
     );
@@ -58,7 +58,7 @@ export function reloadClouds(): void
     // Paint door between the right edge of the page content and the right edge of the browser window
     paintDoor(
         0,
-        windowWitdth - IMG_WIDTH,
+        windowWidth - IMG_WIDTH,
         sideCloudsBottom,
         page.offsetLeft + page.offsetWidth
     );

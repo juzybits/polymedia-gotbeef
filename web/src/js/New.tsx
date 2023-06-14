@@ -248,7 +248,7 @@ export function New()
                 value={currency} onChange={e => setCurrency(e.target.value)}
             >
                 <option disabled value=''>- select -</option>
-                <option value='0x2::sui::SUI'>SUI</option> {/* TODO: allow any token*/}
+                <option value='0x2::sui::SUI'>SUI</option> {/* TODO: allow other tokens: https://github.com/suiet/sui-coin-list/blob/main/src/coins.json */}
             </select>
         </div>
         <FieldError error={currencyError} />
