@@ -1,4 +1,4 @@
-# gotbeef.app website
+# gotbeef.polymedia.app website
 
 ## How to run locally
 ```
