@@ -10,16 +10,16 @@
         "@polymedia/webutils": "latest",
         "js-confetti": "latest",
         "nes.css": "latest",
-        "react": "^18.0.0",
-        "react-dom": "^18.0.0",
-        "react-router-dom": "^6.0.0"
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.14.0"
     },
     "devDependencies": {
         "@parcel/transformer-less": "latest",
-        "@types/react": "^18.0.0",
-        "@types/react-dom": "^18.0.0",
-        "buffer": "^5.0.0",
-        "events": "^3.0.0",
+        "@types/react": "^18.2.14",
+        "@types/react-dom": "^18.2.6",
+        "buffer": "^5.7.1",
+        "events": "^3.3.0",
         "parcel": "latest",
         "process": "latest",
         "react-devtools": "latest"
