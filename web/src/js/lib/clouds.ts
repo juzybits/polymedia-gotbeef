@@ -114,7 +114,7 @@ function paintDoor(top: number, right: number, bottom: number, left: number): vo
             el.className = 'door-open';
         } else {
             const network = localStorage.getItem('polymedia.network') || 'devnet';
-            window.open('https://mountsogol.com?network='+network, '_blank')
+            window.open('https://journey.polymedia.app?network='+network, '_blank')
         }
     });
     document.body.appendChild(el);

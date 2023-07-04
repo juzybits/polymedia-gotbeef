@@ -60,8 +60,8 @@ export function App() {
                 <Link to='/'>HOME</Link>
                 &nbsp;~ <Link to='/new'>NEW</Link>
                 &nbsp;~ <Link to='/find'>FIND</Link>
-                {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank'>CHAT</a>*/}
-                {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans'} target='_blank'>CHAT</a>*/}
+                {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans?network='+network} target='_blank' rel='noopener'>CHAT</a>*/}
+                {/*&nbsp;~ <a href={'https://chat.polymedia.app/@sui-fans'} target='_blank' rel='noopener'>CHAT</a>*/}
             </nav>
 
         </header>
@@ -76,13 +76,13 @@ export function App() {
 
     <footer id='footer'>
         <div id='footer-links'>
-            <a href='https://github.com/juzybits/gotbeef' target='_blank' aria-label='GitHub'><i className='icon icon-github'></i></a>
-            <a href='https://twitter.com/polymedia_app' target='_blank' aria-label='Twitter'><i className='icon icon-twitter'></i></a>
-            <a href='https://discord.gg/3ZaE69Eq78' target='_blank' aria-label='Discord'><i className='icon icon-discord'></i></a>
+            <a href='https://github.com/juzybits/gotbeef' target='_blank' rel='noopener' aria-label='GitHub'><i className='icon icon-github'></i></a>
+            <a href='https://twitter.com/polymedia_app' target='_blank' rel='noopener' aria-label='Twitter'><i className='icon icon-twitter'></i></a>
+            <a href='https://discord.gg/3ZaE69Eq78' target='_blank' rel='noopener' aria-label='Discord'><i className='icon icon-discord'></i></a>
         </div>
 
         <div id='footer-signature'>
-            <a href='https://polymedia.app/' target='_blank'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>polymedia</span></a>
+            <a href='https://polymedia.app/' target='_blank' rel='noopener'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>polymedia</span></a>
         </div>
     </footer>
 
@@ -99,7 +99,7 @@ export function App() {
                     <h3 className='app-title'>Polymedia Profile</h3>
                     <p className='app-description'>Onchain identity system used in all our apps.</p>
                     <div className='app-btn-wrap'>
-                        <a className='nes-btn is-primary' target='_blank' href={'https://profile.polymedia.app?network='+network}>VISIT</a>
+                        <a className='nes-btn is-primary' target='_blank' rel='noopener' href={'https://profile.polymedia.app?network='+network}>VISIT</a>
                     </div>
                 </div>
             </div>
@@ -111,7 +111,7 @@ export function App() {
                     <h3 className='app-title'>Polymedia Chat</h3>
                     <p className='app-description'>Unstoppable chat rooms, fully on-chain.</p>
                     <div className='app-btn-wrap'>
-                        <a className='nes-btn is-primary' target='_blank' href={'https://chat.polymedia.app/@sui-fans?network='+network}>VISIT</a>
+                        <a className='nes-btn is-primary' target='_blank' rel='noopener' href={'https://chat.polymedia.app/@sui-fans?network='+network}>VISIT</a>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@ export function App() {
                     <h3 className='app-title'>Journey to Mount Sogol</h3>
                     <p className='app-description'>The door to The Invisible must be visible...</p>
                     <div className='app-btn-wrap'>
-                        <a className='nes-btn is-primary' target='_blank' href={'https://mountsogol.com?network='+network}>VISIT</a>
+                        <a className='nes-btn is-primary' target='_blank' rel='noopener' href={'https://journey.polymedia.app?network='+network}>VISIT</a>
                     </div>
                 </div>
             </div>

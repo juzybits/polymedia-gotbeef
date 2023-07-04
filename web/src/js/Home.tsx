@@ -22,7 +22,7 @@ export function Home() {
     return <React.Fragment>
         <div>
             <p>
-                <i>Got Beef?</i> is a dApp to make on-chain bets on the <a href='https://sui.io/' className='rainbow' target='_blank'>Sui network</a>.
+                <i>Got Beef?</i> is a dApp to make on-chain bets on the <a href='https://sui.io/' className='rainbow' target='_blank' rel='noopener'>Sui network</a>.
             </p>
             <p>
                 Bet objects serve as escrows (hold player funds) and provide a voting mechanism.
@@ -40,7 +40,7 @@ export function Home() {
 
             <span className='section-title' onClick={() => toggleSection('section-what-is-for')}>{showWhatIsFor?'-':'+'} <span>What is this for?</span></span>
             {showWhatIsFor && <div className='section-body' id='section-what-is-for'>
-                In <a href='https://twitter.com/GiganticRebirth/status/1503335929976664065' className='rainbow' target='_blank'>this scenario</a>, <i>Got Beef?</i> could have been used:
+                In <a href='https://twitter.com/GiganticRebirth/status/1503335929976664065' className='rainbow' target='_blank' rel='noopener'>this scenario</a>, <i>Got Beef?</i> could have been used:
                 <ul>
                     <li>player 1 = GCR</li>
                     <li>player 2 = Do Kwon</li>

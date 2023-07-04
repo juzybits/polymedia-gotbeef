@@ -161,7 +161,7 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank'>{shorten(betId)}</a></td>
+                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank' rel='noopener'>{shorten(betId)}</a></td>
             </tr>
             {
             !bet.winner ? '' :
