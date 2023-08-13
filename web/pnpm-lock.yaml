@@ -13,7 +13,7 @@ dependencies:
     version: 0.6.0(react-dom@18.2.0)(react@18.2.0)
   '@polymedia/profile-sdk':
     specifier: latest
-    version: 1.0.9
+    version: 1.1.0
   '@polymedia/react-components':
     specifier: latest
     version: 1.1.1(react-dom@18.2.0)(react@18.2.0)
@@ -1160,8 +1160,8 @@ packages:
       nullthrows: 1.1.1
     dev: true
 
-  /@polymedia/profile-sdk@1.0.9:
-    resolution: {integrity: sha512-Vll5QGRfjxu78kH/amS/wZCrYU6Co5VuK4Mt31PDIQg5Rdd/gf+G4lUIEo+dHbb+Z63aiP7CelBAOG/EzVSwmw==}
+  /@polymedia/profile-sdk@1.1.0:
+    resolution: {integrity: sha512-zhQvwK25zgug8qFvyohC/7bb/IMW0TKZNJ0G83Gy9q5WLpzgLpmR+m12W+cVX3koBaP2pCl1Bt+rbhZaCSf91g==}
     dependencies:
       '@mysten/bcs': 0.7.3
       '@mysten/sui.js': 0.40.0
@@ -1374,15 +1374,15 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 20.4.10
+      '@types/node': 20.5.0
     dev: true
 
   /@types/node@16.18.40:
     resolution: {integrity: sha512-+yno3ItTEwGxXiS/75Q/aHaa5srkpnJaH+kdkTVJ3DtJEwv92itpKbxU+FjPoh2m/5G9zmUQfrL4A4C13c+iGA==}
     dev: true
 
-  /@types/node@20.4.10:
-    resolution: {integrity: sha512-vwzFiiy8Rn6E0MtA13/Cxxgpan/N6UeNYR9oUu6kuJWxu6zCk98trcDp8CBhbtaeuq9SykCmXkFr2lWLoPcvLg==}
+  /@types/node@20.5.0:
+    resolution: {integrity: sha512-Mgq7eCtoTjT89FqNoTzzXg2XvCi5VMhRV6+I2aYanc6kQCBImeNaAYRs/DyoVqk1YEUJK5gN9VO7HRIdz4Wo3Q==}
     dev: true
 
   /@types/prop-types@15.7.5:
@@ -1406,7 +1406,7 @@ packages:
   /@types/responselike@1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 16.18.40
+      '@types/node': 20.5.0
     dev: true
 
   /@types/scheduler@0.16.3:
