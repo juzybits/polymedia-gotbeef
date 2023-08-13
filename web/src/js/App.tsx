@@ -82,7 +82,7 @@ export function App() {
         </div>
 
         <div id='footer-signature'>
-            <a href='https://polymedia.app/' target='_blank' rel='noopener'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>polymedia</span></a>
+            <a href='https://polymedia.app/' target='_blank' rel='noopener'>built with <i className='nes-icon heart is-small'></i> by <span className='rainbow'>Polymedia</span></a>
         </div>
     </footer>
 
