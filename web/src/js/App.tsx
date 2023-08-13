@@ -3,7 +3,8 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { WalletKitProvider } from '@mysten/wallet-kit';
 import { Connection, JsonRpcProvider } from '@mysten/sui.js';
 
-import { NetworkName, NetworkSelector, isLocalhost, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
+import { NetworkSelector } from '@polymedia/react-components';
+import { NetworkName, isLocalhost, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
 import imgAppChat from '../img/app-chat.webp';
