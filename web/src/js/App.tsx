@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { WalletKitProvider } from '@mysten/wallet-kit';
-import { Connection, JsonRpcProvider } from '@mysten/sui.js';
+import { SuiClient } from '@mysten/sui.js/client';
 
 import { NetworkSelector } from '@polymedia/react-components';
 import { NetworkName, isLocalhost, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
@@ -13,22 +13,22 @@ import imgAppProfile from '../img/app-profile.webp';
 
 export type AppContext = {
     network: NetworkName,
-    rpcProvider: JsonRpcProvider,
+    rpcProvider: SuiClient,
 };
 
 export function App() {
     const location = useLocation();
     const [network, setNetwork] = useState<NetworkName|null>(null);
-    const [rpcProvider, setRpcProvider] = useState<JsonRpcProvider|null>(null);
+    const [rpcProvider, setRpcProvider] = useState<SuiClient|null>(null);
     const showNetworkSelector = isLocalhost();
 
     useEffect(() => {
         async function initialize() {
             const network = isLocalhost() ? loadNetwork() : 'mainnet';
             const rpcConfig = await loadRpcConfig({network, noFetch: true});
-            const rpcProvider = new JsonRpcProvider(new Connection(rpcConfig));
+            const suiClient = new SuiClient({url: rpcConfig.fullnode});
             setNetwork(network);
-            setRpcProvider(rpcProvider);
+            setRpcProvider(suiClient);
         };
         initialize();
     }, []);

@@ -2,9 +2,11 @@ import React, { useEffect, useState, SyntheticEvent } from 'react';
 import {
     CoinBalance,
     PaginatedCoins,
-    TransactionBlock,
     TransactionEffects,
-} from '@mysten/sui.js';
+} from '@mysten/sui.js/client';
+import {
+    TransactionBlock,
+} from '@mysten/sui.js/transactions';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
 

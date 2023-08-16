@@ -1,7 +1,8 @@
 import React, { useState, SyntheticEvent } from 'react';
-import { SuiAddress, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
-import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
+import { TransactionEffects } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile } from '@polymedia/profile-sdk';
 
 import { AppContext } from './App';
@@ -12,7 +13,7 @@ export const Vote: React.FC<{
     bet: Bet,
     reloadBet: () => Promise<void>,
     setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>,
-    profiles: Map<SuiAddress, PolymediaProfile|null>,
+    profiles: Map<string, PolymediaProfile|null>,
 }> = ({
     bet,
     reloadBet,

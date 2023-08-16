@@ -1,7 +1,6 @@
 /// Helpers to interact with the Sui network
 
-
-import { JsonRpcProvider, SuiAddress, SuiMoveObject } from '@mysten/sui.js';
+import { SuiClient } from '@mysten/sui.js/client';
 import { NetworkName } from '@polymedia/webutils';
 
 const GOTBEEF_PACKAGE_LOCALNET = '0x965d1bfb15be36bdd041ce93825926a31668b27427e9d4f1d0dccdd75df622a0';
@@ -29,24 +28,24 @@ export function getConfig(network: NetworkName): Config {
 
 /// Represents a `gotbeef::bet::Bet<T>` Sui object.
 export type Bet = {
-    id: SuiAddress, // The Sui object UID
+    id: string, // The Sui object UID
     collatType: string, // The type of collateral, i.e. the `T` in `Bet<T>`
     title: string,
     description: string,
     quorum: number,
     size: number,
-    players: SuiAddress[],
-    judges: SuiAddress[],
+    players: string[],
+    judges: string[],
     phase: string,
-    funds: Map<SuiAddress, number>,
-    answers: Map<SuiAddress, string>,
-    votesByJudge: Map<SuiAddress, SuiAddress>,
-    votesByPlayer: Map<SuiAddress, number>,
-    winner?: SuiAddress,
+    funds: Map<string, number>,
+    answers: Map<string, string>,
+    votesByJudge: Map<string, string>,
+    votesByPlayer: Map<string, number>,
+    winner?: string,
 };
 
 /// Fetch and parse a `gotbeef::bet::Bet<T>` Sui object into our custom Bet type
-export async function getBet(network: NetworkName, rpc: JsonRpcProvider, objId: string): Promise<Bet|null> {
+export async function getBet(network: NetworkName, rpc: SuiClient, objId: string): Promise<Bet|null> {
     console.debug('[getBet] Looking up:', objId);
 
     const getPhaseName = (phaseCode: number): string => {
@@ -74,56 +73,64 @@ export async function getBet(network: NetworkName, rpc: JsonRpcProvider, objId: 
                 console.warn('[getBet] Error loading bet:', resp.error);
                 return null;
             }
-            const obj = resp.data.content as SuiMoveObject;
-            if (!obj.type.match(betTypeRegex)) {
-                console.warn('[getBet] Found wrong object type:', obj.type);
+            const content = resp.data.content;
+            if (!content) {
+                console.warn('[getBet] Missing object content. Make sure to fetch the object with `showContent: true`');
                 return null;
-            } else {
-                console.debug('[getBet] Found bet object ' + resp.data.objectId);
-
-                const fields = obj.fields;
-
-                // Parse `Bet.funds: VecMap<address, Coin<T>>`
-                let funds = fields.funds.fields.contents || [];
-                let fundsByPlayer = new Map<SuiAddress, number>(
-                    funds.map((obj: any) => [obj.fields.key, obj.fields.value.fields.balance])
-                );
-
-                // Parse `Bet.answers: VecMap<address, String>`
-                let answers = fields.answers.fields.contents || [];
-                let answersByPlayer = new Map<SuiAddress, string>(
-                    answers.map((obj: any) => [obj.fields.key, obj.fields.value])
-                );
-
-                // Parse `Bet.votes: VecMap<address, address>`
-                let votes = fields.votes.fields.contents || [];
-                let votesByJudge = new Map<SuiAddress, SuiAddress>();
-                let votesByPlayer = new Map<SuiAddress, number>();
-                votes.forEach((obj: any) => {
-                    let judgeAddr = obj.fields.key;
-                    let playerAddr = obj.fields.value;
-                    votesByJudge.set(judgeAddr, playerAddr);
-                    votesByPlayer.set(playerAddr, 1 + (votesByPlayer.get(playerAddr) || 0) );
-                });
-
-                const bet: Bet = {
-                    id: fields.id.id,
-                    collatType: getCollateralType(obj.type),
-                    title: fields.title,
-                    description: fields.description,
-                    quorum: fields.quorum,
-                    size: fields.size,
-                    players: fields.players,
-                    judges: fields.judges,
-                    phase: getPhaseName(fields.phase),
-                    funds: fundsByPlayer,
-                    answers: answersByPlayer,
-                    votesByJudge: votesByJudge,
-                    votesByPlayer: votesByPlayer,
-                    winner: typeof fields.winner === 'object' ? '' : fields.winner,
-                };
-                return bet;
             }
+            if (content.dataType !== 'moveObject') {
+                console.warn(`[getBet] Wrong object dataType. Expected 'moveObject' but got: '${content.dataType}'`);
+                return null;
+            }
+            if (!content.type.match(betTypeRegex)) {
+                console.warn('[getBet] Found wrong object type:', content.type);
+                return null;
+            }
+
+            console.debug('[getBet] Found bet object ' + resp.data.objectId);
+
+            const fields = content.fields as any;
+
+            // Parse `Bet.funds: VecMap<address, Coin<T>>`
+            let funds = fields.funds.fields.contents || [];
+            let fundsByPlayer = new Map<string, number>(
+                funds.map((obj: any) => [obj.fields.key, obj.fields.value.fields.balance])
+            );
+
+            // Parse `Bet.answers: VecMap<address, String>`
+            let answers = fields.answers.fields.contents || [];
+            let answersByPlayer = new Map<string, string>(
+                answers.map((obj: any) => [obj.fields.key, obj.fields.value])
+            );
+
+            // Parse `Bet.votes: VecMap<address, address>`
+            let votes = fields.votes.fields.contents || [];
+            let votesByJudge = new Map<string, string>();
+            let votesByPlayer = new Map<string, number>();
+            votes.forEach((obj: any) => {
+                let judgeAddr = obj.fields.key;
+                let playerAddr = obj.fields.value;
+                votesByJudge.set(judgeAddr, playerAddr);
+                votesByPlayer.set(playerAddr, 1 + (votesByPlayer.get(playerAddr) || 0) );
+            });
+
+            const bet: Bet = {
+                id: fields.id.id,
+                collatType: getCollateralType(content.type),
+                title: fields.title,
+                description: fields.description,
+                quorum: fields.quorum,
+                size: fields.size,
+                players: fields.players,
+                judges: fields.judges,
+                phase: getPhaseName(fields.phase),
+                funds: fundsByPlayer,
+                answers: answersByPlayer,
+                votesByJudge: votesByJudge,
+                votesByPlayer: votesByPlayer,
+                winner: typeof fields.winner === 'object' ? '' : fields.winner,
+            };
+            return bet;
         })
         .catch(error => {
             console.warn('[getBet]', error.stack);

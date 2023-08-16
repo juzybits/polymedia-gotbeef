@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useOutletContext } from 'react-router-dom';
-import { SuiAddress } from '@mysten/sui.js';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
 import { linkToExplorer } from '@polymedia/webutils';
@@ -27,14 +26,14 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(false);
     const [userCanCancel, setUserCanCancel] = useState(false);
 
-    const [profileManager] = useState( new ProfileManager({network, rpcProvider}) );
-    const [profiles, setProfiles] = useState( new Map<SuiAddress, PolymediaProfile|null>() );
+    const [profileManager] = useState( new ProfileManager({network, suiClient: rpcProvider}) );
+    const [profiles, setProfiles] = useState( new Map<string, PolymediaProfile|null>() );
 
     const refIsReloadInProgress = useRef(false);
 
     const fetchProfiles = (bet: Bet) => { // TODO: do only once
         const lookupAddresses = [ ...bet.players, ...bet.judges ];
-        profileManager.getProfiles({lookupAddresses})
+        profileManager.getProfilesByOwner({lookupAddresses})
         .then(profiles => {
             setProfiles(profiles);
         })
@@ -42,7 +41,7 @@ export function View()
             console.warn('[fetchProfiles]', error.stack);
         })
     };
-    const AddressOrProfile: React.FC<{address: SuiAddress}> = ({address}) => {
+    const AddressOrProfile: React.FC<{address: string}> = ({address}) => {
         const profile = profiles.get(address);
         const shortAddr = shorten(address);
         return <>{profile

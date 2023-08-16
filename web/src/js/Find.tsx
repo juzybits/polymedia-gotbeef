@@ -1,6 +1,6 @@
 import React, { useEffect, useState, SyntheticEvent } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
-import { PaginatedEvents, SuiAddress } from '@mysten/sui.js';
+import { PaginatedEvents } from '@mysten/sui.js/client';
 
 import { AppContext } from './App';
 import { FieldError } from './components/FieldError';
@@ -27,12 +27,12 @@ export function Find()
     }, []);
 
     type BetSummary = {
-        id: SuiAddress,
+        id: string,
         title: string,
         time: number,
     };
     type CreateBetEventData = {
-        bet_id: SuiAddress,
+        bet_id: string,
         bet_title: string,
     }
     const loadRecentBets = async () =>
