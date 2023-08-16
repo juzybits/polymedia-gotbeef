@@ -7,6 +7,7 @@ published-at = "0x8221cc562f8c58c922c6a40ecbc7e2f16b0159fb683470c22e96d21a0dc52b
 
 [dependencies]
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet" }
+# Sui = { local = "../../sui/crates/sui-framework/packages/sui-framework" }
 
 [addresses]
 gotbeef = "0x8221cc562f8c58c922c6a40ecbc7e2f16b0159fb683470c22e96d21a0dc52beb"

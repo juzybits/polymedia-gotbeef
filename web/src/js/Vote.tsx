@@ -21,7 +21,7 @@ export const Vote: React.FC<{
     profiles,
 
 }) => {
-    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {network, suiClient} = useOutletContext<AppContext>();
     const {packageId} = getConfig(network);
     const [error, setError] = useState('');
 
@@ -29,7 +29,7 @@ export const Vote: React.FC<{
     const castVote = async (
         bet: Bet,
         player_addr: string
-    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
+    ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
     {
         console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
 
@@ -46,7 +46,7 @@ export const Vote: React.FC<{
         const signedTx = await signTransactionBlock({
             transactionBlock: tx,
         });
-        return rpcProvider.executeTransactionBlock({
+        return suiClient.executeTransactionBlock({
             transactionBlock: signedTx.transactionBlockBytes,
             signature: signedTx.signature,
             options: {

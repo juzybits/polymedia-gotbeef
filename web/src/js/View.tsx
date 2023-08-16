@@ -15,7 +15,7 @@ import { shorten } from './lib/common';
 export function View()
 {
     /* Data */
-    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {network, suiClient} = useOutletContext<AppContext>();
 
     const betId = useParams().uid || '';
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);
@@ -26,7 +26,7 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(false);
     const [userCanCancel, setUserCanCancel] = useState(false);
 
-    const [profileManager] = useState( new ProfileManager({network, suiClient: rpcProvider}) );
+    const [profileManager] = useState( new ProfileManager({network, suiClient: suiClient}) ); // TODO: move to App.tsx to benefit from internal cache
     const [profiles, setProfiles] = useState( new Map<string, PolymediaProfile|null>() );
 
     const refIsReloadInProgress = useRef(false);
@@ -57,7 +57,7 @@ export function View()
             return;
         }
         refIsReloadInProgress.current = true;
-        await getBet(network, rpcProvider, betId).then( (bet: Bet|null) => {
+        await getBet(network, suiClient, betId).then( (bet: Bet|null) => {
             setBet(bet);
             bet && fetchProfiles(bet);
         });

@@ -13,13 +13,13 @@ import imgAppProfile from '../img/app-profile.webp';
 
 export type AppContext = {
     network: NetworkName,
-    rpcProvider: SuiClient,
+    suiClient: SuiClient,
 };
 
 export function App() {
     const location = useLocation();
     const [network, setNetwork] = useState<NetworkName|null>(null);
-    const [rpcProvider, setRpcProvider] = useState<SuiClient|null>(null);
+    const [suiClient, setSuiClient] = useState<SuiClient|null>(null);
     const showNetworkSelector = isLocalhost();
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export function App() {
             const rpcConfig = await loadRpcConfig({network, noFetch: true});
             const suiClient = new SuiClient({url: rpcConfig.fullnode});
             setNetwork(network);
-            setRpcProvider(suiClient);
+            setSuiClient(suiClient);
         };
         initialize();
     }, []);
@@ -40,13 +40,13 @@ export function App() {
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
-    if (!network || !rpcProvider) {
+    if (!network || !suiClient) {
         return <></>;
     }
 
     const appContext: AppContext = {
         network,
-        rpcProvider,
+        suiClient,
     };
 
     return <div id='page'>

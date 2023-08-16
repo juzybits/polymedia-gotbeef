@@ -9,7 +9,7 @@ import { timeAgo } from './lib/common';
 
 export function Find()
 {
-    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {network, suiClient} = useOutletContext<AppContext>();
     const {packageId} = getConfig(network);
 
     const [betId, setBetId] = useState('');
@@ -37,7 +37,7 @@ export function Find()
     }
     const loadRecentBets = async () =>
     {
-        const events: PaginatedEvents = await rpcProvider.queryEvents({
+        const events: PaginatedEvents = await suiClient.queryEvents({
             query: { MoveEventType: packageId+'::bet::CreateBetEvent' },
             limit: 20,
             order: 'descending'
@@ -69,7 +69,7 @@ export function Find()
         }
 
         // Search
-        getBet(network, rpcProvider, betIdClean).then(
+        getBet(network, suiClient, betIdClean).then(
         (bet: Bet|null) => {
             setBet(bet);
             bet && navigate('/bet/' + bet.id, {

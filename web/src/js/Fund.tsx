@@ -23,7 +23,7 @@ export const Fund: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {network, suiClient} = useOutletContext<AppContext>();
     const {packageId} = getConfig(network);
     const [userHasFunds, setUserHasFunds] = useState(false);
     const [answer, setAnswer] = useState('');
@@ -49,7 +49,7 @@ export const Fund: React.FC<{
             throw new Error('Wallet not connected');
         }
 
-        const coinBalance: CoinBalance = await rpcProvider.getBalance({
+        const coinBalance: CoinBalance = await suiClient.getBalance({
             owner: currentAccount.address,
             coinType: bet.collatType,
         });
@@ -65,7 +65,7 @@ export const Fund: React.FC<{
     const fundBet = async (
         bet: Bet,
         answer: string,
-    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
+    ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
     {
         if (!currentAccount) {
             throw new Error('Wallet not connected');
@@ -80,7 +80,7 @@ export const Fund: React.FC<{
         }
         else {
             // Get the coin objects
-            const paginatedCoins: PaginatedCoins = await rpcProvider.getCoins({
+            const paginatedCoins: PaginatedCoins = await suiClient.getCoins({
                 owner: currentAccount.address,
                 coinType: bet.collatType,
             });
@@ -111,7 +111,7 @@ export const Fund: React.FC<{
         const signedTx = await signTransactionBlock({
             transactionBlock: tx,
         });
-        return rpcProvider.executeTransactionBlock({
+        return suiClient.executeTransactionBlock({
             transactionBlock: signedTx.transactionBlockBytes,
             signature: signedTx.signature,
             options: {

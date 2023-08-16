@@ -16,7 +16,7 @@ export function New()
         document.title = 'Got Beef? - New'
     }, []);
 
-    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {network, suiClient} = useOutletContext<AppContext>();
     let {packageId} = getConfig(network);
 
     // Inputs
@@ -143,7 +143,7 @@ export function New()
         size: number,
         players: string[],
         judges: string[],
-    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
+    ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
     {
         console.debug(`[createBet] Calling bet::create on package: ${packageId}`);
         if (judges.includes('0xcb9afede793be884c5bb634f222dc8512829c7ee')) {
@@ -167,7 +167,7 @@ export function New()
         const signedTx = await signTransactionBlock({
             transactionBlock: tx,
         });
-        return rpcProvider.executeTransactionBlock({
+        return suiClient.executeTransactionBlock({
             transactionBlock: signedTx.transactionBlockBytes,
             signature: signedTx.signature,
             options: {

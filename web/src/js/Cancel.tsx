@@ -16,14 +16,14 @@ export const Cancel: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const {network, rpcProvider} = useOutletContext<AppContext>();
+    const {network, suiClient} = useOutletContext<AppContext>();
     const [error, setError] = useState('');
 
     const { packageId } = getConfig(network);
     const { signTransactionBlock } = useWalletKit();
     const cancelBet = async (
         bet: Bet
-    ): ReturnType<typeof rpcProvider['executeTransactionBlock']> =>
+    ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
     {
         console.debug(`[cancelBet] Calling bet::cancel on package: ${packageId}`);
 
@@ -39,7 +39,7 @@ export const Cancel: React.FC<{
         const signedTx = await signTransactionBlock({
             transactionBlock: tx,
         });
-        return rpcProvider.executeTransactionBlock({
+        return suiClient.executeTransactionBlock({
             transactionBlock: signedTx.transactionBlockBytes,
             signature: signedTx.signature,
             options: {
