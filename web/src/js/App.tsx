@@ -4,7 +4,7 @@ import { WalletKitProvider } from '@mysten/wallet-kit';
 import { SuiClient } from '@mysten/sui.js/client';
 
 import { NetworkSelector } from '@polymedia/react-components';
-import { NetworkName, isLocalhost, loadNetwork, loadRpcConfig } from '@polymedia/webutils';
+import { NetworkName, isLocalhost, loadNetwork, getRpcConfig } from '@polymedia/webutils';
 import { reloadClouds } from './lib/clouds';
 import cowImage from '../img/cow256.png';
 import imgAppChat from '../img/app-chat.webp';
@@ -25,7 +25,7 @@ export function App() {
     useEffect(() => {
         async function initialize() {
             const network = isLocalhost() ? loadNetwork() : 'mainnet';
-            const rpcConfig = await loadRpcConfig({network, noFetch: true});
+            const rpcConfig = await getRpcConfig({network, fetch: false});
             const suiClient = new SuiClient({url: rpcConfig.fullnode});
             setNetwork(network);
             setSuiClient(suiClient);

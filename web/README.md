@@ -2,6 +2,6 @@
 
 ## How to run locally
 ```
-yarn --ignore-engines
-yarn serve
+pnpm i
+pnpm serve
 ```
