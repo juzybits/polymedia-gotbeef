@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { TransactionBlock, TransactionEffects } from '@mysten/sui.js';
-import { useWalletKit } from '@mysten/wallet-kit';
 import { useOutletContext } from 'react-router-dom';
+
+import { TransactionEffects } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { useWalletKit } from '@mysten/wallet-kit';
 
 import { AppContext } from './App';
 import { Bet, getErrorName, getConfig } from './lib/gotbeef';

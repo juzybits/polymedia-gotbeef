@@ -1,6 +1,7 @@
-import React, { useEffect, useState, SyntheticEvent } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { OwnedObjectRef, TransactionBlock, TransactionEffects } from '@mysten/sui.js';
+import { OwnedObjectRef, TransactionEffects } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { useWalletKit } from '@mysten/wallet-kit';
 
 import { AppContext } from './App';
