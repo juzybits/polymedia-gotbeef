@@ -27,11 +27,11 @@ module gotbeef::bet_tests
     // Bet.phase possible values
     // Using bet::PHASE_FUND in not possible
     // Constants are internal to their module, and cannot can be accessed outside of their module.
-    const PHASE_FUND: u8 = 0;       
-    const PHASE_VOTE: u8 = 1;       
-    const PHASE_SETTLED: u8 = 2;    
-    const PHASE_CANCELED: u8 = 3;   
-    const PHASE_STALEMATE: u8 = 4;  
+    const PHASE_FUND: u8 = 0;
+    const PHASE_VOTE: u8 = 1;
+    const PHASE_SETTLED: u8 = 2;
+    const PHASE_CANCELED: u8 = 3;
+    const PHASE_STALEMATE: u8 = 4;
 
     /* Accessor tests */
 
@@ -66,7 +66,7 @@ module gotbeef::bet_tests
     /* create() tests */
 
     #[test]
-    fun test_create_success()
+    fun test_create()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -179,7 +179,7 @@ module gotbeef::bet_tests
     }
 
     #[test]
-    fun test_fund_success()
+    fun test_fund()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; { create_bet(scen); };
@@ -295,7 +295,7 @@ module gotbeef::bet_tests
     /* vote() tests */
 
     #[test]
-    fun test_vote_success()
+    fun test_vote()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; { create_bet(scen); };
@@ -385,7 +385,7 @@ module gotbeef::bet_tests
     /* cancel() tests */
 
     #[test]
-    fun test_cancel_no_funds_success()
+    fun test_cancel_no_funds()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -402,8 +402,7 @@ module gotbeef::bet_tests
     }
 
     #[test]
-    /// Any player or judge can cancel a bet if a player chickens out during funding
-    fun test_cancel_has_funds_success()
+    fun test_cancel_has_funds()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -417,6 +416,38 @@ module gotbeef::bet_tests
             ts::return_shared(bet_val);
         };
         // TODO check if PLAYER_1 received the funds
+        ts::end(scen_val);
+    }
+
+    #[test]
+    fun test_cancel_during_voting()
+    {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
+            create_bet(scen);
+        };
+
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
+
+        ts::next_tx(scen, PLAYER_1); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
+            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
+            bet::cancel( bet, ts::ctx(scen) ); // request to cancel the bet
+            ts::return_shared(bet_val);
+        };
+
+        ts::next_tx(scen, PLAYER_2); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
+            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
+            bet::cancel( bet, ts::ctx(scen) ); // request to cancel the bet
+            // both players requested to cancel the bet, so it should be canceled now
+            assert!( bet::phase(bet) == PHASE_CANCELED, 0 );
+            ts::return_shared(bet_val);
+        };
+
         ts::end(scen_val);
     }
 
@@ -437,9 +468,9 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = gotbeef::bet::E_BET_ALREADY_SETTLED)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_INVALID_PHASE)]
     /// Try to cancel a settled bet
-    fun test_cancel_e_bet_already_settled()
+    fun test_cancel_e_invalid_phase()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -462,9 +493,9 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = gotbeef::bet::E_CANCEL_REQUEST_ALREADY_MADE)]
-    /// Try to cancel a bet in the voting phase twice
-    fun test_cancel_e_cancel_request_already_made()
+    #[test, expected_failure(abort_code = gotbeef::bet::E_ALREADY_REQUESTED)]
+    /// A player tries to cancel a bet in the voting phase twice
+    fun test_cancel_e_already_requested()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -474,9 +505,6 @@ module gotbeef::bet_tests
         ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
         ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
 
-        // judges are not showing up to vote, 
-        // PLAYER_1 tries to cancel the bet twice
-
         ts::next_tx(scen, PLAYER_1); {
             let bet_val = ts::take_shared<Bet<SUI>>(scen);
             let bet = &mut bet_val;
@@ -485,39 +513,6 @@ module gotbeef::bet_tests
             bet::cancel( bet, ts::ctx(scen) );
             ts::return_shared(bet_val);
         };
-        ts::end(scen_val);
-    }
-
-    #[test]
-    /// Try to cancel a bet in the voting phase
-    fun test_cancel_during_voting_success()
-    {
-        let scen_val = ts::begin(CREATOR);
-        let scen = &mut scen_val; {
-            create_bet(scen);
-        };
-
-        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
-
-        // judges are not showing up to vote
-
-        ts::next_tx(scen, PLAYER_1); {
-            let bet_val = ts::take_shared<Bet<SUI>>(scen);
-            let bet = &mut bet_val;
-            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
-            bet::cancel( bet, ts::ctx(scen) );
-            ts::return_shared(bet_val);
-        };
-        ts::next_tx(scen, PLAYER_2); {
-            let bet_val = ts::take_shared<Bet<SUI>>(scen);
-            let bet = &mut bet_val;
-            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
-            bet::cancel( bet, ts::ctx(scen) );
-            assert!( bet::phase(bet) == PHASE_CANCELED, 0 );
-            ts::return_shared(bet_val);
-        };
-
         ts::end(scen_val);
     }
 
@@ -580,7 +575,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1],
             /* votes */   vector[@0xA1],
             /* quorum */  1,
-            /* expect_phase */ PHASE_SETTLED, 
+            /* expect_phase */ PHASE_SETTLED,
             /* expect_winner */ option::some(@0xA1),
         );
 
