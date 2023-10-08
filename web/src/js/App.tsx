@@ -11,6 +11,9 @@ import imgAppChat from '../img/app-chat.webp';
 import imgAppCastle from '../img/app-castle.webp';
 import imgAppProfile from '../img/app-profile.webp';
 
+import { registerSuiSnapWallet } from "@kunalabs-io/sui-snap-wallet";
+registerSuiSnapWallet();
+
 export type AppContext = {
     network: NetworkName,
     suiClient: SuiClient,
