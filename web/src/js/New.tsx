@@ -25,7 +25,7 @@ export function New()
     const [description, setDescription] = useState('');
     const [currency, setCurrency] = useState('0x2::sui::SUI');
     const [size, setSize] = useState(isProd ? '' : '0.000000007');
-    const [players, setPlayers] = useState(isProd ? '' : '0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713\n0xe956f7c91679020f75d94c44f08fe5caefb4b1be6d384b9f1093ddccff6a93f5\n0x7102570010cdc0f73bd14372c5a33df6f4560f11d75fbd87c1ab372755276ebc');
+    const [players, setPlayers] = useState(isProd ? '' : '0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713\n0xe956f7c91679020f75d94c44f08fe5caefb4b1be6d384b9f1093ddccff6a93f5\n0x0cd792f319cd9049c725be09fccac005827f2a0d9fe9336cf044ab1b69b79a10');
     const [judges, setJudges] = useState(isProd ? '' : '0x5d8133281aa26ad73542c0b53014c6831c37b9d98e7603fd0db2e1cc4453934a');
     const [quorum, setQuorum] = useState(isProd ? '' : 1);
     const [playersArray, setPlayersArray] = useState(new Array<string>());
@@ -167,6 +167,7 @@ export function New()
 
         const signedTx = await signTransactionBlock({
             transactionBlock: tx,
+            chain: `sui:${network}`,
         });
         return suiClient.executeTransactionBlock({
             transactionBlock: signedTx.transactionBlockBytes,

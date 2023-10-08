@@ -45,6 +45,7 @@ export const Vote: React.FC<{
 
         const signedTx = await signTransactionBlock({
             transactionBlock: tx,
+            chain: `sui:${network}`,
         });
         return suiClient.executeTransactionBlock({
             transactionBlock: signedTx.transactionBlockBytes,
