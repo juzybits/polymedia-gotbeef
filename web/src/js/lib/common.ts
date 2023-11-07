@@ -3,11 +3,6 @@
 export const isDev = window.location.hostname=='localhost';
 export const isProd = !isDev;
 
-/// Transform a long string like "startXXXXXXend" into "start...end"
-export function shorten(text: string|undefined, start=5, end=3, separator='...'): string {
-    return !text ? '' : text.slice(0, start) + separator + (end?text.slice(-end):'')
-}
-
 /// Get a date in relative time, e.g. "5 days ago"
 /// Copied from sui/apps/explorer/src/utils/timeUtils.ts
 export const timeAgo = (

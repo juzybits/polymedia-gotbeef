@@ -1,16 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams, useOutletContext } from 'react-router-dom';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
-import { linkToExplorer } from '@polymedia/webutils';
-
+import { linkToExplorer, shortenAddress } from '@polymedia/webutils';
+import React, { useEffect, useRef, useState } from 'react';
+import { useOutletContext, useParams } from 'react-router-dom';
 import { AppContext } from './App';
-import { ButtonConnect } from './components/ButtonConnect';
+import { Cancel } from './Cancel';
 import { Fund } from './Fund';
 import { Vote } from './Vote';
-import { Cancel } from './Cancel';
-import { getBet, Bet } from './lib/gotbeef';
-import { shorten } from './lib/common';
+import { ButtonConnect } from './components/ButtonConnect';
+import { Bet, getBet } from './lib/gotbeef';
 
 export function View()
 {
@@ -43,7 +41,7 @@ export function View()
     };
     const AddressOrProfile: React.FC<{address: string}> = ({address}) => {
         const profile = profiles.get(address);
-        const shortAddr = shorten(address);
+        const shortAddr = shortenAddress(address);
         return <>{profile
             ? <>{profile.name} ({shortAddr})</>
             : shortAddr
@@ -160,13 +158,13 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank' rel='noopener'>{shorten(betId)}</a></td>
+                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank' rel='noopener'>{shortenAddress(betId)}</a></td>
             </tr>
             {
             !bet.winner ? '' :
             <tr>
                 <td>&nbsp;<i className='nes-icon trophy is-small' />:</td>
-                <td>{shorten(bet.winner)}</td>
+                <td>{shortenAddress(bet.winner)}</td>
             </tr>
             }
             <tr>
@@ -226,7 +224,7 @@ export function View()
             <React.Fragment key={judge_addr}>
             <tr>
                 <td><AddressOrProfile address={judge_addr} /></td>
-                <td>{shorten(bet.votesByJudge.get(judge_addr))}</td>
+                <td>{shortenAddress(bet.votesByJudge.get(judge_addr))}</td>
             </tr>
             </React.Fragment>)
         }
