@@ -297,8 +297,8 @@ module gotbeef::bet
             ], vector[
                 utf8(b"Bet: {title}"),
                 utf8(b"{description}"),
-                utf8(b"https://gotbeef.app/bet/{id}"),
-                utf8(b"https://gotbeef.app"),
+                utf8(b"https://gotbeef.polymedia.app/bet/{id}"),
+                utf8(b"https://gotbeef.polymedia.app"),
                 utf8(b"https://polymedia.app")
             ], ctx
         );
