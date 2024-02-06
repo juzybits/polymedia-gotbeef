@@ -24,6 +24,15 @@ module gotbeef::bet_tests
     const JUDGES: vector<address> = vector[@0xB1, @0xB2];
     const SOMEONE: address = @0xC0B1E;
 
+    // Bet.phase possible values
+    // Using bet::PHASE_FUND in not possible
+    // Constants are internal to their module, and cannot can be accessed outside of their module.
+    const PHASE_FUND: u8 = 0;
+    const PHASE_VOTE: u8 = 1;
+    const PHASE_SETTLED: u8 = 2;
+    const PHASE_CANCELED: u8 = 3;
+    const PHASE_STALEMATE: u8 = 4;
+
     /* Accessor tests */
 
     #[test]
@@ -57,7 +66,7 @@ module gotbeef::bet_tests
     /* create() tests */
 
     #[test]
-    fun test_create_success()
+    fun test_create()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -170,7 +179,7 @@ module gotbeef::bet_tests
     }
 
     #[test]
-    fun test_fund_success()
+    fun test_fund()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; { create_bet(scen); };
@@ -184,7 +193,7 @@ module gotbeef::bet_tests
             // nobody has funded the bet yet
             assert!( vec_map::is_empty(funds), 0 );
             // the bet phase is set to PHASE_FUND
-            assert!( bet::phase(bet) == 0, 0 );
+            assert!( bet::phase(bet) == PHASE_FUND, 0 );
             ts::return_shared(bet_val);
         };
 
@@ -203,7 +212,7 @@ module gotbeef::bet_tests
             // and it's who you'd expect
             assert!( vec_map::contains(funds, &PLAYER_1), 0 );
             // the bet remains in the funding phase
-            assert!( bet::phase(bet) == 0, 0 );
+            assert!( bet::phase(bet) == PHASE_FUND, 0 );
             ts::return_shared(bet_val);
 
             // Player 1 got their change
@@ -226,7 +235,7 @@ module gotbeef::bet_tests
             // both players have funded the bet
             assert!( vec_map::contains(funds, &PLAYER_2), 0 );
             // the bet is now in the voting phase
-            assert!( bet::phase(bet) == 1, 0 );
+            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
             ts::return_shared(bet_val);
 
             // Player 2 didn't get any change
@@ -286,7 +295,7 @@ module gotbeef::bet_tests
     /* vote() tests */
 
     #[test]
-    fun test_vote_success()
+    fun test_vote()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; { create_bet(scen); };
@@ -376,7 +385,7 @@ module gotbeef::bet_tests
     /* cancel() tests */
 
     #[test]
-    fun cancel_success()
+    fun test_cancel_no_funds()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -386,27 +395,59 @@ module gotbeef::bet_tests
             let bet_val = ts::take_shared<Bet<SUI>>(scen);
             let bet = &mut bet_val;
             bet::cancel( bet, ts::ctx(scen) );
-            assert!( bet::phase(bet) == 3, 0 );
+            assert!( bet::phase(bet) == PHASE_CANCELED, 0 );
             ts::return_shared(bet_val);
         };
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = gotbeef::bet::E_BET_HAS_FUNDS)]
-    /// Try to cancel a bet with funds
-    fun test_cancel_e_bet_has_funds()
+    #[test]
+    fun test_cancel_has_funds()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
             create_bet(scen);
         };
         ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
-        ts::next_tx(scen, PLAYER_2); {
+        ts::next_tx(scen, PLAYER_1); {
             let bet_val = ts::take_shared<Bet<SUI>>(scen);
             let bet = &mut bet_val;
             bet::cancel( bet, ts::ctx(scen) );
             ts::return_shared(bet_val);
         };
+        // TODO check if PLAYER_1 received the funds
+        ts::end(scen_val);
+    }
+
+    #[test]
+    fun test_cancel_during_voting()
+    {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
+            create_bet(scen);
+        };
+
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
+
+        ts::next_tx(scen, PLAYER_1); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
+            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
+            bet::cancel( bet, ts::ctx(scen) ); // request to cancel the bet
+            ts::return_shared(bet_val);
+        };
+
+        ts::next_tx(scen, PLAYER_2); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
+            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
+            bet::cancel( bet, ts::ctx(scen) ); // request to cancel the bet
+            // both players requested to cancel the bet, so it should be canceled now
+            assert!( bet::phase(bet) == PHASE_CANCELED, 0 );
+            ts::return_shared(bet_val);
+        };
+
         ts::end(scen_val);
     }
 
@@ -427,9 +468,9 @@ module gotbeef::bet_tests
         ts::end(scen_val);
     }
 
-    #[test, expected_failure(abort_code = gotbeef::bet::E_NOT_IN_FUNDING_PHASE)]
+    #[test, expected_failure(abort_code = gotbeef::bet::E_INVALID_PHASE)]
     /// Try to cancel a settled bet
-    fun test_cancel_e_not_in_funding_phase()
+    fun test_cancel_e_invalid_phase()
     {
         let scen_val = ts::begin(CREATOR);
         let scen = &mut scen_val; {
@@ -445,7 +486,30 @@ module gotbeef::bet_tests
         ts::next_tx(scen, PLAYER_1); {
             let bet_val = ts::take_shared<Bet<SUI>>(scen);
             let bet = &mut bet_val;
-            assert!( bet::phase(bet) == 2, 0 ); // PHASE_SETTLED
+            assert!( bet::phase(bet) == PHASE_SETTLED, 0 );
+            bet::cancel( bet, ts::ctx(scen) );
+            ts::return_shared(bet_val);
+        };
+        ts::end(scen_val);
+    }
+
+    #[test, expected_failure(abort_code = gotbeef::bet::E_ALREADY_REQUESTED)]
+    /// A player tries to cancel a bet in the voting phase twice
+    fun test_cancel_e_already_requested()
+    {
+        let scen_val = ts::begin(CREATOR);
+        let scen = &mut scen_val; {
+            create_bet(scen);
+        };
+
+        ts::next_tx(scen, PLAYER_1); { fund_bet(scen, BET_SIZE); };
+        ts::next_tx(scen, PLAYER_2); { fund_bet(scen, BET_SIZE); };
+
+        ts::next_tx(scen, PLAYER_1); {
+            let bet_val = ts::take_shared<Bet<SUI>>(scen);
+            let bet = &mut bet_val;
+            assert!( bet::phase(bet) == PHASE_VOTE, 0 );
+            bet::cancel( bet, ts::ctx(scen) );
             bet::cancel( bet, ts::ctx(scen) );
             ts::return_shared(bet_val);
         };
@@ -511,7 +575,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1],
             /* votes */   vector[@0xA1],
             /* quorum */  1,
-            /* expect_phase */ 2, // PHASE_SETTLED
+            /* expect_phase */ PHASE_SETTLED,
             /* expect_winner */ option::some(@0xA1),
         );
 
@@ -521,7 +585,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2],
             /* votes */   vector[@0xA1, @0xA2],
             /* quorum */  2,
-            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_phase */ PHASE_STALEMATE,
             /* expect_winner */ option::none<address>(),
         );
         test_expectations(
@@ -529,7 +593,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2],
             /* votes */   vector[@0xA1, @0xA1],
             /* quorum */  2,
-            /* expect_phase */ 2, // PHASE_SETTLED
+            /* expect_phase */ PHASE_SETTLED,
             /* expect_winner */ option::some(@0xA1),
         );
 
@@ -539,7 +603,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
             /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA4],
             /* quorum */  3,
-            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_phase */ PHASE_STALEMATE,
             /* expect_winner */ option::none<address>(),
         );
         test_expectations(
@@ -547,7 +611,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
             /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3, @0xA4],
             /* quorum */  3,
-            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_phase */ PHASE_STALEMATE,
             /* expect_winner */ option::none<address>(),
         );
         test_expectations(
@@ -555,7 +619,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5],
             /* votes */   vector[@0xA1, @0xA2, @0xA3, @0xA3],
             /* quorum */  3,
-            /* expect_phase */ 1, // PHASE_VOTE
+            /* expect_phase */ PHASE_VOTE,
             /* expect_winner */ option::none<address>(),
         );
 
@@ -565,7 +629,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
             /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2, @0xA2],
             /* quorum */  5,
-            /* expect_phase */ 4, // PHASE_STALEMATE
+            /* expect_phase */ PHASE_STALEMATE,
             /* expect_winner */ option::none<address>(),
         );
 
@@ -575,7 +639,7 @@ module gotbeef::bet_tests
             /* judges */  vector[@0xB1, @0xB2, @0xB3, @0xB4, @0xB5, @0xB6, @0xB7],
             /* votes */   vector[@0xA1, @0xA1, @0xA1, @0xA2, @0xA2],
             /* quorum */  5,
-            /* expect_phase */ 1, // PHASE_VOTE
+            /* expect_phase */ PHASE_VOTE,
             /* expect_winner */ option::none<address>(),
         );
     }

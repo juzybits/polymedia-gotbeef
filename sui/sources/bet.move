@@ -47,9 +47,10 @@ module gotbeef::bet
     const E_ALREADY_VOTED: u64 = 202; // (maybe: allow judges to update their vote)
     const E_PLAYER_NOT_FOUND: u64 = 203;
 
-    // cancel()
-    const E_BET_HAS_FUNDS: u64 = 300;
+    // errors cancel()
     const E_NOT_AUTHORIZED: u64 = 301;
+    const E_INVALID_PHASE: u64 = 302;
+    const E_ALREADY_REQUESTED: u64 = 303;
 
     /* Settings */
 
@@ -83,6 +84,7 @@ module gotbeef::bet
         answers: VecMap<address, String>, // <player_addr, player_answer>
         most_votes: u64, // number of votes received by the leading player (to detect stalemates)
         winner: Option<address>,
+        cancel_requests: vector<address>
 
         // start_epoch: Option<u64>, // (maybe) voting starts on this day
         // end_epoch: Option<u64>, // (maybe) voting ends on this day
@@ -129,6 +131,9 @@ module gotbeef::bet
     public fun winner<T>(bet: &Bet<T>): &Option<address> {
         &bet.winner
     }
+    public fun cancel_requests<T>(bet: &Bet<T>): &vector<address> {
+        &bet.cancel_requests
+    }
 
     /* Core functionality */
 
@@ -174,6 +179,7 @@ module gotbeef::bet
             answers: vec_map::empty(),
             most_votes: 0,
             winner: option::none(),
+            cancel_requests: vector::empty(),
         };
         transfer::share_object(bet);
     }
@@ -252,20 +258,38 @@ module gotbeef::bet
         };
     }
 
-    /// Some scenarios where we might want to cancel the bet and refund the players:
-    /// - (done) If there's no funding, any judge or player may cancel it at any time.
-    /// - (maybe) If more than half of the participants agree to cancel the bet.
-    /// - (maybe) If all players agree to cancel the bet.
-    /// - (maybe) If a quorum of judges agrees to cancel the bet.
-    /// - (maybe) If end_epoch is reached without a quorum, any judge or player can cancel the bet.
-    public entry fun cancel<T>(bet: &mut Bet<T>, ctx: &mut TxContext) {
-        assert!( bet.phase == PHASE_FUND, E_NOT_IN_FUNDING_PHASE );
-        assert!( vec_map::is_empty(&bet.funds), E_BET_HAS_FUNDS );
+    /// Judges and players can cancel the bet (and refund player deposits) in these scenarios:
+    /// - If the bet is not fully funded, it can be canceled by any single judge or player.
+    /// - If the bet is fully funded, it can be canceled if all players unanimously agree to it.
+    public entry fun cancel<T>(
+        bet: &mut Bet<T>,
+        ctx: &mut TxContext
+    ) {
+        assert!( bet.phase == PHASE_FUND || bet.phase == PHASE_VOTE, E_INVALID_PHASE );
         let sender = tx_context::sender(ctx);
         let is_player = vector::contains(&bet.players, &sender);
         let is_judge = vector::contains(&bet.judges, &sender);
         assert!( is_player || is_judge, E_NOT_AUTHORIZED );
-        bet.phase = PHASE_CANCELED;
+
+        // any judge or player can cancel the bet before all players deposit their funds
+        if ( bet.phase == PHASE_FUND ) {
+            transfers::refund_all(&mut bet.funds); // some players may have already funded the bet
+            bet.phase = PHASE_CANCELED;
+        }
+        // players can unanimously cancel the bet during the voting phase
+        else if ( bet.phase == PHASE_VOTE ) {
+            assert!( is_player, E_NOT_AUTHORIZED );
+            assert!( !vector::contains(&bet.cancel_requests, &sender), E_ALREADY_REQUESTED );
+            // record the cancel request
+            vector::push_back(&mut bet.cancel_requests, sender);
+            // if all players requested to cancel the bet, cancel it
+            let player_len = vector::length(&bet.players);
+            let cancel_requests_len = vector::length(&bet.cancel_requests);
+            if ( player_len == cancel_requests_len ) {
+                transfers::refund_all(&mut bet.funds);
+                bet.phase = PHASE_CANCELED;
+            }
+        };
     }
 
     /* Helpers */
