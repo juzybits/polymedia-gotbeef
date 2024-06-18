@@ -1,7 +1,7 @@
 import { useCurrentAccount, useSuiClient } from '@mysten/dapp-kit';
 import { PolymediaProfile, ProfileClient } from '@polymedia/profile-sdk';
 import { shortenSuiAddress } from '@polymedia/suitcase-core';
-import { linkToExplorer } from '@polymedia/suitcase-react';
+import { LinkToPolymedia } from '@polymedia/suitcase-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { AppContext } from './App';
@@ -29,14 +29,14 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(false);
     const [userCanCancel, setUserCanCancel] = useState(false);
 
-    const [profileClient] = useState( new ProfileClient({network, suiClient: suiClient}) ); // TODO: move to App.tsx to benefit from internal cache
+    const [profileClient] = useState( new ProfileClient(network, suiClient) ); // TODO: move to App.tsx to benefit from internal cache
     const [profiles, setProfiles] = useState( new Map<string, PolymediaProfile|null>() );
 
     const refIsReloadInProgress = useRef(false);
 
     const fetchProfiles = (bet: Bet) => { // TODO: do only once
         const lookupAddresses = [ ...bet.players, ...bet.judges ];
-        profileClient.getProfilesByOwner({lookupAddresses})
+        profileClient.getProfilesByOwner(lookupAddresses)
         .then(profiles => {
             setProfiles(profiles);
         })
@@ -163,7 +163,9 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank' rel='noopener'>{shortenSuiAddress(betId)}</a></td>
+                <td>
+                    <LinkToPolymedia network={network} kind='object' addr={betId} className='rainbow' />
+                </td>
             </tr>
             {
             !bet.winner ? '' :
