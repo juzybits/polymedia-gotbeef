@@ -1,12 +1,12 @@
 import { TransactionEffects } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile } from '@polymedia/profile-sdk';
 import React, { SyntheticEvent, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { AppContext } from './App';
 import { showConfetti } from './lib/confetti';
 import { Bet, getConfig, getErrorName } from './lib/gotbeef';
+import { useSignTransaction, useSuiClient } from '@mysten/dapp-kit';
 
 export const Vote: React.FC<{
     bet: Bet,
@@ -20,11 +20,15 @@ export const Vote: React.FC<{
     profiles,
 
 }) => {
-    const {network, suiClient} = useOutletContext<AppContext>();
-    const {packageId} = getConfig(network);
+
+    const suiClient = useSuiClient();
+    const { mutateAsync: signTransaction } = useSignTransaction();
+
+    const { network } = useOutletContext<AppContext>();
+    const { packageId } = getConfig(network);
+
     const [error, setError] = useState('');
 
-    const { signTransactionBlock } = useWalletKit();
     const castVote = async (
         bet: Bet,
         player_addr: string
@@ -42,12 +46,12 @@ export const Vote: React.FC<{
             ],
         });
 
-        const signedTx = await signTransactionBlock({
-            transactionBlock: tx,
+        const signedTx = await signTransaction({
+            transaction: tx,
             chain: `sui:${network}`,
         });
         return suiClient.executeTransactionBlock({
-            transactionBlock: signedTx.transactionBlockBytes,
+            transactionBlock: signedTx.bytes,
             signature: signedTx.signature,
             options: {
                 showEffects: true,

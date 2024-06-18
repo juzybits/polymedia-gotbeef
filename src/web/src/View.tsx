@@ -1,4 +1,4 @@
-import { useWalletKit } from '@mysten/wallet-kit';
+import { useCurrentAccount, useSuiClient } from '@mysten/dapp-kit';
 import { PolymediaProfile, ProfileClient } from '@polymedia/profile-sdk';
 import { shortenSuiAddress } from '@polymedia/suitcase-core';
 import { linkToExplorer } from '@polymedia/suitcase-react';
@@ -14,7 +14,11 @@ import { Bet, getBet } from './lib/gotbeef';
 export function View()
 {
     /* Data */
-    const {network, suiClient} = useOutletContext<AppContext>();
+
+    const suiClient = useSuiClient();
+    const currentAccount = useCurrentAccount();
+
+    const { network } = useOutletContext<AppContext>();
 
     const betId = useParams().uid || '';
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);
@@ -82,7 +86,7 @@ export function View()
 
     /* Decide which action buttons are visible to the user */
 
-    const { isConnected, currentAccount } = useWalletKit();
+    const { isConnected } = useWalletKit();
     useEffect(() => {
         if (!isConnected || !bet || !currentAccount) {
             return;

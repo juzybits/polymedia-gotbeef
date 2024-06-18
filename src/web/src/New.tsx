@@ -1,6 +1,6 @@
+import { useCurrentAccount, useSignTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { OwnedObjectRef, TransactionEffects } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { useWalletKit } from '@mysten/wallet-kit';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { AppContext } from './App';
@@ -16,8 +16,12 @@ export function New()
         document.title = 'Got Beef? - New'
     }, []);
 
-    const {network, suiClient} = useOutletContext<AppContext>();
-    let {packageId} = getConfig(network);
+    const suiClient = useSuiClient();
+    const currentAccount = useCurrentAccount();
+    const { mutateAsync: signTransaction } = useSignTransaction();
+
+    const { network } = useOutletContext<AppContext>();
+    let { packageId } = getConfig(network);
 
     // Inputs
     const [title, setTitle] = useState(isProd ? '' : 'GCR vs Kwon');
@@ -134,7 +138,6 @@ export function New()
         // });
     }
 
-    const { signTransactionBlock } = useWalletKit();
     const createBet = async (
         currency: string, // e.g. '0x2::sui::SUI'
         title: string,
@@ -164,12 +167,12 @@ export function New()
             ],
         });
 
-        const signedTx = await signTransactionBlock({
-            transactionBlock: tx,
+        const signedTx = await signTransaction({
+            transaction: tx,
             chain: `sui:${network}`,
         });
         return suiClient.executeTransactionBlock({
-            transactionBlock: signedTx.transactionBlockBytes,
+            transactionBlock: signedTx.bytes,
             signature: signedTx.signature,
             options: {
                 showEffects: true,
@@ -209,7 +212,6 @@ export function New()
         });
     };
 
-    const { currentAccount } = useWalletKit();
     return <React.Fragment>
 
     <h2>NEW BET</h2>

@@ -1,3 +1,4 @@
+import { useSuiClient } from '@mysten/dapp-kit';
 import { PaginatedEvents } from '@mysten/sui/client';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
@@ -8,8 +9,10 @@ import { Bet, getBet, getConfig } from './lib/gotbeef';
 
 export function Find()
 {
-    const {network, suiClient} = useOutletContext<AppContext>();
-    const {packageId} = getConfig(network);
+    const suiClient = useSuiClient();
+
+    const { network } = useOutletContext<AppContext>();
+    const { packageId } = getConfig(network);
 
     const [betId, setBetId] = useState('');
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);

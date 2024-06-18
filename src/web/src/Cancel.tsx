@@ -1,6 +1,6 @@
+import { useSignTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { TransactionEffects } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { useWalletKit } from '@mysten/wallet-kit';
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { AppContext } from './App';
@@ -16,11 +16,13 @@ export const Cancel: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const {network, suiClient} = useOutletContext<AppContext>();
-    const [error, setError] = useState('');
+    const suiClient = useSuiClient();
+    const { mutateAsync: signTransaction } = useSignTransaction();
+
+    const { network } = useOutletContext<AppContext>();
+    const [ error, setError ] = useState('');
 
     const { packageId } = getConfig(network);
-    const { signTransactionBlock } = useWalletKit();
     const cancelBet = async (
         bet: Bet
     ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
@@ -36,12 +38,12 @@ export const Cancel: React.FC<{
             ],
         });
 
-        const signedTx = await signTransactionBlock({
-            transactionBlock: tx,
+        const signedTx = await signTransaction({
+            transaction: tx,
             chain: `sui:${network}`,
         });
         return suiClient.executeTransactionBlock({
-            transactionBlock: signedTx.transactionBlockBytes,
+            transactionBlock: signedTx.bytes,
             signature: signedTx.signature,
             options: {
                 showEffects: true,

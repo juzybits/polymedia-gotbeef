@@ -1,6 +1,6 @@
+import { useCurrentAccount, useSignTransaction, useSuiClient } from '@mysten/dapp-kit';
 import { CoinBalance, PaginatedCoins, TransactionEffects } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { useWalletKit } from '@mysten/wallet-kit';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { AppContext } from './App';
@@ -16,14 +16,18 @@ export const Fund: React.FC<{
     reloadBet,
     setModal,
 }) => {
-    const {network, suiClient} = useOutletContext<AppContext>();
+    const suiClient = useSuiClient();
+    const currentAccount = useCurrentAccount();
+    const { mutateAsync: signTransaction } = useSignTransaction();
+
+    const { network } = useOutletContext<AppContext>();
+
     const {packageId} = getConfig(network);
     const [userHasFunds, setUserHasFunds] = useState(false);
     const [answer, setAnswer] = useState('');
     const [error, setError] = useState('');
 
     // Look for a Coin<T> with enough balance to fund the bet
-    const { currentAccount } = useWalletKit();
 
     useEffect(() => {
         checkUserFunds()
@@ -54,7 +58,6 @@ export const Fund: React.FC<{
         }
     };
 
-    const { signTransactionBlock } = useWalletKit();
     const fundBet = async (
         bet: Bet,
         answer: string,
@@ -101,12 +104,12 @@ export const Fund: React.FC<{
             ],
         });
 
-        const signedTx = await signTransactionBlock({
-            transactionBlock: tx,
+        const signedTx = await signTransaction({
+            transaction: tx,
             chain: `sui:${network}`,
         });
         return suiClient.executeTransactionBlock({
-            transactionBlock: signedTx.transactionBlockBytes,
+            transactionBlock: signedTx.bytes,
             signature: signedTx.signature,
             options: {
                 showEffects: true,

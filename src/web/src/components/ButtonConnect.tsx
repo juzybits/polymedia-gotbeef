@@ -1,13 +1,15 @@
+import { ConnectModal, useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
 import { useState } from 'react';
-import { ConnectModal, useWalletKit } from '@mysten/wallet-kit';
 
 export function ButtonConnect()
 {
+    const currentAccount = useCurrentAccount();
+    const { mutate: disconnect } = useDisconnectWallet();
+
     const [showConnectModal, setShowConnectModal] = useState(false);
-    const { currentAccount, disconnect } = useWalletKit();
 
     const ButtonDisconnect = () => {
-        return <button type='button' className='nes-btn' onClick={disconnect}>
+        return <button type='button' className='nes-btn' onClick={() => { disconnect(); }}>
             DISCONNECT
         </button>;
     }
@@ -19,8 +21,9 @@ export function ButtonConnect()
 
         return <>
             <ConnectModal
+                trigger={<></>}
                 open={showConnectModal}
-                onClose={() => setShowConnectModal(false)}
+                onOpenChange={isOpen => { setShowConnectModal(isOpen); }}
             />
             <button type='button' className='nes-btn is-warning'
                 onClick={() => setShowConnectModal(true)}>CONNECT</button>
