@@ -1,18 +1,11 @@
-import React, { useEffect, useState, SyntheticEvent } from 'react';
-import {
-    CoinBalance,
-    PaginatedCoins,
-    TransactionEffects,
-} from '@mysten/sui.js/client';
-import {
-    TransactionBlock,
-} from '@mysten/sui.js/transactions';
+import { CoinBalance, PaginatedCoins, TransactionEffects } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { useWalletKit } from '@mysten/wallet-kit';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-
 import { AppContext } from './App';
-import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
+import { Bet, getConfig, getErrorName } from './lib/gotbeef';
 
 export const Fund: React.FC<{
     bet: Bet,
@@ -72,9 +65,9 @@ export const Fund: React.FC<{
         }
         console.debug(`[fundBet] Calling bet::fund on package: ${packageId}`);
 
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
 
-        let fundingCoin: ReturnType<TransactionBlock['splitCoins']>;
+        let fundingCoin: ReturnType<Transaction['splitCoins']>;
         if (bet.collatType === '0x2::sui::SUI') {
             fundingCoin = tx.splitCoins(tx.gas, [tx.pure(bet.size)]);
         }

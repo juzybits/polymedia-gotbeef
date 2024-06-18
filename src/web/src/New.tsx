@@ -1,15 +1,14 @@
+import { OwnedObjectRef, TransactionEffects } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { useWalletKit } from '@mysten/wallet-kit';
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { OwnedObjectRef, TransactionEffects } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { useWalletKit } from '@mysten/wallet-kit';
-
 import { AppContext } from './App';
 import { ButtonConnect } from './components/ButtonConnect';
 import { FieldError } from './components/FieldError';
-import { getConfig, getErrorName } from './lib/gotbeef';
 import { isProd } from './lib/common';
 import { showConfetti } from './lib/confetti';
+import { getConfig, getErrorName } from './lib/gotbeef';
 
 export function New()
 {
@@ -151,7 +150,7 @@ export function New()
             log([title, description, quorum, size, players, judges]);
         }
 
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         tx.moveCall({
             target: `${packageId}::bet::create`,
             typeArguments: [ currency ],

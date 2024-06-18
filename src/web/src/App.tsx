@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { SuiClient } from '@mysten/sui/client';
 import { WalletKitProvider } from '@mysten/wallet-kit';
-import { SuiClient } from '@mysten/sui.js/client';
-
-import { NetworkSelector } from '@polymedia/react-components';
-import { NetworkName, isLocalhost, loadNetwork, getRpcConfig } from '@polymedia/webutils';
-import { reloadClouds } from './lib/clouds';
-import cowImage from '../img/cow256.png';
-import imgAppChat from '../img/app-chat.webp';
+import { NetworkName } from '@polymedia/suitcase-core';
+import { NetworkSelector, isLocalhost, loadNetwork } from '@polymedia/suitcase-react';
+import { useEffect, useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import imgAppCastle from '../img/app-castle.webp';
+import imgAppChat from '../img/app-chat.webp';
 import imgAppProfile from '../img/app-profile.webp';
+import cowImage from '../img/cow256.png';
+import { reloadClouds } from './lib/clouds';
 
 export type AppContext = {
     network: NetworkName,

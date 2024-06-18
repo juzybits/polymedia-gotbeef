@@ -1,11 +1,10 @@
-import React, { useEffect, useState, SyntheticEvent } from 'react';
+import { PaginatedEvents } from '@mysten/sui/client';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
-import { PaginatedEvents } from '@mysten/sui.js/client';
-
 import { AppContext } from './App';
 import { FieldError } from './components/FieldError';
-import { Bet, getBet, getConfig } from './lib/gotbeef';
 import { timeAgo } from './lib/common';
+import { Bet, getBet, getConfig } from './lib/gotbeef';
 
 export function Find()
 {

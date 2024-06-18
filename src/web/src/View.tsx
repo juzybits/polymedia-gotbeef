@@ -1,6 +1,7 @@
 import { useWalletKit } from '@mysten/wallet-kit';
-import { PolymediaProfile, ProfileManager } from '@polymedia/profile-sdk';
-import { linkToExplorer, shortenAddress } from '@polymedia/webutils';
+import { PolymediaProfile, ProfileClient } from '@polymedia/profile-sdk';
+import { shortenSuiAddress } from '@polymedia/suitcase-core';
+import { linkToExplorer } from '@polymedia/suitcase-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import { AppContext } from './App';
@@ -24,14 +25,14 @@ export function View()
     const [userCanVote, setUserCanVote] = useState(false);
     const [userCanCancel, setUserCanCancel] = useState(false);
 
-    const [profileManager] = useState( new ProfileManager({network, suiClient: suiClient}) ); // TODO: move to App.tsx to benefit from internal cache
+    const [profileClient] = useState( new ProfileClient({network, suiClient: suiClient}) ); // TODO: move to App.tsx to benefit from internal cache
     const [profiles, setProfiles] = useState( new Map<string, PolymediaProfile|null>() );
 
     const refIsReloadInProgress = useRef(false);
 
     const fetchProfiles = (bet: Bet) => { // TODO: do only once
         const lookupAddresses = [ ...bet.players, ...bet.judges ];
-        profileManager.getProfilesByOwner({lookupAddresses})
+        profileClient.getProfilesByOwner({lookupAddresses})
         .then(profiles => {
             setProfiles(profiles);
         })
@@ -41,7 +42,7 @@ export function View()
     };
     const AddressOrProfile: React.FC<{address: string}> = ({address}) => {
         const profile = profiles.get(address);
-        const shortAddr = shortenAddress(address);
+        const shortAddr = shortenSuiAddress(address);
         return <>{profile
             ? <>{profile.name} ({shortAddr})</>
             : shortAddr
@@ -158,13 +159,13 @@ export function View()
         <tbody>
             <tr>
                 <td>ID:</td>
-                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank' rel='noopener'>{shortenAddress(betId)}</a></td>
+                <td><a href={linkToExplorer(network, 'object', betId)} className='rainbow' target='_blank' rel='noopener'>{shortenSuiAddress(betId)}</a></td>
             </tr>
             {
             !bet.winner ? '' :
             <tr>
                 <td>&nbsp;<i className='nes-icon trophy is-small' />:</td>
-                <td>{shortenAddress(bet.winner)}</td>
+                <td>{shortenSuiAddress(bet.winner)}</td>
             </tr>
             }
             <tr>
@@ -224,7 +225,7 @@ export function View()
             <React.Fragment key={judge_addr}>
             <tr>
                 <td><AddressOrProfile address={judge_addr} /></td>
-                <td>{shortenAddress(bet.votesByJudge.get(judge_addr))}</td>
+                <td>{shortenSuiAddress(bet.votesByJudge.get(judge_addr))}</td>
             </tr>
             </React.Fragment>)
         }

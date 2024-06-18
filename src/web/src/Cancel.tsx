@@ -1,13 +1,11 @@
+import { TransactionEffects } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { useWalletKit } from '@mysten/wallet-kit';
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-
-import { TransactionEffects } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { useWalletKit } from '@mysten/wallet-kit';
-
 import { AppContext } from './App';
-import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
+import { Bet, getConfig, getErrorName } from './lib/gotbeef';
 
 export const Cancel: React.FC<{
     bet: Bet,
@@ -29,7 +27,7 @@ export const Cancel: React.FC<{
     {
         console.debug(`[cancelBet] Calling bet::cancel on package: ${packageId}`);
 
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         tx.moveCall({
             target: `${packageId}::bet::cancel`,
             typeArguments: [ bet.collatType ],

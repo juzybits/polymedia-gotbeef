@@ -1,13 +1,12 @@
-import React, { useState, SyntheticEvent } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { TransactionEffects } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionEffects } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { useWalletKit } from '@mysten/wallet-kit';
 import { PolymediaProfile } from '@polymedia/profile-sdk';
-
+import React, { SyntheticEvent, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { AppContext } from './App';
-import { Bet, getErrorName, getConfig } from './lib/gotbeef';
 import { showConfetti } from './lib/confetti';
+import { Bet, getConfig, getErrorName } from './lib/gotbeef';
 
 export const Vote: React.FC<{
     bet: Bet,
@@ -33,7 +32,7 @@ export const Vote: React.FC<{
     {
         console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
 
-        const tx = new TransactionBlock();
+        const tx = new Transaction();
         tx.moveCall({
             target: `${packageId}::bet::vote`,
             typeArguments: [ bet.collatType ],
