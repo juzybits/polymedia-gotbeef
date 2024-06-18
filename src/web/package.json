@@ -1,0 +1,50 @@
+{
+    "private": true,
+    "version": "0.0.0",
+    "name": "@polymedia/gotbeef-web",
+    "author": "@juzybits (https://polymedia.app)",
+    "homepage": "https://gotbeef.polymedia.app",
+    "description": "Peer-to-peer onchain bets on Sui.",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/juzybits/polymedia-gotbeef"
+    },
+    "keywords": [],
+    "scripts": {
+        "build": "vite build",
+        "clean": "rm -rf dist/ node_modules/ .turbo/ .wrangler/",
+        "deploy-dev": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-gotbeef --branch dev",
+        "deploy-prod": "pnpm build && wrangler pages deploy dist/ --project-name polymedia-gotbeef --branch main",
+        "dev": "vite",
+        "lint": "eslint src/ --report-unused-disable-directives --max-warnings 0",
+        "preview": "pnpm build && vite preview",
+        "tunnel": "lt --port 1234",
+        "typecheck": "tsc"
+    },
+    "dependencies": {
+        "@mysten/dapp-kit": "^0.14.9",
+        "@mysten/sui": "^1.1.2",
+        "@polymedia/profile-sdk": "^2.0.0",
+        "@polymedia/suitcase-core": "^0.0.7",
+        "@polymedia/suitcase-react": "^0.0.7",
+        "@tanstack/react-query": "^5.45.1",
+        "js-confetti": "^0.12.0",
+        "nes.css": "^2.3.0",
+        "normalize.css": "^8.0.1",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-router-dom": "^6.23.1"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.3",
+        "@types/react-dom": "^18.3.0",
+        "@vitejs/plugin-react-swc": "^3.7.0",
+        "less": "^4.2.0",
+        "localtunnel": "^2.0.2",
+        "vite": "^5.3.1",
+        "wrangler": "^3.61.0"
+    },
+    "type": "module",
+    "sideEffects": false
+}
