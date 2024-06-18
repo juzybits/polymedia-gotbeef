@@ -11,7 +11,7 @@ export function reloadClouds(): void
 {
     // Remove all clouds
     let el = null;
-    while ( el = document.querySelector('.cloud, .steak, .door-closed, .door-open') ) {
+    while ( el = document.querySelector(".cloud, .steak, .door-closed, .door-open") ) {
         el.parentNode?.removeChild(el);
     }
 
@@ -24,9 +24,9 @@ export function reloadClouds(): void
     || document.body.clientHeight;
 
     // Get the elements that enclose the clouds
-    const footer = document.getElementById('footer');
-    const moreFromUs = document.getElementById('more-from-us');
-    const page = document.getElementById('page');
+    const footer = document.getElementById("footer");
+    const moreFromUs = document.getElementById("more-from-us");
+    const page = document.getElementById("page");
     if (!footer || !page) return;
 
     // Paint clouds between the footer and the bottom of the browser window
@@ -74,18 +74,18 @@ function paintClouds(top: number, right: number, bottom: number, left: number): 
     const extraClouds = canvasSqrt < 500 ? 0 : Math.floor( (canvasSqrt-500) / IMG_SQRT );
     const cloudCount = getRandomInt(1, 2) + extraClouds;
 
-    for (var i = 0; i < cloudCount; i++) {
+    for (let i = 0; i < cloudCount; i++) {
         const imgTop = getRandomInt(top, bottom);
         const imgLeft = getRandomInt(left, right);
 
-        const el = document.createElement('span');
-        el.className = 'cloud';
+        const el = document.createElement("span");
+        el.className = "cloud";
         el.setAttribute(
-          'style',
+          "style",
           `top: ${imgTop}px; left: ${imgLeft}px`,
         );
-        el.addEventListener('click', (_event) => {
-            el.className = 'steak';
+        el.addEventListener("click", (_event) => {
+            el.className = "steak";
         });
         document.body.appendChild(el);
     }

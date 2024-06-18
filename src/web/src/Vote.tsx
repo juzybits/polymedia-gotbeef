@@ -1,18 +1,17 @@
-import { TransactionEffects } from '@mysten/sui/client';
-import { Transaction } from '@mysten/sui/transactions';
-import { PolymediaProfile } from '@polymedia/profile-sdk';
-import React, { SyntheticEvent, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { AppContext } from './App';
-import { showConfetti } from './lib/confetti';
-import { Bet, getConfig, getErrorName } from './lib/gotbeef';
-import { useSignTransaction, useSuiClient } from '@mysten/dapp-kit';
+import { Transaction } from "@mysten/sui/transactions";
+import { PolymediaProfile } from "@polymedia/profile-sdk";
+import React, { SyntheticEvent, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import { AppContext } from "./App";
+import { showConfetti } from "./lib/confetti";
+import { Bet, getConfig, getErrorName } from "./lib/gotbeef";
+import { useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
 
 export const Vote: React.FC<{
-    bet: Bet,
-    reloadBet: () => Promise<void>,
-    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>,
-    profiles: Map<string, PolymediaProfile|null>,
+    bet: Bet;
+    reloadBet: () => Promise<void>;
+    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>;
+    profiles: Map<string, PolymediaProfile|null>;
 }> = ({
     bet,
     reloadBet,
@@ -27,12 +26,12 @@ export const Vote: React.FC<{
     const { network } = useOutletContext<AppContext>();
     const { packageId } = getConfig(network);
 
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const castVote = async (
         bet: Bet,
         player_addr: string
-    ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
+    ): ReturnType<typeof suiClient["executeTransactionBlock"]> =>
     {
         console.debug(`[castVote] Calling bet::vote on package: ${packageId}`);
 
@@ -63,13 +62,13 @@ export const Vote: React.FC<{
         const player_addr = (e.target as HTMLButtonElement).value;
         castVote(bet, player_addr)
         .then(resp => {
-            const effects = resp.effects as TransactionEffects;
-            if (effects.status.status == 'success') {
+            const effects = resp.effects!;
+            if (effects.status.status == "success") {
                 showConfetti();
-                setError('');
-                setModal('');
+                setError("");
+                setModal("");
                 reloadBet();
-                console.debug('[onClickVote] Success:', resp);
+                console.debug("[onClickVote] Success:", resp);
             } else {
                 setError( getErrorName(effects.status.error) );
             }
@@ -80,33 +79,33 @@ export const Vote: React.FC<{
     };
 
     const onClickBack = () => {
-        setModal('');
+        setModal("");
     };
 
     const profileNameOrBlank = (address: string): string => {
         const profile = profiles.get(address);
-        return profile ? profile.name : '';
+        return profile ? profile.name : "";
     };
 
-    return <section className='bet-modal'>
+    return <section className="bet-modal">
         <h2>Vote</h2>
         Click the address of the winner:
         <br/>
         {
             bet.players.map((player: string) =>
-                <div key={player} className='player-box'>
+                <div key={player} className="player-box">
                     <div>{profileNameOrBlank(player)}</div>
-                    <button type='button' className='nes-btn is-primary' style={{overflowWrap: 'anywhere'}}
+                    <button type="button" className="nes-btn is-primary" style={{overflowWrap: "anywhere"}}
                         value={player} onClick={onClickVote}>{player}
                     </button>
-                    <span className='player-box-answer'>
-                        <b>ANSWER:</b> {bet.answers.get(player) || '-'}
+                    <span className="player-box-answer">
+                        <b>ANSWER:</b> {bet.answers.get(player) || "-"}
                     </span>
                 </div>
             )
         }
         <br/>
-        <button type='button' className='nes-btn' onClick={onClickBack}>
+        <button type="button" className="nes-btn" onClick={onClickBack}>
             BACK
         </button>
         <br/>
@@ -122,4 +121,4 @@ export const Vote: React.FC<{
         <br/>
         <hr/>
     </section>;
-}
+};

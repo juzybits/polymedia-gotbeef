@@ -1,11 +1,11 @@
-import { useSuiClient } from '@mysten/dapp-kit';
-import { PaginatedEvents } from '@mysten/sui/client';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { Link, useNavigate, useOutletContext } from 'react-router-dom';
-import { AppContext } from './App';
-import { FieldError } from './components/FieldError';
-import { timeAgo } from './lib/common';
-import { Bet, getBet, getConfig } from './lib/gotbeef';
+import { useSuiClient } from "@mysten/dapp-kit";
+import { PaginatedEvents } from "@mysten/sui/client";
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { AppContext } from "./App";
+import { FieldError } from "./components/FieldError";
+import { timeAgo } from "./lib/common";
+import { Bet, getBet, getConfig } from "./lib/gotbeef";
 
 export function Find()
 {
@@ -14,35 +14,35 @@ export function Find()
     const { network } = useOutletContext<AppContext>();
     const { packageId } = getConfig(network);
 
-    const [betId, setBetId] = useState('');
+    const [betId, setBetId] = useState("");
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const [recentBets, setRecentBets] = useState<BetSummary[]>([]);
 
     useEffect(() => {
-        document.title = 'Got Beef? - Find';
+        document.title = "Got Beef? - Find";
         loadRecentBets()
         .catch(error => {
-            console.warn('[loadRecentBets]', error.stack);
-            setError('[loadRecentBets] ' + error.message);
+            console.warn("[loadRecentBets]", error.stack);
+            setError("[loadRecentBets] " + error.message);
         });
     }, []);
 
     type BetSummary = {
-        id: string,
-        title: string,
-        time: number,
+        id: string;
+        title: string;
+        time: number;
     };
     type CreateBetEventData = {
-        bet_id: string,
-        bet_title: string,
-    }
+        bet_id: string;
+        bet_title: string;
+    };
     const loadRecentBets = async () =>
     {
         const events: PaginatedEvents = await suiClient.queryEvents({
-            query: { MoveEventType: packageId+'::bet::CreateBetEvent' },
+            query: { MoveEventType: packageId+"::bet::CreateBetEvent" },
             limit: 20,
-            order: 'descending'
+            order: "descending"
         });
 
         const bets: BetSummary[] = events.data.map(event => {
@@ -61,12 +61,12 @@ export function Find()
         e.preventDefault();
 
         // Validate input
-        const betIdClean = betId.trim()
+        const betIdClean = betId.trim();
         if ( betIdClean.match(/^0x[0-9a-fA-F]{64}$/) ) {
-            setError('');
+            setError("");
         } else {
             setBet(undefined);
-            setError("that doesn't look like a valid address")
+            setError("that doesn't look like a valid address");
             return;
         }
 
@@ -74,7 +74,7 @@ export function Find()
         getBet(network, suiClient, betIdClean).then(
         (bet: Bet|null) => {
             setBet(bet);
-            bet && navigate('/bet/' + bet.id, {
+            bet && navigate("/bet/" + bet.id, {
                 // state: { bet: bet } // No longer used
             });
         });
@@ -89,7 +89,7 @@ export function Find()
             <h2>Error</h2>
             Bet not found.
         </section>;
-    }
+    };
 
     return <React.Fragment>
 
@@ -97,17 +97,17 @@ export function Find()
 
         <form onSubmit={onSubmitSearch}>
 
-            <div className='nes-field'>
-                <label htmlFor='uid_field'>Object ID</label>
-                <input type='text' id='uid_field' className={`nes-input ${error ? 'is-error' : ''}`}
-                    spellCheck='false' autoCorrect='off' autoComplete='off'
+            <div className="nes-field">
+                <label htmlFor="uid_field">Object ID</label>
+                <input type="text" id="uid_field" className={`nes-input ${error ? "is-error" : ""}`}
+                    spellCheck="false" autoCorrect="off" autoComplete="off"
                     value={betId} onChange={(e) => setBetId(e.target.value)}
                />
             </div>
             <FieldError error={error} />
             <br/>
 
-            <button type='submit' className='nes-btn is-primary'>SEARCH</button>
+            <button type="submit" className="nes-btn is-primary">SEARCH</button>
 
             <ErrorSection />
 
@@ -115,12 +115,12 @@ export function Find()
 
         <br/>
         <br/>
-        <h3 style={{marginBottom: '1em'}}>RECENT BETS</h3>
+        <h3 style={{marginBottom: "1em"}}>RECENT BETS</h3>
         {
-            !recentBets.length ? 'Loading...' :
+            !recentBets.length ? "Loading..." :
             recentBets.map((bet: BetSummary) =>
             <div key={bet.id}>
-                <span style={{minWidth: '6.5em', display: 'inline-block', textAlign: 'right'}}>
+                <span style={{minWidth: "6.5em", display: "inline-block", textAlign: "right"}}>
                     {timeAgo(bet.time)}
                 </span>
                 &nbsp;

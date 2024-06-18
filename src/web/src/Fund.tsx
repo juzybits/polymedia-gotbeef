@@ -1,16 +1,16 @@
-import { useCurrentAccount, useSignTransaction, useSuiClient } from '@mysten/dapp-kit';
-import { CoinBalance, PaginatedCoins, TransactionEffects } from '@mysten/sui/client';
-import { Transaction } from '@mysten/sui/transactions';
-import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { AppContext } from './App';
-import { showConfetti } from './lib/confetti';
-import { Bet, getConfig, getErrorName } from './lib/gotbeef';
+import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { CoinBalance, PaginatedCoins } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import { useOutletContext } from "react-router-dom";
+import { AppContext } from "./App";
+import { showConfetti } from "./lib/confetti";
+import { Bet, getConfig, getErrorName } from "./lib/gotbeef";
 
 export const Fund: React.FC<{
-    bet: Bet,
-    reloadBet: () => Promise<void>,
-    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>,
+    bet: Bet;
+    reloadBet: () => Promise<void>;
+    setModal: React.Dispatch<React.SetStateAction<React.ReactNode|null>>;
 }> = ({
     bet,
     reloadBet,
@@ -24,26 +24,26 @@ export const Fund: React.FC<{
 
     const {packageId} = getConfig(network);
     const [userHasFunds, setUserHasFunds] = useState(false);
-    const [answer, setAnswer] = useState('');
-    const [error, setError] = useState('');
+    const [answer, setAnswer] = useState("");
+    const [error, setError] = useState("");
 
     // Look for a Coin<T> with enough balance to fund the bet
 
     useEffect(() => {
         checkUserFunds()
         .catch(error => {
-            console.warn('[checkUserFunds]', error.stack);
-            setError('[checkUserFunds] ' + error.message);
+            console.warn("[checkUserFunds]", error.stack);
+            setError("[checkUserFunds] " + error.message);
         });
     }, [currentAccount]);
 
     const checkUserFunds = async () =>
     {
         setUserHasFunds(false);
-        setError('');
+        setError("");
 
         if (!currentAccount) {
-            throw new Error('Wallet not connected');
+            throw new Error("Wallet not connected");
         }
 
         const coinBalance: CoinBalance = await suiClient.getBalance({
@@ -61,17 +61,17 @@ export const Fund: React.FC<{
     const fundBet = async (
         bet: Bet,
         answer: string,
-    ): ReturnType<typeof suiClient['executeTransactionBlock']> =>
+    ): ReturnType<typeof suiClient["executeTransactionBlock"]> =>
     {
         if (!currentAccount) {
-            throw new Error('Wallet not connected');
+            throw new Error("Wallet not connected");
         }
         console.debug(`[fundBet] Calling bet::fund on package: ${packageId}`);
 
         const tx = new Transaction();
 
-        let fundingCoin: ReturnType<Transaction['splitCoins']>;
-        if (bet.collatType === '0x2::sui::SUI') {
+        let fundingCoin: ReturnType<Transaction["splitCoins"]>;
+        if (bet.collatType === "0x2::sui::SUI") {
             fundingCoin = tx.splitCoins(tx.gas, [tx.pure(bet.size)]);
         }
         else {
@@ -122,46 +122,46 @@ export const Fund: React.FC<{
         e.preventDefault();
         fundBet(bet, answer)
         .then(resp => {
-            const effects = resp.effects as TransactionEffects;
-            if (effects.status.status == 'success') {
-                showConfetti('💸');
-                setError('');
-                setModal('');
+            const effects = resp.effects!;
+            if (effects.status.status == "success") {
+                showConfetti("💸");
+                setError("");
+                setModal("");
                 reloadBet();
-                console.debug('[onClickFund] Success:', resp);
+                console.debug("[onClickFund] Success:", resp);
             } else {
                 setError( getErrorName(effects.status.error) );
             }
         })
         .catch(error => {
             setError( getErrorName(error.message) );
-            console.warn('[onClickFund]', error.stack);
+            console.warn("[onClickFund]", error.stack);
         });
     };
 
     const onClickBack = () => {
-        setModal('');
+        setModal("");
     };
 
-    return <section className='bet-modal'>
+    return <section className="bet-modal">
         <h2>Fund bet</h2>
         <div>
-            Bet size is {bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {bet.collatType}
+            Bet size is {bet.size/1_000_000_000} <i className="nes-icon coin is-small" /> {bet.collatType}
             <br/>
-            <form onSubmit={onClickFund} className='nes-field'>
-                <label htmlFor='answer_field'>Answer (optional)</label>
-                <input type='text' id='answer_field' className={`nes-input ${userHasFunds ? '' : 'is-disabled'}`} maxLength={500}
-                    spellCheck='false' autoCorrect='off' autoComplete='off'
+            <form onSubmit={onClickFund} className="nes-field">
+                <label htmlFor="answer_field">Answer (optional)</label>
+                <input type="text" id="answer_field" className={`nes-input ${userHasFunds ? "" : "is-disabled"}`} maxLength={500}
+                    spellCheck="false" autoCorrect="off" autoComplete="off"
                     value={answer} disabled={!userHasFunds} onChange={e => setAnswer(e.target.value)}
                 />
             </form>
             <br/>
-            <button type='button' className={`nes-btn ${userHasFunds ? 'is-success' : 'is-disabled'}`}
+            <button type="button" className={`nes-btn ${userHasFunds ? "is-success" : "is-disabled"}`}
                     disabled={!userHasFunds} onClick={onClickFund}>
                 FUND
             </button>
             &nbsp;
-            <button type='button' className='nes-btn' onClick={onClickBack}>
+            <button type="button" className="nes-btn" onClick={onClickBack}>
                 BACK
             </button>
         </div>
@@ -176,4 +176,4 @@ export const Fund: React.FC<{
         <br/>
         <hr/>
     </section>;
-}
+};

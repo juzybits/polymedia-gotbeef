@@ -1,6 +1,6 @@
 /// Miscellaneous convenience functions and constants
 
-export const isDev = window.location.hostname=='localhost';
+export const isDev = window.location.hostname=="localhost";
 export const isProd = !isDev;
 
 /// Get a date in relative time, e.g. "5 days ago"
@@ -8,39 +8,39 @@ export const isProd = !isDev;
 export const timeAgo = (
     epochMilliSecs: number | null | undefined,
     timeNow?: number,
-    shortenTimeLabel: boolean = true
+    shortenTimeLabel = true
 ): string => {
-    if (!epochMilliSecs) return '';
+    if (!epochMilliSecs) return "";
 
     timeNow = timeNow ? timeNow : Date.now();
 
     const timeLabel = {
         year: {
-            full: 'year',
-            short: 'y',
+            full: "year",
+            short: "y",
         },
         month: {
-            full: 'month',
-            short: 'm',
+            full: "month",
+            short: "m",
         },
         day: {
-            full: 'day',
-            short: 'd',
+            full: "day",
+            short: "d",
         },
         hour: {
-            full: 'hour',
-            short: 'h',
+            full: "hour",
+            short: "h",
         },
         min: {
-            full: 'min',
-            short: 'm',
+            full: "min",
+            short: "m",
         },
         sec: {
-            full: 'sec',
-            short: 's',
+            full: "sec",
+            short: "s",
         },
     };
-    const dateKeyType = shortenTimeLabel ? 'short' : 'full';
+    const dateKeyType = shortenTimeLabel ? "short" : "full";
 
     let timeUnit: [string, number][];
     let timeCol = timeNow - epochMilliSecs;
@@ -63,11 +63,11 @@ export const timeAgo = (
     }
 
     const convertAmount = (amount: number, label: string) => {
-        const spacing = shortenTimeLabel ? '' : ' ';
+        const spacing = shortenTimeLabel ? "" : " ";
         if (amount > 1)
-            return `${amount}${spacing}${label}${!shortenTimeLabel ? 's' : ''}`;
+            return `${amount}${spacing}${label}${!shortenTimeLabel ? "s" : ""}`;
         if (amount === 1) return `${amount}${spacing}${label}`;
-        return '';
+        return "";
     };
 
     const resultArr = timeUnit.map(([label, denom]) => {
@@ -76,7 +76,7 @@ export const timeAgo = (
         return convertAmount(whole, label);
     });
 
-    const result = resultArr.join(' ').trim();
+    const result = resultArr.join(" ").trim();
 
-    return result ? result : `< 1s`;
+    return result ? result : "< 1s";
 };

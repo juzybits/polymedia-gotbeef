@@ -1,15 +1,15 @@
-import { useCurrentAccount, useSuiClient } from '@mysten/dapp-kit';
-import { PolymediaProfile, ProfileClient } from '@polymedia/profile-sdk';
-import { shortenSuiAddress } from '@polymedia/suitcase-core';
-import { LinkToPolymedia } from '@polymedia/suitcase-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
-import { AppContext } from './App';
-import { Cancel } from './Cancel';
-import { Fund } from './Fund';
-import { Vote } from './Vote';
-import { ButtonConnect } from './components/ButtonConnect';
-import { Bet, getBet } from './lib/gotbeef';
+import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
+import { PolymediaProfile, ProfileClient } from "@polymedia/profile-sdk";
+import { shortenSuiAddress } from "@polymedia/suitcase-core";
+import { LinkToPolymedia } from "@polymedia/suitcase-react";
+import React, { useEffect, useRef, useState } from "react";
+import { useOutletContext, useParams } from "react-router-dom";
+import { AppContext } from "./App";
+import { Cancel } from "./Cancel";
+import { Fund } from "./Fund";
+import { Vote } from "./Vote";
+import { ButtonConnect } from "./components/ButtonConnect";
+import { Bet, getBet } from "./lib/gotbeef";
 
 export function View()
 {
@@ -20,7 +20,7 @@ export function View()
 
     const { network } = useOutletContext<AppContext>();
 
-    const betId = useParams().uid || '';
+    const betId = useParams().uid || "";
     const [bet, setBet] = useState<Bet|null|undefined>(undefined);
     const [modal, setModal] = useState<React.ReactNode|null>(null);
     const [isPlayer, setIsPlayer] = useState(false);
@@ -41,8 +41,8 @@ export function View()
             setProfiles(profiles);
         })
         .catch(error => {
-            console.warn('[fetchProfiles]', error.stack);
-        })
+            console.warn("[fetchProfiles]", error.stack);
+        });
     };
     const AddressOrProfile: React.FC<{address: string}> = ({address}) => {
         const profile = profiles.get(address);
@@ -96,57 +96,57 @@ export function View()
         const isPlayer = bet.players.includes(userAddr);
         setIsPlayer(isPlayer);
         setIsJudge(isJudge);
-        setUserCanFund( isPlayer && bet.phase == 'funding' && !bet.funds.has(userAddr) );
-        setUserCanVote( isJudge && bet.phase == 'voting' && !bet.votesByJudge.has(userAddr) );
-        setUserCanCancel( (isPlayer||isJudge) && bet.phase == 'funding' && bet.funds.size == 0 );
+        setUserCanFund( isPlayer && bet.phase == "funding" && !bet.funds.has(userAddr) );
+        setUserCanVote( isJudge && bet.phase == "voting" && !bet.votesByJudge.has(userAddr) );
+        setUserCanCancel( (isPlayer||isJudge) && bet.phase == "funding" && bet.funds.size == 0 );
     }, [isConnected, bet, currentAccount]);
 
     /* Render */
 
-    if (typeof bet === 'undefined')
+    if (typeof bet === "undefined")
         return <React.Fragment>Loading...</React.Fragment>;
 
     if (bet === null)
         return <React.Fragment>Bet not found.</React.Fragment>;
 
     // MAYBE: show date of last update
-    const showFunded = ['funding'].includes(bet.phase);
+    const showFunded = ["funding"].includes(bet.phase);
     return <React.Fragment>
     {
         modal ||
         // Show action only if we're not inside of a modal (fund/vote/cancel)
         (
             // Show actions only if the bet is not already settled/canceled/stalemate
-            (bet.phase=='voting' || bet.phase=='funding') &&
-            <section id='bet-actions-container' className='nes-container with-title'>
-                <h3 className='title'>Actions</h3>
-                <div id='bet-actions' className='button-container'>
+            (bet.phase=="voting" || bet.phase=="funding") &&
+            <section id="bet-actions-container" className="nes-container with-title">
+                <h3 className="title">Actions</h3>
+                <div id="bet-actions" className="button-container">
                 {isConnected && <>
                     {userCanFund &&
-                    <button type='button' className='nes-btn is-success'
+                    <button type="button" className="nes-btn is-success"
                         onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                         FUND
                     </button>}
 
                     {userCanVote &&
-                    <button type='button' className='nes-btn is-success'
+                    <button type="button" className="nes-btn is-success"
                         onClick={() => setModal(<Vote bet={bet} profiles={profiles} reloadBet={reloadBet} setModal={setModal} />)}>
                         VOTE
                     </button>}
 
                     {userCanCancel &&
-                    <button type='button' className='nes-btn is-error'
+                    <button type="button" className="nes-btn is-error"
                         onClick={() => setModal(<Cancel bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
                         CANCEL
                     </button>}
 
                     {
-                        (isPlayer===false && isJudge===false)
-                        ? <span className='error'>
+                        (!isPlayer && !isJudge)
+                        ? <span className="error">
                             Your address is not a participant in this bet
                         </span>
-                        : (userCanFund===false && userCanVote===false && userCanCancel===false) &&
-                        <span className='error'>
+                        : (!userCanFund && !userCanVote && !userCanCancel) &&
+                        <span className="error">
                             No actions available at this time
                         </span>
                     }
@@ -157,20 +157,20 @@ export function View()
         )
     }
 
-    <h2 style={{marginBottom: '0.8em'}}>{bet.title}</h2>
+    <h2 style={{marginBottom: "0.8em"}}>{bet.title}</h2>
 
-    <table id='bet-summary'>
+    <table id="bet-summary">
         <tbody>
             <tr>
                 <td>ID:</td>
                 <td>
-                    <LinkToPolymedia network={network} kind='object' addr={betId} className='rainbow' />
+                    <LinkToPolymedia network={network} kind="object" addr={betId} className="rainbow" />
                 </td>
             </tr>
             {
-            !bet.winner ? '' :
+            !bet.winner ? "" :
             <tr>
-                <td>&nbsp;<i className='nes-icon trophy is-small' />:</td>
+                <td>&nbsp;<i className="nes-icon trophy is-small" />:</td>
                 <td>{shortenSuiAddress(bet.winner)}</td>
             </tr>
             }
@@ -180,14 +180,14 @@ export function View()
             </tr>
             <tr>
                 <td>Size:</td>
-                <td>{bet.size/1_000_000_000} <i className='nes-icon coin is-small' /> {bet.collatType}</td>
+                <td>{bet.size/1_000_000_000} <i className="nes-icon coin is-small" /> {bet.collatType}</td>
             </tr>
             <tr>
                 <td>Quorum:</td>
                 <td>{bet.quorum}/{bet.judges.length}</td>
             </tr>
             {
-            !bet.description ? '' :
+            !bet.description ? "" :
             <tr>
                 <td>Details:</td>
                 <td>{bet.description}</td>
@@ -199,7 +199,7 @@ export function View()
     <table>
         <thead>
             <tr>
-                <th><i className='snes-jp-logo custom-logo' /> Player</th>
+                <th><i className="snes-jp-logo custom-logo" /> Player</th>
                 {!showFunded && <th>Votes</th>}
                 {showFunded && <th>Funded</th>}
             </tr>
@@ -210,8 +210,8 @@ export function View()
             <React.Fragment key={player_addr}>
                 <tr>
                     <td><AddressOrProfile address={player_addr} /></td>
-                    {!showFunded && <td>{bet.votesByPlayer.get(player_addr) || '0'}</td>}
-                    {showFunded && <td>{bet.funds.get(player_addr) ? 'Yes' : 'No'}</td>}
+                    {!showFunded && <td>{bet.votesByPlayer.get(player_addr) || "0"}</td>}
+                    {showFunded && <td>{bet.funds.get(player_addr) ? "Yes" : "No"}</td>}
                 </tr>
             </React.Fragment>)
         }
@@ -221,7 +221,7 @@ export function View()
     <table>
         <thead>
             <tr>
-                <th><i className='nes-logo custom-logo' /> Judge</th>
+                <th><i className="nes-logo custom-logo" /> Judge</th>
                 <th>Vote</th>
             </tr>
         </thead>
@@ -244,7 +244,7 @@ export function View()
     <table>
         <thead>
             <tr>
-                <th><i className='snes-jp-logo custom-logo' /> Player</th>
+                <th><i className="snes-jp-logo custom-logo" /> Player</th>
                 <th>Answer</th>
             </tr>
         </thead>
@@ -254,7 +254,7 @@ export function View()
             <React.Fragment key={player_addr}>
                 <tr>
                     <td><AddressOrProfile address={player_addr} /></td>
-                    <td>{bet.answers.get(player_addr) || '-'}</td>
+                    <td>{bet.answers.get(player_addr) || "-"}</td>
                 </tr>
             </React.Fragment>)
         }
@@ -265,13 +265,13 @@ export function View()
 }
 
 const phaseColors = new Map([
-    ['funding', '#92cc41'],
-    ['voting', '#92cc41'],
-    ['settled', 'grey'],
-    ['canceled', '#e76e55'],
-    ['stalemate', '#e76e55'],
+    ["funding", "#92cc41"],
+    ["voting", "#92cc41"],
+    ["settled", "grey"],
+    ["canceled", "#e76e55"],
+    ["stalemate", "#e76e55"],
 ]);
 
 function phaseColor(phaseName: string): string {
-    return phaseColors.get(phaseName) || 'black';
+    return phaseColors.get(phaseName) || "black";
 }

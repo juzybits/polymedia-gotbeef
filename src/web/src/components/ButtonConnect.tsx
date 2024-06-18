@@ -1,5 +1,5 @@
 import { ConnectModal, useCurrentAccount, useDisconnectWallet } from "@mysten/dapp-kit";
-import { useState } from 'react';
+import { useState } from "react";
 
 export function ButtonConnect()
 {
@@ -9,10 +9,10 @@ export function ButtonConnect()
     const [showConnectModal, setShowConnectModal] = useState(false);
 
     const ButtonDisconnect = () => {
-        return <button type='button' className='nes-btn' onClick={() => { disconnect(); }}>
+        return <button type="button" className="nes-btn" onClick={() => { disconnect(); }}>
             DISCONNECT
         </button>;
-    }
+    };
 
     const ButtonConnect = () => {
         if (currentAccount) {
@@ -25,7 +25,7 @@ export function ButtonConnect()
                 open={showConnectModal}
                 onOpenChange={isOpen => { setShowConnectModal(isOpen); }}
             />
-            <button type='button' className='nes-btn is-warning'
+            <button type="button" className="nes-btn is-warning"
                 onClick={() => setShowConnectModal(true)}>CONNECT</button>
         </>;
     };
