@@ -1,7 +1,7 @@
 /// Helpers to interact with the Sui network
 
 import { SuiClient } from '@mysten/sui/client';
-import { NetworkName } from '@polymedia/suitcase-react';
+import { NetworkName } from '@polymedia/suitcase-core';
 
 const GOTBEEF_PACKAGE_LOCALNET = '0x965d1bfb15be36bdd041ce93825926a31668b27427e9d4f1d0dccdd75df622a0';
 const GOTBEEF_PACKAGE_DEVNET = '0x1268f202feab32e88e517504da606e03d421f5c6dbaa348829da7b56242c6ec8';

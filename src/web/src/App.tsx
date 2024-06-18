@@ -4,10 +4,6 @@ import { NetworkName } from '@polymedia/suitcase-core';
 import { NetworkSelector, isLocalhost, loadNetwork } from '@polymedia/suitcase-react';
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import imgAppCastle from '../img/app-castle.webp';
-import imgAppChat from '../img/app-chat.webp';
-import imgAppProfile from '../img/app-profile.webp';
-import cowImage from '../img/cow256.png';
 import { reloadClouds } from './lib/clouds';
 
 export type AppContext = {
@@ -54,7 +50,7 @@ export function App() {
 
         <header id='header'>
 
-            <h1 id='title'><span>GOT BEEF?<img id='cow' src={cowImage} alt='got beef?' onClick={reloadClouds} /></span></h1>
+            <h1 id='title'><span>GOT BEEF?<img id='cow' src="/img/cow256.png" alt='got beef?' onClick={reloadClouds} /></span></h1>
 
             <nav id='nav'>
                 <Link to='/'>HOME</Link>
@@ -93,7 +89,7 @@ export function App() {
         <div id='apps-showcase'>
             <div className='app'>
                 <div className='app-photo'>
-                    <img src={imgAppProfile} />
+                    <img src="/img/app-profile.webp" />
                 </div>
                 <div className='app-details'>
                     <h3 className='app-title'>Polymedia Profile</h3>
@@ -105,7 +101,7 @@ export function App() {
             </div>
             <div className='app'>
                 <div className='app-photo'>
-                    <img src={imgAppChat} />
+                    <img src="/img/app-chat.webp" />
                 </div>
                 <div className='app-details'>
                     <h3 className='app-title'>Polymedia Chat</h3>
@@ -117,7 +113,7 @@ export function App() {
             </div>
             <div className='app'>
                 <div className='app-photo'>
-                    <img src={imgAppCastle} />
+                    <img src="/app-castle.webp" />
                 </div>
                 <div className='app-details'>
                     <h3 className='app-title'>Journey to Mount Sogol</h3>

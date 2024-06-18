@@ -2,13 +2,10 @@
 
 const IMG_WIDTH = 145; // px
 const IMG_HEIGHT = 108; // px
-const IMG_SQRT = 125 // px, square root of the area
+const IMG_SQRT = 125; // px, square root of the area
 
 // Preload images
-// import imgDoorOpen from '../../img/door_open.webp';
-import imgSteak from '../../img/steak.svg';
-// (new Image()).src = imgDoorOpen;
-(new Image()).src = imgSteak;
+(new Image()).src = "/img/steak.svg";
 
 export function reloadClouds(): void
 {
