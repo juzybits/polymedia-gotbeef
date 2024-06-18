@@ -1,32 +1,81 @@
-import { SuiClient } from '@mysten/sui/client';
-import { WalletKitProvider } from '@mysten/wallet-kit';
-import { NetworkName } from '@polymedia/suitcase-core';
-import { NetworkSelector, isLocalhost, loadNetwork } from '@polymedia/suitcase-react';
-import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import {
+    SuiClientProvider,
+    WalletProvider,
+    createNetworkConfig
+} from "@mysten/dapp-kit";
+import "@mysten/dapp-kit/dist/index.css";
+import { getFullnodeUrl } from "@mysten/sui/client";
+import { NetworkSelector, isLocalhost, loadNetwork } from "@polymedia/suitcase-react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Link, Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Find } from "./Find";
+import { Home } from "./Home";
+import { New } from "./New";
+import { NotFound } from "./NotFound";
+import { View } from "./View";
+import "./css/styles.less";
 import { reloadClouds } from './lib/clouds';
 
-export type AppContext = {
-    network: NetworkName,
-    suiClient: SuiClient,
+/* App router */
+
+export const AppRouter: React.FC = () => {
+    return (
+    <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<AppSuiProviders />} >
+                <Route index element={<Home />} />
+                <Route path='new' element={<New />} />
+                <Route path='find' element={<Find />} />
+                <Route path='bet/:uid' element={<View />} />
+                <Route path='*' element={<NotFound />} />
+            </Route>
+        </Routes>
+    </BrowserRouter>
+    );
 };
 
-export function App() {
-    const location = useLocation();
-    const [network, setNetwork] = useState<NetworkName|null>(null);
-    const [suiClient, setSuiClient] = useState<SuiClient|null>(null);
-    const showNetworkSelector = isLocalhost();
+/* Sui providers + network config */
 
-    useEffect(() => {
-        async function initialize() {
-            const network = isLocalhost() ? loadNetwork() : 'mainnet';
-            const rpcConfig = await getRpcConfig({network, fetch: false});
-            const suiClient = new SuiClient({url: rpcConfig.fullnode});
-            setNetwork(network);
-            setSuiClient(suiClient);
-        };
-        initialize();
-    }, []);
+export const supportedNetworks = ["mainnet", "testnet", "devnet"] as const;
+export type NetworkName = typeof supportedNetworks[number];
+
+const { networkConfig } = createNetworkConfig({
+    mainnet: { url: getFullnodeUrl("mainnet") },
+    testnet: { url: getFullnodeUrl("testnet") },
+    devnet: { url: getFullnodeUrl("devnet") },
+});
+
+const queryClient = new QueryClient();
+const AppSuiProviders: React.FC = () => {
+    const [ network ] = useState(loadNetwork(supportedNetworks, "mainnet"));
+    return (
+    <QueryClientProvider client={queryClient}>
+        <SuiClientProvider networks={networkConfig} network={network}>
+            <WalletProvider autoConnect={true}>
+                <App network={network} />
+            </WalletProvider>
+        </SuiClientProvider>
+    </QueryClientProvider>
+    );
+};
+
+/* App */
+
+export type ReactSetter<T> = React.Dispatch<React.SetStateAction<T>>;
+
+export type AppContext = {
+    network: NetworkName;
+};
+
+const App: React.FC<{
+    network: NetworkName;
+}> = ({
+    network,
+}) =>
+{
+    const location = useLocation();
+    const showNetworkSelector = isLocalhost();
 
     useEffect(() => {
         const resizeObserver = new ResizeObserver((_entries) => {
@@ -35,17 +84,14 @@ export function App() {
         resizeObserver.observe(document.getElementById('app') as Element);
     }, []);
 
-    if (!network || !suiClient) {
-        return <></>;
-    }
-
     const appContext: AppContext = {
         network,
-        suiClient,
     };
 
     return <div id='page'>
-    {showNetworkSelector && <NetworkSelector currentNetwork={network} />}
+    {showNetworkSelector &&
+    <NetworkSelector currentNetwork={network} supportedNetworks={supportedNetworks} />
+    }
     <section id='main'>
 
         <header id='header'>
@@ -63,9 +109,7 @@ export function App() {
         </header>
 
         <section id='content'>
-        <WalletKitProvider>
             <Outlet context={appContext} />
-        </WalletKitProvider>
         </section>
 
     </section>
