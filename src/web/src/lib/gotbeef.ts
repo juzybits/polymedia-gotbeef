@@ -3,24 +3,24 @@
 import { SuiClient } from "@mysten/sui/client";
 import { NetworkName } from "@polymedia/suitcase-core";
 
-const GOTBEEF_PACKAGE_LOCALNET = "0x965d1bfb15be36bdd041ce93825926a31668b27427e9d4f1d0dccdd75df622a0";
-const GOTBEEF_PACKAGE_DEVNET = "0x1268f202feab32e88e517504da606e03d421f5c6dbaa348829da7b56242c6ec8";
-const GOTBEEF_PACKAGE_TESTNET = "0x7eac492d418a9d193c0cb142ab7be5eda6abbf00d40a58735deab356a42fdff6";
 const GOTBEEF_PACKAGE_MAINNET = "0x8221cc562f8c58c922c6a40ecbc7e2f16b0159fb683470c22e96d21a0dc52beb";
+const GOTBEEF_PACKAGE_TESTNET = "0x7eac492d418a9d193c0cb142ab7be5eda6abbf00d40a58735deab356a42fdff6";
+const GOTBEEF_PACKAGE_DEVNET = "";
+const GOTBEEF_PACKAGE_LOCALNET = "";
 
 type Config = {
     packageId: string;
 };
 export function getConfig(network: NetworkName): Config {
     switch (network) {
-        case "localnet":
-            return { packageId: GOTBEEF_PACKAGE_LOCALNET };
-        case "devnet":
-            return { packageId: GOTBEEF_PACKAGE_DEVNET };
-        case "testnet":
-            return { packageId: GOTBEEF_PACKAGE_TESTNET };
         case "mainnet":
             return { packageId: GOTBEEF_PACKAGE_MAINNET };
+        case "testnet":
+            return { packageId: GOTBEEF_PACKAGE_TESTNET };
+        case "devnet":
+            return { packageId: GOTBEEF_PACKAGE_DEVNET };
+        case "localnet":
+            return { packageId: GOTBEEF_PACKAGE_LOCALNET };
     }
 }
 
@@ -151,7 +151,7 @@ export function getErrorName(error?: unknown): string {
         return "Your wallet doesn't have enough balance to pay for the transaction";
     }
 
-    const match = errMsg.match(/^MoveAbort.+, (\d+)\)$/);
+    const match = errMsg.match(/MoveAbort.+, (\d+)\)/);
     if (!match) {
         return errMsg;
     }

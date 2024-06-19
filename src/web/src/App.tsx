@@ -37,7 +37,7 @@ export const AppRouter: React.FC = () => {
 
 /* Sui providers + network config */
 
-export const supportedNetworks = ["mainnet", "testnet", "devnet"] as const;
+export const supportedNetworks = ["mainnet", "testnet"] as const;
 export type NetworkName = typeof supportedNetworks[number];
 
 const { networkConfig } = createNetworkConfig({
@@ -61,8 +61,6 @@ const AppSuiProviders: React.FC = () => {
 };
 
 /* App */
-
-export type ReactSetter<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export type AppContext = {
     network: NetworkName;
