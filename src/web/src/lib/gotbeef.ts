@@ -21,8 +21,6 @@ export function getConfig(network: NetworkName): Config {
             return { packageId: GOTBEEF_PACKAGE_TESTNET };
         case "mainnet":
             return { packageId: GOTBEEF_PACKAGE_MAINNET };
-        default:
-            throw new Error("Invalid network: " + network);
     }
 }
 
@@ -89,7 +87,8 @@ export async function getBet(network: NetworkName, rpc: SuiClient, objId: string
 
             console.debug("[getBet] Found bet object " + resp.data.objectId);
 
-            const fields = content.fields as any;
+            /* eslint-disable */
+            const fields: Record<string, any> = content.fields;
 
             // Parse `Bet.funds: VecMap<address, Coin<T>>`
             const funds = fields.funds.fields.contents || [];
@@ -130,27 +129,31 @@ export async function getBet(network: NetworkName, rpc: SuiClient, objId: string
                 votesByPlayer: votesByPlayer,
                 winner: typeof fields.winner === "object" ? "" : fields.winner,
             };
+            /* eslint-enable */
+
             return bet;
         })
-        .catch(error => {
-            console.warn("[getBet]", error.stack);
+        .catch((err: unknown) => {
+            console.warn("[getBet]", err);
             return null;
         });
 }
 
-export function getErrorName(error?: string): string {
-    if (!error) {
+export function getErrorName(error?: unknown): string {
+    const errMsg = (error instanceof Error ? error.message : String(error));
+
+    if (errMsg.length === 0) {
         return "unknown error";
     }
 
     const noBalanceTxt = "Unable to select a gas object with balance greater than or equal to";
-    if (error.includes(noBalanceTxt)) {
+    if (errMsg.includes(noBalanceTxt)) {
         return "Your wallet doesn't have enough balance to pay for the transaction";
     }
 
-    const match = error.match(/^MoveAbort.+, (\d+)\)$/);
+    const match = errMsg.match(/^MoveAbort.+, (\d+)\)$/);
     if (!match) {
-        return error;
+        return errMsg;
     }
     const errCode = match[1];
     const errorNames: Record<string, string> = { // from bet.move
@@ -176,5 +179,5 @@ export function getErrorName(error?: string): string {
         "300": "E_BET_HAS_FUNDS",
         "301": "E_NOT_AUTHORIZED",
     };
-    return errorNames[errCode] || error;
+    return errorNames[errCode] || errMsg;
 }

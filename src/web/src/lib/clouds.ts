@@ -11,9 +11,10 @@ export function reloadClouds(): void
 {
     // Remove all clouds
     let el = null;
-    while ( el = document.querySelector(".cloud, .steak, .door-closed, .door-open") ) {
-        el.parentNode?.removeChild(el);
-    }
+    do {
+        el = document.querySelector(".cloud, .steak, .door-closed, .door-open");
+        el?.parentNode?.removeChild(el);
+    } while (el);
 
     // Get window dimensions
     const windowWidth = window.innerWidth

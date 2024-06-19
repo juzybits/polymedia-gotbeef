@@ -40,8 +40,8 @@ export function View()
         .then(profiles => {
             setProfiles(profiles);
         })
-        .catch(error => {
-            console.warn("[fetchProfiles]", error.stack);
+        .catch((err: unknown) => {
+            console.warn("[fetchProfiles]", err);
         });
     };
     const AddressOrProfile: React.FC<{address: string}> = ({address}) => {

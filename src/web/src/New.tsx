@@ -129,7 +129,7 @@ export function New()
         return valid;
     };
 
-    async function log(_args: any[]) {
+    function log(_args: unknown[]) {
         const {packageId: newPackageId} = getConfig(network);
         packageId = newPackageId;
         // await fetch('', {
@@ -207,8 +207,8 @@ export function New()
                 setError( getErrorName(effects.status.error) );
             }
         })
-        .catch(error => {
-            setError( getErrorName(error.message) );
+        .catch((err: unknown) => {
+            setError(getErrorName(err));
         });
     };
 

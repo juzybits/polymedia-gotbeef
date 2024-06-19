@@ -22,9 +22,9 @@ export function Find()
     useEffect(() => {
         document.title = "Got Beef? - Find";
         loadRecentBets()
-        .catch(error => {
-            console.warn("[loadRecentBets]", error.stack);
-            setError("[loadRecentBets] " + error.message);
+        .catch((err: unknown) => {
+            console.warn("[loadRecentBets]", err);
+            setError("[loadRecentBets] " + (err instanceof Error ? err.message : String(err)));
         });
     }, []);
 

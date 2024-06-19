@@ -73,8 +73,8 @@ export const Vote: React.FC<{
                 setError( getErrorName(effects.status.error) );
             }
         })
-        .catch(error => {
-            setError( getErrorName(error.message) );
+        .catch((err: unknown) => {
+            setError(getErrorName(err));
         });
     };
 

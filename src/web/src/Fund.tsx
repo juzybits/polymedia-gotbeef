@@ -31,9 +31,9 @@ export const Fund: React.FC<{
 
     useEffect(() => {
         checkUserFunds()
-        .catch(error => {
-            console.warn("[checkUserFunds]", error.stack);
-            setError("[checkUserFunds] " + error.message);
+        .catch((err: unknown) => {
+            console.warn("[checkUserFunds]", err);
+            setError("[checkUserFunds] " + (err instanceof Error ? err.message : String(err)));
         });
     }, [currentAccount]);
 
@@ -134,9 +134,9 @@ export const Fund: React.FC<{
                 setError( getErrorName(effects.status.error) );
             }
         })
-        .catch(error => {
-            setError( getErrorName(error.message) );
-            console.warn("[onClickFund]", error.stack);
+        .catch((err: unknown) => {
+            console.warn("[onClickFund]", err);
+            setError( getErrorName(err) );
         });
     };
 
