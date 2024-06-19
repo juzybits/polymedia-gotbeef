@@ -41,7 +41,7 @@ export const Vote: React.FC<{
             typeArguments: [ bet.collatType ],
             arguments: [
                 tx.object(bet.id),
-                tx.pure(player_addr),
+                tx.pure.address(player_addr),
             ],
         });
 

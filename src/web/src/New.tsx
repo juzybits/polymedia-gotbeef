@@ -1,4 +1,5 @@
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
+import { bcs } from "@mysten/sui/bcs";
 import { Transaction } from "@mysten/sui/transactions";
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
@@ -27,8 +28,8 @@ export function New()
     const [description, setDescription] = useState("");
     const [currency, setCurrency] = useState("0x2::sui::SUI");
     const [size, setSize] = useState(isProd ? "" : "0.000000007");
-    const [players, setPlayers] = useState(isProd ? "" : "0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713\n0xe956f7c91679020f75d94c44f08fe5caefb4b1be6d384b9f1093ddccff6a93f5\n0x0cd792f319cd9049c725be09fccac005827f2a0d9fe9336cf044ab1b69b79a10");
-    const [judges, setJudges] = useState(isProd ? "" : "0x5d8133281aa26ad73542c0b53014c6831c37b9d98e7603fd0db2e1cc4453934a");
+    const [players, setPlayers] = useState(isProd ? "" : "0x1a818b34b4ce389c0b3d9e584663ecce4f2ffd66bb255d603bb6eb96b2b41166\n0x017d58f4347357b1157c00eb2e67e318a83673decc6a7dd9fe24d34c202c2713");
+    const [judges, setJudges] = useState(isProd ? "" : "0xbcc6e3a5e34bca4ed781e9a47d1d4b82645f9c382204956389a68304c20fe8e5");
     const [quorum, setQuorum] = useState(isProd ? "" : 1);
     const [playersArray, setPlayersArray] = useState(new Array<string>());
     const [judgesArray, setJudgesArray] = useState(new Array<string>());
@@ -157,12 +158,12 @@ export function New()
             target: `${packageId}::bet::create`,
             typeArguments: [ currency ],
             arguments: [
-                tx.pure(Array.from( (new TextEncoder()).encode(title) )),
-                tx.pure(Array.from( (new TextEncoder()).encode(description) )),
-                tx.pure(quorum),
-                tx.pure(size),
-                tx.pure(players),
-                tx.pure(judges),
+                tx.pure.string(title),
+                tx.pure.string(description),
+                tx.pure.u64(quorum),
+                tx.pure.u64(size),
+                tx.pure(bcs.vector(bcs.Address).serialize(players)),
+                tx.pure(bcs.vector(bcs.Address).serialize(judges)),
             ],
         });
 

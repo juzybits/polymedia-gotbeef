@@ -23,6 +23,7 @@
         "typecheck": "tsc"
     },
     "dependencies": {
+        "@mysten/bcs": "^1.0.2",
         "@mysten/dapp-kit": "^0.14.9",
         "@mysten/sui": "^1.1.2",
         "@polymedia/profile-sdk": "^2.0.0",

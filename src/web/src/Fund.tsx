@@ -71,8 +71,9 @@ export const Fund: React.FC<{
         const tx = new Transaction();
 
         let fundingCoin: ReturnType<Transaction["splitCoins"]>;
+        // TODO: use getCoinOfValue() from @polymedia/suitcase-core
         if (bet.collatType === "0x2::sui::SUI") {
-            fundingCoin = tx.splitCoins(tx.gas, [tx.pure(bet.size)]);
+            fundingCoin = tx.splitCoins(tx.gas, [bet.size]);
         }
         else {
             // Get the coin objects
@@ -91,7 +92,7 @@ export const Fund: React.FC<{
                     otherCoins.map((coin) => tx.object(coin.coinObjectId))
                 );
             }
-            fundingCoin = tx.splitCoins(firstCoinInput, [tx.pure(bet.size)]);
+            fundingCoin = tx.splitCoins(firstCoinInput, [bet.size]);
         }
 
         tx.moveCall({
@@ -99,7 +100,7 @@ export const Fund: React.FC<{
             typeArguments: [ bet.collatType ],
             arguments: [
                 tx.object(bet.id),
-                tx.pure(Array.from( (new TextEncoder()).encode(answer) )),
+                tx.pure.string(answer),
                 fundingCoin,
             ],
         });

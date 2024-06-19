@@ -86,9 +86,8 @@ export function View()
 
     /* Decide which action buttons are visible to the user */
 
-    const { isConnected } = useWalletKit();
     useEffect(() => {
-        if (!isConnected || !bet || !currentAccount) {
+        if (!bet || !currentAccount) {
             return;
         }
         const userAddr = currentAccount.address;
@@ -99,7 +98,7 @@ export function View()
         setUserCanFund( isPlayer && bet.phase == "funding" && !bet.funds.has(userAddr) );
         setUserCanVote( isJudge && bet.phase == "voting" && !bet.votesByJudge.has(userAddr) );
         setUserCanCancel( (isPlayer||isJudge) && bet.phase == "funding" && bet.funds.size == 0 );
-    }, [isConnected, bet, currentAccount]);
+    }, [bet, currentAccount]);
 
     /* Render */
 
@@ -121,7 +120,7 @@ export function View()
             <section id="bet-actions-container" className="nes-container with-title">
                 <h3 className="title">Actions</h3>
                 <div id="bet-actions" className="button-container">
-                {isConnected && <>
+                {currentAccount && <>
                     {userCanFund &&
                     <button type="button" className="nes-btn is-success"
                         onClick={() => setModal(<Fund bet={bet} reloadBet={reloadBet} setModal={setModal} />)}>
