@@ -1,6 +1,7 @@
 import { useCurrentAccount, useSignTransaction, useSuiClient } from "@mysten/dapp-kit";
-import { CoinBalance, PaginatedCoins } from "@mysten/sui/client";
+import { CoinBalance } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
+import { getCoinOfValue } from "@polymedia/suitcase-core";
 import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { AppContext } from "./App";
@@ -70,30 +71,13 @@ export const Fund: React.FC<{
 
         const tx = new Transaction();
 
-        let fundingCoin: ReturnType<Transaction["splitCoins"]>;
-        // TODO: use getCoinOfValue() from @polymedia/suitcase-core
-        if (bet.collatType === "0x2::sui::SUI") {
-            fundingCoin = tx.splitCoins(tx.gas, [bet.size]);
-        }
-        else {
-            // Get the coin objects
-            const paginatedCoins: PaginatedCoins = await suiClient.getCoins({
-                owner: currentAccount.address,
-                coinType: bet.collatType,
-            });
-            // if (paginatedCoins.hasNextPage) // MAYBE (unlikely it's needed in practice)
-
-            // Merge all coins into one
-            const [firstCoin, ...otherCoins] = paginatedCoins.data;
-            const firstCoinInput = tx.object(firstCoin.coinObjectId);
-            if (otherCoins.length) {
-                tx.mergeCoins(
-                    firstCoinInput,
-                    otherCoins.map((coin) => tx.object(coin.coinObjectId))
-                );
-            }
-            fundingCoin = tx.splitCoins(firstCoinInput, [bet.size]);
-        }
+        const fundingCoin = await getCoinOfValue(
+            suiClient,
+            tx,
+            currentAccount.address,
+            bet.collatType,
+            bet.size,
+        );
 
         tx.moveCall({
             target: `${packageId}::bet::fund`,
