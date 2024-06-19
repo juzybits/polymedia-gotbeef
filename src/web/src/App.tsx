@@ -14,7 +14,7 @@ import { Home } from "./Home";
 import { New } from "./New";
 import { NotFound } from "./NotFound";
 import { View } from "./View";
-import "./css/styles.less";
+import "./styles/index.css";
 import { reloadClouds } from "./lib/clouds";
 
 /* App router */
@@ -157,7 +157,7 @@ const App: React.FC<{
             </div>
             <div className="app">
                 <div className="app-photo">
-                    <img src="/app-castle.webp" />
+                    <img src="/img/app-castle.webp" />
                 </div>
                 <div className="app-details">
                     <h3 className="app-title">Journey to Mount Sogol</h3>
