@@ -3,11 +3,10 @@ name = "GotBeef"
 version = "1.0.0"
 authors = ["juzybits <https://twitter.com/juzybits>"]
 license = "Apache-2.0"
-published-at = "0x0"
 
 [dependencies]
-# Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "mainnet" }
-Sui = { local = "../../../sui/crates/sui-framework/packages/sui-framework" }
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
+# Sui = { local = "../../../../sui/crates/sui-framework/packages/sui-framework" }
 
 [addresses]
 gotbeef = "0x0"
